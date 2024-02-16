@@ -22,7 +22,7 @@ function register_runner(id) {
     let formData = new FormData();
     formData.append(name= 'control', value=control);
     formData.append(name= 'id', value=id);
-    time = new Date(Date.now()).toISOString()
+    time = new Date(Date.now()).toISOString().split('.')[0]+"Z"
     formData.append('time', time);
     fetch("upload.php", {
         method: "POST",
