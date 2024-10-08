@@ -29,6 +29,17 @@ class Runner
     {
         $this->splits[$control] = $timestamp;
     }
+
+    function get_control()
+    {
+        // Returns wich control the runner last passed
+        for ($i = 0; $i < count($this->splits); $i++) {
+            if (!is_object($this->splits[$i])) {
+                return $i-1;
+            }
+        }
+        return count($this->splits)-1;
+    }
 }
 
 //find runner by id in list of Runner objects
@@ -40,6 +51,30 @@ function get_runner($runnner_list, int $id)
         }
     }
     return false;
+}
+
+function cmp(Runner $a, Runner $b) {
+    $a_control = $a->get_control();
+    $b_control = $b->get_control();
+    if ($a_control > $b_control){
+        return -1;
+    }
+    if ($a_control < $b_control){
+        return 1;
+    }
+    if ($a_control == -1) {
+        return 1;
+    }
+    if ($b_control == -1) {
+        return -1;
+    }
+    if ($a->splits[$a_control]->getTimestamp() < $b->splits[$b_control]->getTimestamp()){
+        return -1;
+    }
+    if ($a->splits[$a_control]->getTimestamp() > $b->splits[$b_control]->getTimestamp()){
+        return 1;
+    }
+    return 0;
 }
 
 $runners = [];
@@ -72,7 +107,15 @@ for ($i = 0; $i < count($timings); $i++) {
     $runner->set_split($line[0]-1, $time);
 }
 
-//print_r($runners);
+usort($runners, "cmp");
+echo("  <tr>
+    <th>#</th>
+    <th>Startnummer</th>
+    <th>Navn</th>
+    <th>1. matpost</th>
+    <th>2. matpost</th>
+    <th>Mål</th>
+  </tr>");
 for ($i = 0; $i < count($runners); $i++) {
     $runner = $runners[$i];
     $tid_1_mat = "";
@@ -82,13 +125,11 @@ for ($i = 0; $i < count($runners); $i++) {
     }
     $tid_2_mat = "";
     if ($runner->splits[1] != false) {
-        // https://www.php.net/manual/en/class.dateinterval.php
         $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
     }
     $tid_maal = "";
     if ($runner->splits[2] != false) {
-        // https://www.php.net/manual/en/class.dateinterval.php
         $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
     }
-    echo ("<tr><td>$runner->id</td><td>$runner->name</td><td>$tid_1_mat</td><td>$tid_2_mat</td><td>$tid_maal</td></tr>");
+    echo ("<tr><td>". $i+1 .".</td><td>$runner->id</td><td>$runner->name</td><td>$tid_1_mat</td><td>$tid_2_mat</td><td>$tid_maal</td></tr>\n");
 }
