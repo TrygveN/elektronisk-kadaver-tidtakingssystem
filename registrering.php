@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
+    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css">
     <style>
         .passed {
             background-color: #8ff0a4;
@@ -8,15 +9,24 @@
     </style>
 </head>
 <body>
+
+<input id="search" type="text" class="form-control"  onkeyup="filterTable()"  placeholder="Søk etter startnummer eller navn">
+<br>
+
 <table>
     <tbody id="runners">
 
     </tbody>
 </table>
 </body>
+<?php
+$action = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+switch($action) {
+}
+?>
 <script>
 // Hvilken matpost vi er på:
-var control = 1;
+var control = 2;
 
 function register_runner(id) {
     let formData = new FormData();
@@ -62,7 +72,26 @@ function create_rows(csv) {
     }
     return rows
 }
+function filterTable() {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("search");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("runners");
+  tr = table.getElementsByTagName("tr");
 
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td");
+    for (var j = 0; j < td.length; j++) {
+      txtValue = td[j].textContent || td[j].innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+        break;
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
 function update_row(id, name, passed) {
     row = document.getElementById(id)
     row.innerHTML = create_row(id, name, passed)
