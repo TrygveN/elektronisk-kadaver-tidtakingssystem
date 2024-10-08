@@ -1,16 +1,41 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
+    <meta charset="UTF-8" />
+    <title>EKT</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
     <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css">
     <style>
         .passed {
             background-color: #8ff0a4;
         }
+        fieldset {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+        }
     </style>
 </head>
 <body>
+<fieldset>
+    <legend>Velg post</legend>
+    <label>
+      <input type="radio" name="post" value="1">
+      1. Matpost
+    </label>
+    <label>
+      <input type="radio" name="post" value="2">
+      2. Matpost
+    </label>
+    <label>
+      <input type="radio" name="post" value="3">
+      Mål
+    </label>
+  </fieldset>
 
-<input id="search" type="text" class="form-control"  onkeyup="filterTable()"  placeholder="Søk etter startnummer eller navn">
+
+<input id="search" type="number" class="form-control"  onkeyup="filterTable()"  placeholder="Søk">
 <br>
 
 <table>
@@ -21,14 +46,14 @@
 </body>
 <?php
 $action = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
-switch($action) {
-}
+print_r($action)
 ?>
 <script>
 // Hvilken matpost vi er på:
-var control = 2;
+var control = location.search[1];
 
 function register_runner(id) {
+    control = document.querySelector('input[name="post"]:checked').value;
     let formData = new FormData();
     formData.append(name= 'control', value=control);
     formData.append(name= 'id', value=id);
@@ -65,7 +90,7 @@ function create_row(id, name, passed) {
 
 function create_rows(csv) {
     csv = csv.split('\n')
-    rows = ""
+    rows = "<tr><th>#</th><th>Navn</th><th></th>";
     for (i in csv) {
         data = csv[i].split(",")
         rows += create_row(data[0], data[1], false)
