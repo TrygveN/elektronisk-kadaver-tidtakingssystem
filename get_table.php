@@ -8,9 +8,11 @@ class Runner
 {
     public int $id;
     public string $name;
+    public string $club;
+    public string $course;
     public array $splits;
 
-    function __construct($id, $name)
+    function __construct($id, $name, $club, $course)
     {
         //echo($id);
         //echo($name);
@@ -20,6 +22,8 @@ class Runner
         }
         $this->id = $id;
         $this->name = $name;
+        $this->club = $club;
+        $this->course = $course;
         for ($i = 0; $i < $GLOBALS['number_of_controls']; $i++) {
             $this->splits[$i] = false;
         }
@@ -83,7 +87,7 @@ $csv_runners = str_getcsv($csv_runners, "\n");
 //print_r($csv_runners);
 for ($i = 1; $i < count($csv_runners); $i++) {
     $line = str_getcsv($csv_runners[$i]);
-    array_push($runners, new Runner($line[0], $line[1]));
+    array_push($runners, new Runner($line[0], $line[1], $line[2], $line[3]));
 }
 
 
@@ -107,9 +111,10 @@ for ($i = 0; $i < count($timings); $i++) {
     $runner->set_split($line[0]-1, $time);
 }
 
-usort($runners, "cmp");
 
-$query = explode(",",$_SERVER['QUERY_STRING']);
+if (!isset($query)){
+    $query = explode(",",$_SERVER['QUERY_STRING']);
+}
 
 if ($query[0] == "registrering"){
     $matpost = $query[1];
@@ -153,7 +158,19 @@ if ($query[0] == "registrering"){
         echo ("<tr $cssclass><td>". $i+1 .".</td><td>$runner->id</td><td>$runner->name</td><td>$tid_1_mat</td><td>$tid_2_mat</td><td>$tid_maal</td><td>$button</td></tr>\n");
     }
 }
+elseif ($query[0] == "paameldte") {
+    echo("  <tr>
+        <th>Navn</th>
+        <th>Klubb/Forening</th>
+        <th>Variant</th>
+    </tr>");
+    for ($i = 0; $i < count($runners); $i++) {
+        $runner = $runners[$i];
+        echo ("<td>$runner->name</td><td>$runner->club</td><td>$runner->course</td></tr>\n");
+    }
+}
 else {
+    usort($runners, "cmp");
     echo("  <tr>
         <th>#</th>
         <th>Startnummer</th>
