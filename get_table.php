@@ -108,28 +108,75 @@ for ($i = 0; $i < count($timings); $i++) {
 }
 
 usort($runners, "cmp");
-echo("  <tr>
+
+$query = explode(",",$_SERVER['QUERY_STRING']);
+
+if ($query[0] == "registrering"){
+    $matpost = $query[1];
+    echo("  <tr>
     <th>#</th>
     <th>Startnummer</th>
     <th>Navn</th>
     <th>1. matpost</th>
     <th>2. matpost</th>
     <th>Mål</th>
-  </tr>");
-for ($i = 0; $i < count($runners); $i++) {
-    $runner = $runners[$i];
-    $tid_1_mat = "";
-    if ($runner->splits[0] != false) {
-        // https://www.php.net/manual/en/class.dateinterval.php
-        $tid_1_mat = $GLOBALS['start_time']->diff($runner->splits[0])->format('%H:%I:%S');
+    </tr>");
+    for ($i = 0; $i < count($runners); $i++) {
+        $runner = $runners[$i];
+        $tid_1_mat = "";
+        if ($runner->splits[0] != false) {
+            // https://www.php.net/manual/en/class.dateinterval.php
+            $tid_1_mat = $GLOBALS['start_time']->diff($runner->splits[0])->format('%H:%I:%S');
+        }
+        $tid_2_mat = "";
+        if ($runner->splits[1] != false) {
+            $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
+        }
+        $tid_maal = "";
+        if ($runner->splits[2] != false) {
+            $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
+        }
+        if ($runner->get_control() == $matpost-1) {
+            // Løperen har vært på denne matposten og vi farger raden grønn
+            $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
+            $cssclass = "class=\"bg-success\"\"";
+        }
+        elseif ($runner->get_control() > $matpost-1) {
+            // Løperen har vært på denne matposten og vi farger raden grønn
+            $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
+            $cssclass = "class=\"bg-active\"\"";
+        }
+        else {
+            $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
+            $cssclass = "";
+        }
+        echo ("<tr $cssclass><td>". $i+1 .".</td><td>$runner->id</td><td>$runner->name</td><td>$tid_1_mat</td><td>$tid_2_mat</td><td>$tid_maal</td><td>$button</td></tr>\n");
     }
-    $tid_2_mat = "";
-    if ($runner->splits[1] != false) {
-        $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
+}
+else {
+    echo("  <tr>
+        <th>#</th>
+        <th>Startnummer</th>
+        <th>Navn</th>
+        <th>1. matpost</th>
+        <th>2. matpost</th>
+        <th>Mål</th>
+    </tr>");
+    for ($i = 0; $i < count($runners); $i++) {
+        $runner = $runners[$i];
+        $tid_1_mat = "";
+        if ($runner->splits[0] != false) {
+            // https://www.php.net/manual/en/class.dateinterval.php
+            $tid_1_mat = $GLOBALS['start_time']->diff($runner->splits[0])->format('%H:%I:%S');
+        }
+        $tid_2_mat = "";
+        if ($runner->splits[1] != false) {
+            $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
+        }
+        $tid_maal = "";
+        if ($runner->splits[2] != false) {
+            $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
+        }
+        echo ("<tr><td>". $i+1 .".</td><td>$runner->id</td><td>$runner->name</td><td>$tid_1_mat</td><td>$tid_2_mat</td><td>$tid_maal</td></tr>\n");
     }
-    $tid_maal = "";
-    if ($runner->splits[2] != false) {
-        $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
-    }
-    echo ("<tr><td>". $i+1 .".</td><td>$runner->id</td><td>$runner->name</td><td>$tid_1_mat</td><td>$tid_2_mat</td><td>$tid_maal</td></tr>\n");
 }

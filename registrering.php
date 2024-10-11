@@ -15,26 +15,32 @@
             flex-wrap: wrap;
             justify-content: space-evenly;
         }
+        .bg-success {
+	        background: var(--bg-success) !important;
+        }
+        .bg-active {
+	        background: var(--bg-active) !important;
+        }
     </style>
 </head>
 <body>
 <fieldset>
     <legend>Velg post</legend>
     <label>
-      <input type="radio" name="post" value="1">
+      <input type="radio" name="post" value="1" onclick="update()">
       1. Matpost
     </label>
     <label>
-      <input type="radio" name="post" value="2">
+      <input type="radio" name="post" value="2" onclick="update()">
       2. Matpost
     </label>
     <label>
-      <input type="radio" name="post" value="3">
+      <input type="radio" name="post" value="3" onclick="update()">
       Mål
     </label>
   </fieldset>
 
-
+<button onmousedown="update()">Oppdater</button>
 <input id="search" type="number" class="form-control"  onkeyup="filterTable()"  placeholder="Søk">
 <br>
 
@@ -52,8 +58,22 @@ print_r($action)
 // Hvilken matpost vi er på:
 var control = location.search[1];
 
+function get_control() {
+    try {
+      return document.querySelector('input[name="post"]:checked').value;
+    }
+    catch (error) {
+      return 0;
+    }
+}
+
 function register_runner(id) {
-    control = document.querySelector('input[name="post"]:checked').value;
+    control = get_control();
+    if (control == 0) {
+      console.error(error);
+      alert("Velg en post!");
+      return 0;
+    }
     let formData = new FormData();
     formData.append(name= 'control', value=control);
     formData.append(name= 'id', value=id);
@@ -63,31 +83,9 @@ function register_runner(id) {
         method: "POST",
         body: formData,
     });
+    update()
+    //document.getElementById("search").focus()
 };
-function update_runner_status(id, name) {
-    update_row(id, name, true);
-    register_runner(id);
-}
-
-function read_db() {
-    let xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", "db.csv", false);
-    xmlHttp.send(null);
-    return xmlHttp.responseText;
-}
-
-function create_row(id, name, passed) {
-    if (!passed) {
-        button = `<button onclick="update_runner_status(${id}, '${name}')">✓</button>`
-        return `<tr id="${id}"><td>${id}</td><td>${name}</td><td>${button}</td></tr>`
-    }
-    else {
-        button = `<button onclick="update_runner_status(${id}, '${name}')">Angre</button>`
-        return `<tr id="${id}" class="passed"><td>${id}</td><td>${name}</td><td>${button}</td></tr>`
-    }
-
-}
-
 function create_rows(csv) {
     csv = csv.split('\n')
     rows = "<tr><th>#</th><th>Navn</th><th></th>";
@@ -120,9 +118,20 @@ function filterTable() {
 function update_row(id, name, passed) {
     row = document.getElementById(id)
     row.innerHTML = create_row(id, name, passed)
-    row.classList.add("passed");
+    row.classList.add("bg-success");
 }
-table = document.getElementById("runners")
-table.innerHTML = create_rows(read_db())
+
+function update() {
+        const table = document.getElementById("runners");
+        control = get_control();
+        const myRequest = new Request(`get_table.php?registrering,`+control);
+        fetch(myRequest)
+        .then((response) => response.text())
+        .then((text) => {
+        table.innerHTML = text;
+        });
+    }
+
+update()
 </script>
 <html>
