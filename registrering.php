@@ -5,7 +5,7 @@
     <title>EKT</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
-    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css">
+    <link rel="stylesheet" href="matcha.css">
     <style>
         .passed {
             background-color: #8ff0a4;

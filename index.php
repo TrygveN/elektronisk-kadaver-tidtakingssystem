@@ -5,7 +5,7 @@
     <title>EKT</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
-    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css">
+    <link rel="stylesheet" href="matcha.css">
     <style>
         @media (prefers-color-scheme: dark) {
             .invert {
@@ -17,7 +17,7 @@
 <body>
 <div class="flex align-center">
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
-<h1>Løpende resultater kadaverløpet 2024</h1>
+<h1>TESTING Løpende resultater kadaverløpet 2024</h1>
 </div>
 <h2>Vi tar forbehold om feil. Dette er ikke offisielle resultater</h2>
 <table>
