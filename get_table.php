@@ -80,6 +80,10 @@ function cmp(Runner $a, Runner $b) {
     }
     return 0;
 }
+function cmp_course(Runner $a, Runner $b) {
+    return strcmp($a->course, $b->course);
+}
+
 
 $runners = [];
 $csv_runners = file_get_contents("db.csv");
@@ -159,19 +163,39 @@ if ($query[0] == "registrering"){
     }
 }
 elseif ($query[0] == "paameldte") {
-    echo("  <tr>
+    usort($runners, "cmp_course");
+
+    $kadaverløpere = 0;
+    $minikadaverløpere = 0;
+    for ($i = 0; $i < count($runners); $i++) {
+        if ($runners[$i]->course == "Kadaverløpet") {
+            $kadaverløpere++;
+        }
+        elseif ($runners[$i]->course == "Minikadaver'n") {
+            $minikadaverløpere++;
+        }
+    }
+
+    echo("<div class=\"flex space-evenly\">
+    <div class=\"flash accent\">$kadaverløpere påmeldte i Kadaverløpet</div><div class=\"flash accent\">$minikadaverløpere påmeldte i Minikadaver'n</div>
+    </div>");
+
+    echo("<table><tbody>
+        <tr>
         <th>Navn</th>
         <th>Klubb/Forening</th>
         <th>Variant</th>
     </tr>");
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
-        echo ("<td>$runner->name</td><td>$runner->club</td><td>$runner->course</td></tr>\n");
+        echo ("<tr><td>$runner->name</td><td>$runner->club</td><td>$runner->course</td></tr>\n");
     }
+    echo("<table><tbody>");
 }
 else {
     usort($runners, "cmp");
-    echo("  <tr>
+    echo("<table><tbody>
+        <tr>
         <th>#</th>
         <th>Startnummer</th>
         <th>Navn</th>
@@ -196,4 +220,5 @@ else {
         }
         echo ("<tr><td>". $i+1 .".</td><td>$runner->id</td><td>$runner->name</td><td>$tid_1_mat</td><td>$tid_2_mat</td><td>$tid_maal</td></tr>\n");
     }
+    echo("</tbody></table>");
 }

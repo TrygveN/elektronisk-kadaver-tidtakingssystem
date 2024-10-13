@@ -19,16 +19,12 @@
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
 <h1>Påmeldte kadaverløpet 2024</h1>
 </div>
-<h2>Oppdatert 11.10.24</h2>
-<table>
-<tbody>
+<h2>Oppdatert 13.10.24</h2>
 <?php
 $query = ["paameldte"];
 include("get_table.php");
 ?>
-</tbody>
 <footer>
-</table>
 <h3>Laget av Trygve. <a href="https://git.willy.club/Trygve/elektronisk-kadaver-tidtakingssystem">Kildekode</a></h3>
 <figure><img src="img/NMBUI.webp" alt="" width="200px"></figure>
 </footer>
