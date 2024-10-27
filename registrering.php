@@ -7,23 +7,29 @@
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
     <link rel="stylesheet" href="matcha.css">
     <style>
-        .passed {
-            background-color: #8ff0a4;
-        }
-        fieldset {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-evenly;
-        }
-        .bg-success {
-	        background: var(--bg-success) !important;
-        }
-        .bg-active {
-	        background: var(--bg-active) !important;
-        }
+      body {
+        padding: 0;
+      }
+      .settings {
+        padding: 0 1.5rem;
+      }
+      fieldset {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-evenly;
+      }
+      .bg-success {
+        background: var(--bg-success) !important;
+      }
+      .bg-active {
+        background: var(--bg-active) !important;
+      }
     </style>
 </head>
 <body>
+  <div class="settings">
+<legend>Passord</legend>
+      <input type="password" name="passord" id="password">
 <fieldset>
     <legend>Velg post</legend>
     <label>
@@ -40,20 +46,11 @@
     </label>
   </fieldset>
 
-<button onmousedown="update()">Oppdater</button>
+<button onmousedown="update()">Oppdater tabell</button>
 <input id="search" type="number" class="form-control"  onkeyup="filterTable()"  placeholder="Søk">
 <br>
-
-<table>
-    <tbody id="runners">
-
-    </tbody>
-</table>
-</body>
-<?php
-$action = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
-print_r($action)
-?>
+</div>
+<table id="runners"></table>
 <script>
 // Hvilken matpost vi er på:
 var control = location.search[1];
@@ -75,14 +72,21 @@ function register_runner(id) {
       return 0;
     }
     let formData = new FormData();
+    formData.append(name= 'password', value=document.getElementById('password').value)
     formData.append(name= 'control', value=control);
     formData.append(name= 'id', value=id);
     time = new Date(Date.now()).toISOString().split('.')[0]+"Z"
     formData.append('time', time);
-    fetch("upload.php", {
+    response = fetch("post.php", {
         method: "POST",
         body: formData,
-    });
+    })
+    .then(response => {
+      if (response.status == 401) {
+      alert("Feil passord!")
+    }
+    })
+
     update()
     //document.getElementById("search").focus()
 };
@@ -98,22 +102,26 @@ function create_rows(csv) {
 function filterTable() {
   var input, filter, table, tr, td, i, txtValue;
   input = document.getElementById("search");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("runners");
+  filter = input.value;
+  table = document.getElementById("runners").getElementsByTagName("tbody")[0];
   tr = table.getElementsByTagName("tr");
 
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td");
-    for (var j = 0; j < td.length; j++) {
-      txtValue = td[j].textContent || td[j].innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-        break;
-      } else {
-        tr[i].style.display = "none";
-      }
+  if (filter == "") {
+    for (i = 0; i < tr.length; i++) {
+      tr[i].style.display = "";
     }
   }
+  else {
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td");
+    txtValue = td[0].textContent;
+    if (txtValue == filter) {
+      tr[i].style.display = "";
+    } else {
+      tr[i].style.display = "none";
+    }
+  }
+}
 }
 function update_row(id, name, passed) {
     row = document.getElementById(id)
@@ -131,7 +139,6 @@ function update() {
         table.innerHTML = text;
         });
     }
-
-update()
 </script>
-<html>
+</body>
+</html>

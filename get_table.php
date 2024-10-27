@@ -122,29 +122,24 @@ if (!isset($query)){
 
 if ($query[0] == "registrering"){
     $matpost = $query[1];
-    echo("  <tr>
+    echo("  <thead><tr>
     <th>#</th>
-    <th>Startnummer</th>
     <th>Navn</th>
-    <th>1. matpost</th>
-    <th>2. matpost</th>
-    <th>Mål</th>
-    </tr>");
+    <th>Tid</th>
+    <th></th>
+    </tr></thead>
+    <tbody>");
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
-        $tid_1_mat = "";
-        if ($runner->splits[0] != false) {
-            // https://www.php.net/manual/en/class.dateinterval.php
-            $tid_1_mat = $GLOBALS['start_time']->diff($runner->splits[0])->format('%H:%I:%S');
+        
+        // Klokkeslett for denne posten
+        if ($runner->splits[$matpost-1] != false) {
+            $tid_passering = $GLOBALS['start_time']->diff($runner->splits[$matpost-1])->format('%H:%I:%S');
         }
-        $tid_2_mat = "";
-        if ($runner->splits[1] != false) {
-            $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
+        else {
+            $tid_passering = "";
         }
-        $tid_maal = "";
-        if ($runner->splits[2] != false) {
-            $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
-        }
+        
         if ($runner->get_control() == $matpost-1) {
             // Løperen har vært på denne matposten og vi farger raden grønn
             $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
@@ -159,8 +154,9 @@ if ($query[0] == "registrering"){
             $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
             $cssclass = "";
         }
-        echo ("<tr $cssclass><td>". $i+1 .".</td><td>$runner->id</td><td>$runner->name</td><td>$tid_1_mat</td><td>$tid_2_mat</td><td>$tid_maal</td><td>$button</td></tr>\n");
+        echo ("<tr $cssclass><td>$runner->id</td><td>$runner->name</td><td>$tid_passering</td><td>$button</td></tr>\n");
     }
+    echo("</tbody>");
 }
 elseif ($query[0] == "paameldte") {
     usort($runners, "cmp_course");
@@ -177,7 +173,7 @@ elseif ($query[0] == "paameldte") {
     }
 
     echo("<div class=\"flex space-evenly\">
-    <div class=\"flash accent\">$kadaverløpere påmeldte i Kadaverløpet</div><div class=\"flash accent\">$minikadaverløpere påmeldte i Minikadaver'n</div>
+    <div class=\"flash accent\">$kadaverløpere påmeldt Kadaverløpet</div><div class=\"flash accent\">$minikadaverløpere påmeldte i Minikadaver'n</div>
     </div>");
 
     echo("<table><tbody>
