@@ -77,7 +77,7 @@ function register_runner(id) {
     formData.append(name= 'id', value=id);
     time = new Date(Date.now()).toISOString().split('.')[0]+"Z"
     formData.append('time', time);
-    response = fetch("post.php", {
+    response = fetch("passing.php", {
         method: "POST",
         body: formData,
     })
@@ -132,7 +132,7 @@ function update_row(id, name, passed) {
 function update() {
         const table = document.getElementById("runners");
         control = get_control();
-        const myRequest = new Request(`get_table.php?registrering,`+control);
+        const myRequest = new Request(`table.php?registrering,`+control);
         fetch(myRequest)
         .then((response) => response.text())
         .then((text) => {

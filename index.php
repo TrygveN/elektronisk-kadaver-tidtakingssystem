@@ -21,7 +21,7 @@
 </div>
 <h2>Vi tar forbehold om feil. Dette er ikke offisielle resultater</h2>
 <?php
-include("get_table.php")
+include("table.php")
 ?>
 <footer>
 <h3>Laget av Trygve. <a href="https://git.willy.club/Trygve/elektronisk-kadaver-tidtakingssystem">Kildekode</a></h3>
@@ -30,7 +30,7 @@ include("get_table.php")
 <script>
     function update() {
         const table = document.querySelector("table");
-        const myRequest = new Request(`get_table.php`);
+        const myRequest = new Request(`table.php`);
         fetch(myRequest)
         .then((response) => response.text())
         .then((text) => {

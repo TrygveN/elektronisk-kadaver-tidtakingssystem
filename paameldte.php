@@ -22,7 +22,7 @@
 <h2>Oppdatert 13.10.24</h2>
 <?php
 $query = ["paameldte"];
-include("get_table.php");
+include("table.php");
 ?>
 <footer>
 <h3>Laget av Trygve. <a href="https://git.willy.club/Trygve/elektronisk-kadaver-tidtakingssystem">Kildekode</a></h3>
