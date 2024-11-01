@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('UTC');
-$GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, "2024-10-08T08:07:32+01");
+$GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, "2024-11-01T10:07:32+01");
 $GLOBALS['number_of_controls'] = 3;
 
 //declare(strict_types=1);
@@ -84,6 +84,15 @@ function cmp_course(Runner $a, Runner $b) {
     return strcmp($a->course, $b->course);
 }
 
+function filter_runners(Runner $runner, $id) {
+    if ($runner->id == $id) {
+        return True;
+    }
+    else {
+        return False;
+    }
+}
+
 
 $runners = [];
 $csv_runners = file_get_contents("db.csv");
@@ -117,11 +126,23 @@ for ($i = 0; $i < count($timings); $i++) {
 
 
 if (!isset($query)){
-    $query = explode(",",$_SERVER['QUERY_STRING']);
+    parse_str($_SERVER['QUERY_STRING'], $query);
 }
 
-if ($query[0] == "registrering"){
-    $matpost = $query[1];
+if ($query["type"] == "registrering"){
+    $matpost = $query["control"];
+    $runners_filtered = [];
+    if ($query["filter"]) {
+        for ($i = 0; $i < count($runners); $i++) {
+            if (filter_runners($runners[$i], $query["filter"])) {
+                array_push($runners_filtered, $runners[$i]);
+            }
+        }
+        $runners = $runners_filtered;
+    }
+
+    
+
     echo("  <thead><tr>
     <th>#</th>
     <th>Navn</th>
@@ -158,7 +179,7 @@ if ($query[0] == "registrering"){
     }
     echo("</tbody>");
 }
-elseif ($query[0] == "paameldte") {
+elseif ($query["type"] == "paameldte") {
     usort($runners, "cmp_course");
 
     $kadaverløpere = 0;

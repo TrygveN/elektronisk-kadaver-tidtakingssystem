@@ -47,7 +47,7 @@
   </fieldset>
 
 <button onmousedown="update()">Oppdater tabell</button>
-<input id="search" type="number" class="form-control"  onkeyup="filterTable()"  placeholder="Søk">
+<input id="search" type="number" class="form-control"  onkeydown="update()"  placeholder="Søk etter startnummer">
 <br>
 </div>
 <table id="runners"></table>
@@ -90,38 +90,12 @@ function register_runner(id) {
     update()
     document.getElementById("search").focus()
 };
-function filterTable() {
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("search");
-  filter = input.value;
-  table = document.getElementById("runners").getElementsByTagName("tbody")[0];
-  if (!table) {
-    setTimeout(filterTable, 100);
-  }
-  tr = table.getElementsByTagName("tr");
-
-  if (filter == "") {
-    for (i = 0; i < tr.length; i++) {
-      tr[i].style.display = "";
-    }
-  }
-  else {
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td");
-    txtValue = td[0].textContent;
-    if (txtValue == filter) {
-      tr[i].style.display = "";
-    } else {
-      tr[i].style.display = "none";
-    }
-  }
-}
-}
 
 function update() {
         const table = document.getElementById("runners");
         control = get_control();
-        let request = new Request(`table.php?registrering,`+control);
+        filter = document.getElementById("search").value;
+        let request = new Request(`table.php?type=registrering&control=`+control+`&filter=`+filter);
         fetch(request)
         .then((response) => response.text())
         .then((text) => {table.innerHTML = text;})
