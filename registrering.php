@@ -88,22 +88,16 @@ function register_runner(id) {
     })
 
     update()
-    //document.getElementById("search").focus()
+    document.getElementById("search").focus()
 };
-function create_rows(csv) {
-    csv = csv.split('\n')
-    rows = "<tr><th>#</th><th>Navn</th><th></th>";
-    for (i in csv) {
-        data = csv[i].split(",")
-        rows += create_row(data[0], data[1], false)
-    }
-    return rows
-}
 function filterTable() {
   var input, filter, table, tr, td, i, txtValue;
   input = document.getElementById("search");
   filter = input.value;
   table = document.getElementById("runners").getElementsByTagName("tbody")[0];
+  if (!table) {
+    setTimeout(filterTable, 100);
+  }
   tr = table.getElementsByTagName("tr");
 
   if (filter == "") {
@@ -123,21 +117,15 @@ function filterTable() {
   }
 }
 }
-function update_row(id, name, passed) {
-    row = document.getElementById(id)
-    row.innerHTML = create_row(id, name, passed)
-    row.classList.add("bg-success");
-}
 
 function update() {
         const table = document.getElementById("runners");
         control = get_control();
-        const myRequest = new Request(`table.php?registrering,`+control);
-        fetch(myRequest)
+        let request = new Request(`table.php?registrering,`+control);
+        fetch(request)
         .then((response) => response.text())
-        .then((text) => {
-        table.innerHTML = text;
-        });
+        .then((text) => {table.innerHTML = text;})
+        filterTable()
     }
 </script>
 </body>
