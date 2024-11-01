@@ -143,12 +143,12 @@ if ($query[0] == "registrering"){
         if ($runner->get_control() == $matpost-1) {
             // Løperen har vært på denne matposten og vi farger raden grønn
             $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
-            $cssclass = "class=\"bg-success\"\"";
+            $cssclass = "class=\"bg-success\"";
         }
         elseif ($runner->get_control() > $matpost-1) {
             // Løperen har vært på denne matposten og vi farger raden grønn
             $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
-            $cssclass = "class=\"bg-active\"\"";
+            $cssclass = "class=\"bg-active\"";
         }
         else {
             $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
@@ -176,45 +176,68 @@ elseif ($query[0] == "paameldte") {
     <div class=\"flash accent\">$kadaverløpere påmeldt Kadaverløpet</div><div class=\"flash accent\">$minikadaverløpere påmeldte i Minikadaver'n</div>
     </div>");
 
-    echo("<table><tbody>
+    echo("<table><thead>
         <tr>
+        <th>S.nr</th>
         <th>Navn</th>
         <th>Klubb/Forening</th>
         <th>Variant</th>
-    </tr>");
+    </tr></thead>
+    <tbody>");
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
-        echo ("<tr><td>$runner->name</td><td>$runner->club</td><td>$runner->course</td></tr>\n");
+        echo ("<tr><td>$runner->id</td><td>$runner->name</td><td>$runner->club</td><td>$runner->course</td></tr>\n");
     }
     echo("<table><tbody>");
 }
 else {
     usort($runners, "cmp");
-    echo("<table><tbody>
+    usort($runners, "cmp_course");
+    $kadaver_table = "<table><thead>
         <tr>
         <th>#</th>
-        <th>Startnummer</th>
         <th>Navn</th>
         <th>1. matpost</th>
         <th>2. matpost</th>
         <th>Mål</th>
-    </tr>");
+    </tr></thead>
+    <tbody>";
+    $minikadaver_table = "<table><thead>
+    <tr>
+    <th>#</th>
+    <th>Navn</th>
+    <th>Mål</th>
+    </tr></thead>
+    <tbody>";
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
-        $tid_1_mat = "";
-        if ($runner->splits[0] != false) {
-            // https://www.php.net/manual/en/class.dateinterval.php
-            $tid_1_mat = $GLOBALS['start_time']->diff($runner->splits[0])->format('%H:%I:%S');
-        }
-        $tid_2_mat = "";
-        if ($runner->splits[1] != false) {
-            $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
+        
+        if ($runner->course == "Kadaverløpet") {
+            $tid_1_mat = "";
+            if ($runner->splits[0] != false) {
+                // https://www.php.net/manual/en/class.dateinterval.php
+                $tid_1_mat = $GLOBALS['start_time']->diff($runner->splits[0])->format('%H:%I:%S');
+            }
+            $tid_2_mat = "";
+            if ($runner->splits[1] != false) {
+                $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
+            }
+            $matposter = "<td>$tid_1_mat</td><td>$tid_2_mat</td>";
         }
         $tid_maal = "";
         if ($runner->splits[2] != false) {
             $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
         }
-        echo ("<tr><td>". $i+1 .".</td><td>$runner->id</td><td>$runner->name</td><td>$tid_1_mat</td><td>$tid_2_mat</td><td>$tid_maal</td></tr>\n");
+        if ($runner->course == "Kadaverløpet") {
+            $kadaver_table .= "<tr><td>". $i+1 .".</td><td>$runner->name</td>$matposter<td>$tid_maal</td></tr>\n";
+        }
+        elseif ($runner->course == "Minikadaver'n") {
+            $minikadaver_table .= "<tr><td>". $i+1 .".</td><td>$runner->name</td><td>$tid_maal</td></tr>\n";
+        }
     }
-    echo("</tbody></table>");
+    $kadaver_table .= "</tbody></table>";
+    $minikadaver_table .= "</tbody></table>";
+    echo($kadaver_table);
+    echo("<h2>Minikadaver'n</h2>");
+    echo($minikadaver_table);
 }
