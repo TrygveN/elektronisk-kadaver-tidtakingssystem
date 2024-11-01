@@ -7,6 +7,12 @@
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
     <link rel="stylesheet" href="matcha.css">
     <style>
+        @media only screen and (max-width: 650px) {
+            body {
+                padding-left: 0;
+                padding-right: 0;
+            }
+        }
         @media (prefers-color-scheme: dark) {
             .invert {
                 filter: invert(1);
@@ -17,7 +23,7 @@
 <body>
 <div class="flex align-center">
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
-<h1>TESTING Løpende resultater kadaverløpet 2024</h1>
+<h1>TESTING Løpende resultater Kadaverløpet 2024</h1>
 </div>
 <h2>Vi tar forbehold om feil. Dette er ikke offisielle resultater</h2>
 <?php
