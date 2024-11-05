@@ -2,7 +2,7 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8" />
-    <title>Påmeldte kadaverløpet</title>
+    <title>Påmeldte Kadaverløpet</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
     <link rel="stylesheet" href="matcha.css">
@@ -17,11 +17,11 @@
 <body>
 <div class="flex align-center">
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
-<h1>Påmeldte kadaverløpet 2024</h1>
+<h1>Påmeldte Kadaverløpet 2024</h1>
 </div>
-<h2>Oppdatert 13.10.24</h2>
+<h2>Oppdatert 1.11.24</h2>
 <?php
-$query = ["paameldte"];
+$query = ["type"=>"paameldte"];
 include("table.php");
 ?>
 <footer>
