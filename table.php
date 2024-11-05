@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('UTC');
-$GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, "2024-11-01T10:07:32+01");
+$GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, "2024-11-02T08:53:00+01");
 $GLOBALS['number_of_controls'] = 3;
 
 //declare(strict_types=1);
@@ -35,14 +35,13 @@ class Runner
     }
 
     function get_control()
-    {
-        // Returns wich control the runner last passed
-        for ($i = 0; $i < count($this->splits); $i++) {
+    {        for ($i = 0; $i < count($this->splits); $i++) {
+
             if (!is_object($this->splits[$i])) {
                 return $i-1;
             }
-        }
-        return count($this->splits)-1;
+    }
+	return count($this->splits)-1;
     }
 }
 
@@ -217,7 +216,7 @@ else {
     $kadaver_table = "<table><thead>
         <tr>
         <th>#</th>
-        <th>Navn</th>
+	<th>Navn</th>
         <th>1. matpost</th>
         <th>2. matpost</th>
         <th>Mål</th>
@@ -230,10 +229,12 @@ else {
     <th>Mål</th>
     </tr></thead>
     <tbody>";
+       	$kadaver_num = 0;
+       	$mini_num = 0;	
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
-        
-        if ($runner->course == "Kadaverløpet") {
+	if ($runner->course == "Kadaverløpet") {
+		$kadaver_num++;
             $tid_1_mat = "";
             if ($runner->splits[0] != false) {
                 // https://www.php.net/manual/en/class.dateinterval.php
@@ -244,21 +245,22 @@ else {
                 $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
             }
             $matposter = "<td>$tid_1_mat</td><td>$tid_2_mat</td>";
-        }
+	}
+	else {
+		$mini_num++;
+	}
         $tid_maal = "";
         if ($runner->splits[2] != false) {
             $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
         }
         if ($runner->course == "Kadaverløpet") {
-            $kadaver_table .= "<tr><td>". $i+1 .".</td><td>$runner->name</td>$matposter<td>$tid_maal</td></tr>\n";
+            $kadaver_table .= "<tr><td>". $kadaver_num .".</td><td>$runner->name</td>$matposter<td>$tid_maal</td></tr>\n";
         }
         elseif ($runner->course == "Minikadaver'n") {
-            $minikadaver_table .= "<tr><td>". $i+1 .".</td><td>$runner->name</td><td>$tid_maal</td></tr>\n";
+            $minikadaver_table .= "<tr><td>". "" .".</td><td>$runner->name</td><td>$tid_maal</td></tr>\n";
         }
     }
     $kadaver_table .= "</tbody></table>";
     $minikadaver_table .= "</tbody></table>";
     echo($kadaver_table);
-    echo("<h2>Minikadaver'n</h2>");
-    echo($minikadaver_table);
 }
