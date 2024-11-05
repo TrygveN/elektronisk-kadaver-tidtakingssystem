@@ -3,7 +3,20 @@ date_default_timezone_set('UTC');
 $GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, "2024-11-02T08:53:00+01");
 $GLOBALS['number_of_controls'] = 3;
 
-//declare(strict_types=1);
+// Caching
+header("Last-Modified: " . date("F d Y H:i:s.", filemtime("passering.csv")));
+$etag = '"' . md5_file("passering.csv"). '"';
+header(header: 'ETag: ' . $etag );
+
+if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
+	// If HTTP_IF_NONE_MATCH is same as the generated ETag => content is the same as browser cache
+	// So send a 304 Not Modified response header and exit
+	if($_SERVER['HTTP_IF_NONE_MATCH'] == $etag) {
+		header('HTTP/1.1 304 Not Modified', true, 304);
+		exit();
+	}
+}
+
 class Runner
 {
     public int $id;
@@ -92,6 +105,9 @@ function filter_runners(Runner $runner, $id) {
     }
 }
 
+function time_diff(DateTime $date_1, DateTime $date_2) {
+    return $date_2->getTimestamp() - $date_1->getTimestamp();
+}
 
 $runners = [];
 $csv_runners = file_get_contents("db.csv");
@@ -220,6 +236,7 @@ else {
         <th>1. matpost</th>
         <th>2. matpost</th>
         <th>Mål</th>
+        <th>Sprekkindeks</th>
     </tr></thead>
     <tbody>";
     $minikadaver_table = "<table><thead>
@@ -233,7 +250,11 @@ else {
        	$mini_num = 0;	
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
-	if ($runner->course == "Kadaverløpet") {
+        $tid_maal = "";
+        if ($runner->splits[2] != false) {
+            $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
+        }
+	    if ($runner->course == "Kadaverløpet") {
 		$kadaver_num++;
             $tid_1_mat = "";
             if ($runner->splits[0] != false) {
@@ -243,18 +264,24 @@ else {
             $tid_2_mat = "";
             if ($runner->splits[1] != false) {
                 $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
+                try {
+                    $sprekk = "<td>" . number_format(100*(time_diff($GLOBALS['start_time'],$runner->splits[2]) - time_diff($GLOBALS['start_time'],$runner->splits[1])) / time_diff($GLOBALS['start_time'],$runner->splits[2]), 0) . "%</td>";
+                }
+                catch (DivisionByZeroError $e){
+                    $sprekk = "<td></td>";
+                }
+                catch (TypeError $e) {
+                    $sprekk = "<td></td>";
+                }
             }
             $matposter = "<td>$tid_1_mat</td><td>$tid_2_mat</td>";
 	}
 	else {
 		$mini_num++;
 	}
-        $tid_maal = "";
-        if ($runner->splits[2] != false) {
-            $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
-        }
+
         if ($runner->course == "Kadaverløpet") {
-            $kadaver_table .= "<tr><td>". $kadaver_num .".</td><td>$runner->name</td>$matposter<td>$tid_maal</td></tr>\n";
+            $kadaver_table .= "<tr><td>". $kadaver_num .".</td><td>$runner->name</td>$matposter<td>$tid_maal</td>$sprekk</tr>\n";
         }
         elseif ($runner->course == "Minikadaver'n") {
             $minikadaver_table .= "<tr><td>". "" .".</td><td>$runner->name</td><td>$tid_maal</td></tr>\n";
@@ -263,4 +290,5 @@ else {
     $kadaver_table .= "</tbody></table>";
     $minikadaver_table .= "</tbody></table>";
     echo($kadaver_table);
+    
 }
