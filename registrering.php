@@ -47,7 +47,7 @@
   </fieldset>
 
 <button onmousedown="update()">Oppdater tabell</button>
-<input id="search" type="number" class="form-control"  onkeydown="update()"  placeholder="Søk etter startnummer">
+<input id="search" type="number" class="form-control"  onkeyup="update()"  placeholder="Søk etter startnummer">
 <br>
 </div>
 <table id="runners"></table>
@@ -67,7 +67,7 @@ function get_control() {
 function register_runner(id) {
     control = get_control();
     if (control == 0) {
-      console.error(error);
+      console.error("Ingen post valgt");
       alert("Velg en post!");
       return 0;
     }
@@ -84,11 +84,10 @@ function register_runner(id) {
     .then(response => {
       if (response.status == 401) {
       alert("Feil passord!")
-    }
-    })
-
-    update()
-    document.getElementById("search").focus()
+    }})
+    .then((response) => update());
+    document.getElementById("search").focus();
+    
 };
 
 function update() {
@@ -99,7 +98,6 @@ function update() {
         fetch(request)
         .then((response) => response.text())
         .then((text) => {table.innerHTML = text;})
-        filterTable()
     }
 </script>
 </body>
