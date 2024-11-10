@@ -27,7 +27,8 @@
 </div>
 <h2>Vi tar forbehold om feil. Dette er ikke offisielle resultater</h2>
 <?php
-include("table.php")
+include("table.php");
+liveresult_table($runners);
 ?>
 <footer>
 <h3>Laget av Trygve. <a href="https://git.willy.club/Trygve/elektronisk-kadaver-tidtakingssystem">Kildekode</a></h3>
@@ -36,12 +37,15 @@ include("table.php")
 <script>
     function update() {
         const table = document.querySelector("table");
-        const myRequest = new Request(`table.php`);
-        fetch(myRequest)
-        .then((response) => response.text())
-        .then((text) => {
-        table.innerHTML = text;
-        });
+        const request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            table.innerHTML = this.responseText;
+            localStorage.setItem("ETag", this.getResponseHeader("ETag"));
+        }};
+        request.open("GET", "table.php?type=liveresultater");
+        request.setRequestHeader("If-None-Match", localStorage.getItem("ETag"));
+        request.send();
     }
     setInterval(update, 5*1000)
 </script>

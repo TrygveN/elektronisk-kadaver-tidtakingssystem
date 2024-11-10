@@ -12,7 +12,7 @@ if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
 	// If HTTP_IF_NONE_MATCH is same as the generated ETag => content is the same as browser cache
 	// So send a 304 Not Modified response header and exit
 	if($_SERVER['HTTP_IF_NONE_MATCH'] == $etag) {
-		header('HTTP/1.1 304 Not Modified', true, 304);
+		http_response_code(304);
 		exit();
 	}
 }
@@ -27,8 +27,6 @@ class Runner
 
     function __construct($id, $name, $club, $course)
     {
-        //echo($id);
-        //echo($name);
         if ($id == null) {
             $id = 0;
             $name = "";
@@ -139,12 +137,7 @@ for ($i = 0; $i < count($timings); $i++) {
     $runner->set_split($line[0]-1, $time);
 }
 
-
-if (!isset($query)){
-    parse_str($_SERVER['QUERY_STRING'], $query);
-}
-
-if ($query["type"] == "registrering"){
+function registration_table($runners) {
     $matpost = $query["control"];
     $runners_filtered = [];
     if ($query["filter"]) {
@@ -194,7 +187,8 @@ if ($query["type"] == "registrering"){
     }
     echo("</tbody>");
 }
-elseif ($query["type"] == "paameldte") {
+
+function participants_table($runners) {
     usort($runners, "cmp_course");
 
     $kadaverløpere = 0;
@@ -226,7 +220,7 @@ elseif ($query["type"] == "paameldte") {
     }
     echo("<table><tbody>");
 }
-else {
+function liveresult_table($runners) {
     usort($runners, "cmp");
     usort($runners, "cmp_course");
     $kadaver_table = "<table><thead>
@@ -291,4 +285,17 @@ else {
     $minikadaver_table .= "</tbody></table>";
     echo($kadaver_table);
     
+}
+
+if (!isset($query)){
+    parse_str($_SERVER['QUERY_STRING'], $query);
+    if ($query["type"] == "registrering"){
+        registration_table($runners);
+    }
+    elseif ($query["type"] == "paameldte") {
+        participants_table($runners);
+    }
+    elseif ($query["type"] == "liveresultater") {
+        liveresult_table($runners);
+    }
 }
