@@ -17,12 +17,14 @@
 <body>
 <div class="flex align-center">
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
-<h1>Påmeldte Kadaverløpet 2024</h1>
+<h1>Påmeldte Kadaverløpet 2025</h1>
 </div>
-<h2>Oppdatert 1.11.24</h2>
+<h2>Oppdatert 24.10.25</h2>
+<div class="flash attention">Startnummer blir tildelt nærmere arrangementet. Prøver å oppdatere lsita gjevnlig. TBN</div>
 <?php
 $query = ["type"=>"paameldte"];
 include("table.php");
+participants_table($runners);
 ?>
 <footer>
 <h3>Laget av Trygve. <a href="https://git.willy.club/Trygve/elektronisk-kadaver-tidtakingssystem">Kildekode</a></h3>

@@ -110,10 +110,9 @@ function time_diff(DateTime $date_1, DateTime $date_2) {
 $runners = [];
 $csv_runners = file_get_contents("db.csv");
 $csv_runners = str_getcsv($csv_runners, "\n");
-//print_r($csv_runners);
 for ($i = 1; $i < count($csv_runners); $i++) {
-    $line = str_getcsv($csv_runners[$i]);
-    array_push($runners, new Runner($line[0], $line[1], $line[2], $line[3]));
+    $line = str_getcsv($csv_runners[$i], ";");
+    array_push($runners, new Runner($line[0], $line[2], $line[5], $line[6]));
 }
 
 
@@ -245,6 +244,7 @@ function liveresult_table($runners) {
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
         $tid_maal = "";
+        $sprekk = "<td></td>";
         if ($runner->splits[2] != false) {
             $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
         }
@@ -288,7 +288,7 @@ function liveresult_table($runners) {
 }
 
 if (!isset($query)){
-    parse_str($_SERVER['QUERY_STRING'], $query);
+    //parse_str($_SERVER['QUERY_STRING'], $query);
     if ($query["type"] == "registrering"){
         registration_table($runners);
     }
