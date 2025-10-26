@@ -1,8 +1,8 @@
 <?php
 date_default_timezone_set('UTC');
-$GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, "2024-11-02T08:53:00+01");
+$GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, "2026-10-26T08:53:00+01");
 $GLOBALS['number_of_controls'] = 3;
-
+/*
 // Caching
 header("Last-Modified: " . date("F d Y H:i:s.", filemtime("passering.csv")));
 $etag = '"' . md5_file("passering.csv"). '"';
@@ -16,7 +16,7 @@ if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
 		exit();
 	}
 }
-
+*/
 class Runner
 {
     public int $id;
@@ -137,6 +137,7 @@ for ($i = 0; $i < count($timings); $i++) {
 }
 
 function registration_table($runners) {
+    parse_str($_SERVER['QUERY_STRING'], $query);
     $matpost = $query["control"];
     $runners_filtered = [];
     if ($query["filter"]) {
@@ -288,7 +289,7 @@ function liveresult_table($runners) {
 }
 
 if (!isset($query)){
-    //parse_str($_SERVER['QUERY_STRING'], $query);
+    parse_str($_SERVER['QUERY_STRING'], $query);
     if ($query["type"] == "registrering"){
         registration_table($runners);
     }
