@@ -10,14 +10,34 @@
 <body>
   <nav>
   <menu>
-    <li class="selected"><a href="#">Dashbord</a></li>
-    <li class="disabled"><a href="/registrering.php">Registrer passering på matpost/mål</a></li>
-    <li class="disabled"><a href="/db_editor.html">Endre løperbase</a></li>
+    <li class="selected"><a href="/admin.php">📊 Dashbord</a></li>
+    <li class="disabled"><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
+    <li class="disabled"><a href="/db_editor.html">👥 Endre løperbase</a></li>
   </menu>
 </nav>
   <button class="danger" onclick="log_out()">Logg ut</button>
 
-</div>
+<h1>Løpende resultater</h1>
+<?php
+include("table.php");
+liveresult_table($runners);
+?>
+<script>
+    function update() {
+        const table = document.querySelector("table");
+        const request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            table.innerHTML = this.responseText;
+            localStorage.setItem("ETag", this.getResponseHeader("ETag"));
+        }};
+        request.open("GET", "table.php?type=liveresultater");
+        request.setRequestHeader("If-None-Match", localStorage.getItem("ETag"));
+        request.send();
+    }
+    setInterval(update, 5*1000)
+</script>
+
 <script>
   function log_out(){
     localStorage.removeItem("navn");

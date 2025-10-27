@@ -12,6 +12,16 @@
       }
       .settings {
         padding: 0 1.5rem;
+        padding-top: 0px;
+        padding-right: 1.5rem;
+        padding-bottom: 0px;
+        padding-left: 1.5rem;
+
+        margin: 0 auto;
+        margin-top: 0px;
+        margin-right: auto;
+        margin-bottom: 0px;
+        margin-left: auto;
       }
       fieldset {
           display: flex;
@@ -30,9 +40,9 @@
 <div class="settings">
 <nav>
   <menu>
-    <li class="disabled"><a href="/admin.php">Dashbord</a></li>
-    <li class="selected"><a href="/registrering.php">Registrer passering på matpost/mål</a></li>
-    <li class="disabled"><a href="/db_editor.html">Endre løperbase</a></li>
+    <li class="disabled"><a href="/admin.php">📊 Dashbord</a></li>
+    <li class="selected"><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
+    <li class="disabled"><a href="/db_editor.html">👥 Endre løperbase</a></li>
   </menu>
 </nav>
 <fieldset>
