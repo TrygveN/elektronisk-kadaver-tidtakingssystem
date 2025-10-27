@@ -10,35 +10,24 @@
 <body>
   <nav>
   <menu>
-    <li class="selected"><a href="/admin.php">📊 Dashbord</a></li>
+    <li class="disabled"><a href="/admin.php">📊 Dashbord</a></li>
     <li class="disabled"><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
     <li class="disabled"><a href="/db_editor.html">👥 Endre løperbase</a></li>
-    <li class="disabled"><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
+    <li class="selected"><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
   </menu>
 </nav>
-  <button class="danger" onclick="log_out()">Logg ut</button>
 
-<h1>Løpende resultater</h1>
-<?php
-include("table.php");
-liveresult_table($runners);
-?>
-<script>
-    function update() {
-        const table = document.querySelector("table");
-        const request = new XMLHttpRequest();
-        request.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            table.innerHTML = this.responseText;
-            localStorage.setItem("ETag", this.getResponseHeader("ETag"));
-        }};
-        request.open("GET", "table.php?type=liveresultater");
-        request.setRequestHeader("If-None-Match", localStorage.getItem("ETag"));
-        request.send();
-    }
-    setInterval(update, 5*1000)
-</script>
+  <h2>Sett dato og tid startskuddet gikk:</h2>
+  <form action="/config.php" method="POST">
+    <input style="display: none;" type="text" id="password" name="password" required>
+    <label>
+      Dato og tid
+      <input type="datetime-local" id="start_time" name="start_time" step="1">
+    </label>
+    <button type="submit">Oppdater</button>
+  </form>
 
+</div>
 <script>
   function log_out(){
     localStorage.removeItem("navn");
@@ -46,6 +35,7 @@ liveresult_table($runners);
     window.location.href = "/login.html";
   }
 
+  // Sjekk om brukeren er logga inn. hvis ikke hiv de ut til innloggingskjermen
   let xmlHttpReq = new XMLHttpRequest();
   xmlHttpReq.open("POST", "/is_authorized.php", false);
   xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
@@ -53,6 +43,12 @@ liveresult_table($runners);
   if (xmlHttpReq.status != 200){
       window.location.href = "/login.html";
   }
+  document.getElementById('password').value = localStorage.getItem("passord");
+
+  xmlHttpReq.open("GET", "/config.php", false);
+  xmlHttpReq.send();
+  document.getElementById('start_time').value = xmlHttpReq.response.split('+')[0]
+  console.log(xmlHttpReq.response)
 
 </script>
 </body>

@@ -1,5 +1,5 @@
 <?php
-$hash = file_get_contents("hash.txt");
+$hash = file_get_contents("data/hash.txt");
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method == "POST") {
     $password = $_POST['password'];

@@ -4,13 +4,13 @@ $runner_id = $_POST['id'];
 $time = $_POST['time'];
 $password = $_POST['password'];
 
-$hash = file_get_contents("hash.txt");
+$hash = file_get_contents("data/hash.txt");
 
 if (!password_verify($password, $hash)) {
     http_response_code(response_code: 401);
 }
 else {
-    $file = 'passering.csv';
+    $file = 'data/passering.csv';
     $current = file_get_contents($file);
     $current .= $control . "," . $runner_id . "," . $time . "\n";
     file_put_contents($file, $current);

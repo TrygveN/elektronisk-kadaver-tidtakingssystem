@@ -43,6 +43,7 @@
     <li class="disabled"><a href="/admin.php">📊 Dashbord</a></li>
     <li class="selected"><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
     <li class="disabled"><a href="/db_editor.html">👥 Endre løperbase</a></li>
+    <li class="disabled"><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
   </menu>
 </nav>
 <fieldset>

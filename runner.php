@@ -1,5 +1,5 @@
 <?php
-$hash = file_get_contents("hash.txt");
+$hash = file_get_contents("data/hash.txt");
 $method = $_SERVER['REQUEST_METHOD'];
 print_r($_POST);
 if ($method == "POST") {
@@ -18,7 +18,7 @@ if ($method == "POST") {
         http_response_code(response_code: 400);
     }
     else {
-        $file = 'db.csv';
+        $file = 'data/db.csv';
         file_put_contents($file, $line, FILE_APPEND);
     }
 }
