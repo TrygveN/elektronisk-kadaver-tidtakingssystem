@@ -65,6 +65,9 @@ function search_for_runner($runner_list, $search_term) {
         elseif (str_contains($runner->id, $search_term)){
             array_push($filtered_runners, $runner);
         }
+        elseif (str_contains(strtolower($runner->club), strtolower($search_term))){
+            array_push($filtered_runners, $runner);
+        }
         
     }
     return $filtered_runners;

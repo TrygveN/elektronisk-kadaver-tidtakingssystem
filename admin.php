@@ -12,7 +12,12 @@
         font-size: 1.4em;
         padding: 1rem;
 	      border-radius: var(--bd-radius);
-
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .profile-card h2{
+        font-size: 2rem;
       }
     </style>
 </head>
@@ -29,7 +34,7 @@
 <h1>Søk opp løper</h1>
 <form action="/runner.php" method="GET" hx-boost="true" hx-target="#runner_info" hx-swap="show:none">
   <label>
-    Navn eller startnummer
+    Navn, startnummer eller klubb
     <input type="text" name="search" id="search">
   </label>
   <button type="submit">Søk</button>

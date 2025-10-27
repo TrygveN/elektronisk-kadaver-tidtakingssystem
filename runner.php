@@ -31,12 +31,11 @@ if ($method == "GET") {
         $r = $filtered[0];
         $response .= "
         <h2> $r->name</h2>
-        <p> Klubb: $r->club</p>
-        <p> Løype: $r->course</p>
-        <p> Epost: <a href=\"mailto:$r->email\">$r->email</a></p>
-        <p> Mobilnummer: <a href=\"tel:$r->phone\">$r->phone</a></p>
-        <p> Mobilnummer: <a href=\"tel:$r->phone\">$r->phone</a></p>
-        <p> Student? $r->is_student</p>
+        <p> <b>Klubb:</b> $r->club</p>
+        <p> <b>Løype:</b> $r->course</p>
+        <p> <b>Epost:</b> <a href=\"mailto:$r->email\">$r->email</a></p>
+        <p> <b>Mobilnummer:</b> <a href=\"tel:$r->phone\">$r->phone</a></p>
+        <p> <b>Student?</b> $r->is_student</p>
         ";
         header("HX-Replace-Url: false");
         echo($response);
@@ -48,8 +47,11 @@ if ($method == "GET") {
             $runner = $filtered[$i];
             $response .= "<button class=\"default\" hx-get=\"/runner.php?search=$runner->id\" hx-target=\"#runner_info\" hx-swap=\"show:none\">$runner->id $runner->name</button>";
             header("HX-Replace-Url: false");
-            echo($response);
         }
+        echo($response);
+    }
+    else{
+        echo("Ingen resultater...");
     }
 
 }
