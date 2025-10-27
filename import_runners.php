@@ -7,9 +7,10 @@ class Runner
     public string $course;
     public string $email;
     public string $phone;
+    public string $is_student;
     public array $splits;
 
-    function __construct($id, $name, $club, $course, $email, $phone)
+    function __construct($id, $name, $club, $course, $email, $phone, $is_student)
     {
         if ($id == null) {
             $id = 0;
@@ -21,6 +22,7 @@ class Runner
         $this->course = $course;
         $this->email = $email;
         $this->phone = $phone;
+        $this->is_student = $is_student;
         for ($i = 0; $i < $GLOBALS['number_of_controls']; $i++) {
             $this->splits[$i] = false;
         }
@@ -52,6 +54,22 @@ function get_runner($runnner_list, int $id)
     }
     return false;
 }
+
+function search_for_runner($runner_list, $search_term) {
+    $filtered_runners = [];
+    for ($i = 0; $i < count($runner_list); $i++) {
+        $runner = $runner_list[$i];
+        if (str_contains(strtolower($runner->name), strtolower($search_term))){
+            array_push($filtered_runners, $runner);
+        }
+        elseif (str_contains($runner->id, $search_term)){
+            array_push($filtered_runners, $runner);
+        }
+        
+    }
+    return $filtered_runners;
+}
+
 
 function cmp(Runner $a, Runner $b) {
     $a_control = $a->get_control();
@@ -99,7 +117,7 @@ function read_runners_from_csv(){
     $csv_runners = str_getcsv($csv_runners, "\n");
     for ($i = 1; $i < count($csv_runners); $i++) {
         $line = str_getcsv($csv_runners[$i], ";");
-        array_push($runners, new Runner($line[0], $line[2], $line[5], $line[6], $line[3], $line[4]));
+        array_push($runners, new Runner($line[0], $line[2], $line[5], $line[6], $line[3], $line[4], $line[7]));
     }
 
 

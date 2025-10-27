@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
     <link rel="stylesheet" href="matcha.css">
+    <style>
+      .profile-card{
+        background-color: var(--bg-active);
+        font-size: 1.4em;
+        padding: 1rem;
+	      border-radius: var(--bd-radius);
+
+      }
+    </style>
 </head>
 <body>
   <nav>
@@ -17,7 +26,15 @@
   </menu>
 </nav>
   <button class="danger" onclick="log_out()">Logg ut</button>
-
+<h1>Søk opp løper</h1>
+<form action="/runner.php" method="GET" hx-boost="true" hx-target="#runner_info" hx-swap="show:none">
+  <label>
+    Navn eller startnummer
+    <input type="text" name="search" id="search">
+  </label>
+  <button type="submit">Søk</button>
+</form>
+<div id="runner_info" class="profile-card"></div>
 <h1>Løpende resultater</h1>
 <?php
 include("table.php");
@@ -55,5 +72,6 @@ liveresult_table($runners);
   }
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
 </body>
 </html>
