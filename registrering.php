@@ -27,9 +27,14 @@
     </style>
 </head>
 <body>
-  <div class="settings">
-<legend>Passord</legend>
-      <input type="password" name="passord" id="password">
+<div class="settings">
+<nav>
+  <menu>
+    <li class="disabled"><a href="/admin.php">Dashbord</a></li>
+    <li class="selected"><a href="/registrering.php">Registrer passering på matpost/mål</a></li>
+    <li class="disabled"><a href="/db_editor.html">Endre løperbase</a></li>
+  </menu>
+</nav>
 <fieldset>
     <legend>Velg post</legend>
     <label>
@@ -72,7 +77,7 @@ function register_runner(id) {
       return 0;
     }
     let formData = new FormData();
-    formData.append(name= 'password', value=document.getElementById('password').value)
+    formData.append(name= 'password', localStorage.getItem("passord"))
     formData.append(name= 'control', value=control);
     formData.append(name= 'id', value=id);
     time = new Date(Date.now()).toISOString().split('.')[0]+"Z"
@@ -99,6 +104,18 @@ function update() {
         .then((response) => response.text())
         .then((text) => {table.innerHTML = text;})
     }
+
+
+  // Sjekk om brukeren er logga inn. hvis ikke hiv de ut til innloggingskjermen
+  let xmlHttpReq = new XMLHttpRequest();
+  xmlHttpReq.open("POST", "/is_authorized.php", false);
+  xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
+  xmlHttpReq.send("username=" + localStorage.getItem("navn")+"&"+"password=" + localStorage.getItem("passord"));
+  if (xmlHttpReq.status != 200){
+      window.location.href = "/login.html";
+  }
+  document.getElementById('password').value = localStorage.getItem("passord");
+
 </script>
 </body>
 </html>

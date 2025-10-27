@@ -6,25 +6,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
     <link rel="stylesheet" href="matcha.css">
-    <style>
-      body {
-        padding: 0;
-      }
-      .settings {
-        padding: 0 1.5rem;
-      }
-      fieldset {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-evenly;
-      }
-      .bg-success {
-        background: var(--bg-success) !important;
-      }
-      .bg-active {
-        background: var(--bg-active) !important;
-      }
-    </style>
 </head>
 <body>
   <nav>
@@ -34,16 +15,31 @@
     <li class="selected"><a href="/db_editor.html">Endre løperbase</a></li>
   </menu>
 </nav>
-  <h2>Simple Form</h2>
+  <h2>Legg til løper</h2>
   <form action="/runner.php" method="POST">
-    <label for="password">Passord:</label><br>
-    <input type="text" id="password" name="password" required><br><br>
+    
+    <input style="display: none;" type="text" id="password" name="password" required>
 
-    <label for="id">Startnummer:</label><br>
-    <input type="text" id="id" name="id" required><br><br>
-
-    <label for="navn">Navn:</label><br>
-    <input type="text" id="name" name="input2"><br><br>
+    <label for="id">Startnummer:
+    <input type="text" id="id" name="id" required>
+    </label>
+    <label for="navn">Navn:
+    <input type="text" id="name" name="name">
+    </label>
+    <label for="club">Klubb:
+    <input type="text" id="club" name="club">
+    </label>
+     <fieldset>
+    <legend>Klasse</legend>
+    <label>
+      <input type="radio" name="course" value="Kadaverløpet" checked="checked">
+      Kadaverløpet
+    </label>
+    <label>
+      <input type="radio" name="course" value="Minikadaver'n">
+      Minikadaver'n
+    </label>
+  </fieldset>
 
     <button type="submit">Submit</button>
   </form>
@@ -56,6 +52,7 @@
     window.location.href = "/login.html";
   }
 
+  // Sjekk om brukeren er logga inn. hvis ikke hiv de ut til innloggingskjermen
   let xmlHttpReq = new XMLHttpRequest();
   xmlHttpReq.open("POST", "/is_authorized.php", false);
   xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
@@ -63,6 +60,7 @@
   if (xmlHttpReq.status != 200){
       window.location.href = "/login.html";
   }
+  document.getElementById('password').value = localStorage.getItem("passord");
 
 </script>
 </body>
