@@ -24,9 +24,11 @@ class Runner
     public string $name;
     public string $club;
     public string $course;
+    public string $email;
+    public string $phone;
     public array $splits;
 
-    function __construct($id, $name, $club, $course)
+    function __construct($id, $name, $club, $course, $email, $phone)
     {
         if ($id == null) {
             $id = 0;
@@ -36,6 +38,8 @@ class Runner
         $this->name = $name;
         $this->club = $club;
         $this->course = $course;
+        $this->email = $email;
+        $this->phone = $phone;
         for ($i = 0; $i < $GLOBALS['number_of_controls']; $i++) {
             $this->splits[$i] = false;
         }
@@ -113,7 +117,7 @@ $csv_runners = file_get_contents("data/db.csv");
 $csv_runners = str_getcsv($csv_runners, "\n");
 for ($i = 1; $i < count($csv_runners); $i++) {
     $line = str_getcsv($csv_runners[$i], ";");
-    array_push($runners, new Runner($line[0], $line[2], $line[5], $line[6]));
+    array_push($runners, new Runner($line[0], $line[2], $line[5], $line[6], $line[3], $line[4]));
 }
 
 
@@ -231,6 +235,7 @@ function liveresult_table($runners) {
         <th>1. matpost</th>
         <th>2. matpost</th>
         <th>Mål</th>
+        <th>Etter</th>
         <th>Sprekkindeks</th>
     </tr></thead>
     <tbody>";
@@ -258,6 +263,13 @@ function liveresult_table($runners) {
                 $tid_1_mat = $GLOBALS['start_time']->diff($runner->splits[0])->format('%H:%I:%S');
             }
             $tid_2_mat = "";
+
+            //tid etter vinner
+            $tid_etter = "";
+            if ($runner->splits[2] != false && $kadaver_num > 0) {
+                $tid_etter = $runners[0]->splits[2]->diff($runner->splits[2])->format('%I:%S');
+            }
+            //sprekkindekss
             if ($runner->splits[1] != false) {
                 $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
                 try {
@@ -277,15 +289,15 @@ function liveresult_table($runners) {
 	}
 
         if ($runner->course == "Kadaverløpet") {
-            $kadaver_table .= "<tr><td>". $kadaver_num .".</td><td>$runner->name</td>$matposter<td>$tid_maal</td>$sprekk</tr>\n";
+            $kadaver_table .= "<tr><td>". $kadaver_num .".</td><td>$runner->name</td>$matposter<td>$tid_maal</td><td>$tid_etter</td>$sprekk</tr>\n";
         }
         elseif ($runner->course == "Minikadaver'n") {
             $minikadaver_table .= "<tr><td>". "" .".</td><td>$runner->name</td><td>$tid_maal</td></tr>\n";
         }
     }
-    $kadaver_table .= "</tbody></table>";
+    $kadaver_table .= "</tbody></table>\n";
     $minikadaver_table .= "</tbody></table>";
-    echo($kadaver_table);
+    echo($kadaver_table . $minikadaver_table);
     
 }
 
