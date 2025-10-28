@@ -15,6 +15,9 @@
     <style>
       body {
         padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
       }
       .settings {
         padding: 0 1.5rem;
@@ -28,6 +31,7 @@
         margin-right: auto;
         margin-bottom: 0px;
         margin-left: auto;
+        max-width: var(--ct-width);
       }
       fieldset {
           display: flex;
