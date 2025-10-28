@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="matcha.css">
   <main>
     <h2>Login</h2>
-    <form method="POST" action="/is_authorized.php" id="login">
+    <form method="POST" action="/api/is_authorized.php" id="login">
       <label for="username">Navn</label>
       <input id="navn" name="username" type="text" required>
 
@@ -26,7 +26,7 @@
 
 <script>
 let xmlHttpReq = new XMLHttpRequest();
-xmlHttpReq.open("POST", "/is_authorized.php", false);
+xmlHttpReq.open("POST", "/api/is_authorized.php", false);
 xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
 xmlHttpReq.send("username=" + localStorage.getItem("navn")+"&"+"password=" + localStorage.getItem("passord"));
 if (xmlHttpReq.status == 200){

@@ -1,4 +1,5 @@
 <?php
+$documentRoot = $_SERVER['DOCUMENT_ROOT'];
 class Runner
 {
     public int $id;
@@ -115,8 +116,9 @@ function time_diff(DateTime $date_1, DateTime $date_2) {
 }
 
 function read_runners_from_csv(){
+    $documentRoot = $_SERVER['DOCUMENT_ROOT'];
     $runners = [];
-    $csv_runners = file_get_contents("data/db.csv");
+    $csv_runners = file_get_contents("$documentRoot/data/db.csv");
     $csv_runners = str_getcsv($csv_runners, "\n");
     for ($i = 1; $i < count($csv_runners); $i++) {
         $line = str_getcsv($csv_runners[$i], ";");
@@ -124,7 +126,7 @@ function read_runners_from_csv(){
     }
 
 
-    $timings = file_get_contents("data/passering.csv");
+    $timings = file_get_contents("$documentRoot/data/passering.csv");
     $timings = str_getcsv($timings, "\n");
     for ($i = 0; $i < count($timings); $i++) {
         $line = str_getcsv($timings[$i]);

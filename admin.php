@@ -38,7 +38,7 @@
 </nav>
   <button class="danger" onclick="log_out()">Logg ut</button>
 <h1>Søk opp løper</h1>
-<form action="/runner.php" method="GET" hx-boost="true" hx-target="#runner_info" hx-swap="show:none">
+<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner_info" hx-swap="show:none">
   <label>
     Navn, startnummer eller klubb
     <input type="text" name="search" id="search">
@@ -48,7 +48,7 @@
 <div id="runner_info" class="profile-card"></div>
 <h1>Løpende resultater</h1>
 <?php
-include("table.php");
+include("api/table.php");
 liveresult_table($runners);
 ?>
 <script>
@@ -60,7 +60,7 @@ liveresult_table($runners);
             table.innerHTML = this.responseText;
             localStorage.setItem("ETag", this.getResponseHeader("ETag"));
         }};
-        request.open("GET", "table.php?type=liveresultater");
+        request.open("GET", "api/table.php?type=liveresultater");
         request.setRequestHeader("If-None-Match", localStorage.getItem("ETag"));
         request.send();
     }
@@ -75,7 +75,7 @@ liveresult_table($runners);
   }
 
   let xmlHttpReq = new XMLHttpRequest();
-  xmlHttpReq.open("POST", "/is_authorized.php", false);
+  xmlHttpReq.open("POST", "/api/is_authorized.php", false);
   xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
   xmlHttpReq.send("username=" + localStorage.getItem("navn")+"&"+"password=" + localStorage.getItem("passord"));
   if (xmlHttpReq.status != 200){

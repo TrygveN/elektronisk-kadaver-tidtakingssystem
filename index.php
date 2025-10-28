@@ -33,7 +33,7 @@
 </div>
 <h2>Vi tar forbehold om feil. Dette er ikke offisielle resultater</h2>
 <?php
-include("table.php");
+include("api/table.php");
 liveresult_table($runners);
 ?>
 <footer>
@@ -49,7 +49,7 @@ liveresult_table($runners);
             table.innerHTML = this.responseText;
             localStorage.setItem("ETag", this.getResponseHeader("ETag"));
         }};
-        request.open("GET", "table.php?type=liveresultater");
+        request.open("GET", "api/table.php?type=liveresultater");
         request.setRequestHeader("If-None-Match", localStorage.getItem("ETag"));
         request.send();
     }

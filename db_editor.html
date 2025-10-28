@@ -23,7 +23,7 @@
   </menu>
 </nav>
   <h2>Legg til løper</h2>
-  <form action="/runner.php" method="POST">
+  <form action="/api/runner.php" method="POST">
     <input style="display: none;" type="text" id="password" name="password" required>
 
     <label for="id">Startnummer:
@@ -60,7 +60,7 @@
 
   // Sjekk om brukeren er logga inn. hvis ikke hiv de ut til innloggingskjermen
   let xmlHttpReq = new XMLHttpRequest();
-  xmlHttpReq.open("POST", "/is_authorized.php", false);
+  xmlHttpReq.open("POST", "/api/is_authorized.php", false);
   xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
   xmlHttpReq.send("username=" + localStorage.getItem("navn")+"&"+"password=" + localStorage.getItem("passord"));
   if (xmlHttpReq.status != 200){

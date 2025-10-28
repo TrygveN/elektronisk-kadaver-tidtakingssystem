@@ -1,5 +1,7 @@
 <?php
-$config = parse_ini_file("data/config.ini");
+$documentRoot = $_SERVER['DOCUMENT_ROOT'];
+
+$config = parse_ini_file("$documentRoot/data/config.ini");
 date_default_timezone_set('UTC');
 $GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, $config["start_date"]);
 $GLOBALS['number_of_controls'] = 3;
@@ -19,7 +21,7 @@ if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
 }
 */
 
-include("import_runners.php");
+include("$documentRoot/import_runners.php");
 
 function registration_table($runners) {
     parse_str($_SERVER['QUERY_STRING'], $query);

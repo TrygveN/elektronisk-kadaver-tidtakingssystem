@@ -23,7 +23,7 @@
 <div class="flash attention">Startnummer blir tildelt nærmere arrangementet. Prøver å oppdatere lista jevnlig. TBN</div>
 <?php
 $query = ["type"=>"paameldte"];
-include("table.php");
+include("api/table.php");
 participants_table($runners);
 ?>
 <footer>

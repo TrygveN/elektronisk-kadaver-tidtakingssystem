@@ -1,5 +1,7 @@
 <?php
-$hash = file_get_contents("data/hash.txt");
+$documentRoot = $_SERVER['DOCUMENT_ROOT'];
+print_r($documentRoot);
+$hash = file_get_contents("$documentRoot/data/hash.txt");
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method == "POST") {
     $password = $_POST['password'];

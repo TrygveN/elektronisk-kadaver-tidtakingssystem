@@ -1,6 +1,9 @@
 <?php
-include("import_runners.php");
-$hash = file_get_contents("data/hash.txt");
+$documentRoot = $_SERVER['DOCUMENT_ROOT'];
+include("$documentRoot/import_runners.php");
+
+
+$hash = file_get_contents("$documentRoot/data/hash.txt");
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method == "POST") {
     $runner_id = $_POST['id'];
@@ -8,7 +11,7 @@ if ($method == "POST") {
     $club = $_POST['club'];
     $course = $_POST['course'];
     
-    $line = $runner_id . ";;" . $name . ";;;" . $club . ";" . $course . "\n";
+    $line = $runner_id . ";;" . $name . ";;;" . $club . ";" . $course . "\n;;";
 
     $password = $_POST['password'];
     if (!password_verify($password, $hash)) {
@@ -18,7 +21,7 @@ if ($method == "POST") {
         http_response_code(response_code: 400);
     }
     else {
-        $file = 'data/db.csv';
+        $file = "$documentRoot/data/db.csv";
         file_put_contents($file, $line, FILE_APPEND);
     }
 }
@@ -45,7 +48,7 @@ if ($method == "GET") {
         
         for ($i = 0; $i < count($filtered); $i++) {
             $runner = $filtered[$i];
-            $response .= "<button class=\"default\" hx-get=\"/runner.php?search=$runner->id\" hx-target=\"#runner_info\" hx-swap=\"show:none\">$runner->id $runner->name</button>";
+            $response .= "<button class=\"default\" hx-get=\"/api/runner.php?search=$runner->id\" hx-target=\"#runner_info\" hx-swap=\"show:none\">$runner->id $runner->name</button>";
             header("HX-Replace-Url: false");
         }
         echo($response);

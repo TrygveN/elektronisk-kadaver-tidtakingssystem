@@ -1,5 +1,5 @@
 <?php
-
+$documentRoot = $_SERVER['DOCUMENT_ROOT'];
 function write_ini_file($assoc_array, $path) {
     $content = "";
     foreach ($assoc_array as $section => $values) {
@@ -16,9 +16,9 @@ function write_ini_file($assoc_array, $path) {
     file_put_contents($path, $content);
 }
 
-$config = parse_ini_file("data/config.ini");
+$config = parse_ini_file("$documentRoot/data/config.ini");
 
-$hash = file_get_contents("data/hash.txt");
+$hash = file_get_contents("$documentRoot/data/hash.txt");
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method == "POST") {
     $start_time = $_POST['start_time'];
@@ -28,10 +28,10 @@ if ($method == "POST") {
         http_response_code(response_code: 401);
     }
     else {
-        $file = 'data/config.ini';
+        $file = "$documentRoot/data/config.ini";
         $config["start_date"] = $start_time . "+01";
         write_ini_file($config, $file);
-        header('Location: config_editor.html');
+        header("Location: $documentRoot/config_editor.html");
     }
 }
 elseif ($method == "GET"){

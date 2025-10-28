@@ -103,7 +103,7 @@ function register_runner(id) {
     formData.append(name= 'id', value=id);
     time = new Date(Date.now()).toISOString().split('.')[0]+"Z"
     formData.append('time', time);
-    response = fetch("passing.php", {
+    response = fetch("api/passing.php", {
         method: "POST",
         body: formData,
     })
@@ -120,7 +120,7 @@ function update() {
         const table = document.getElementById("runners");
         control = get_control();
         filter = document.getElementById("search").value;
-        let request = new Request(`table.php?type=registrering&control=`+control+`&filter=`+filter);
+        let request = new Request(`api/table.php?type=registrering&control=`+control+`&filter=`+filter);
         fetch(request)
         .then((response) => response.text())
         .then((text) => {table.innerHTML = text;})
@@ -129,7 +129,7 @@ function update() {
 
   // Sjekk om brukeren er logga inn. hvis ikke hiv de ut til innloggingskjermen
   let xmlHttpReq = new XMLHttpRequest();
-  xmlHttpReq.open("POST", "/is_authorized.php", false);
+  xmlHttpReq.open("POST", "/api/is_authorized.php", false);
   xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
   xmlHttpReq.send("username=" + localStorage.getItem("navn")+"&"+"password=" + localStorage.getItem("passord"));
   if (xmlHttpReq.status != 200){
