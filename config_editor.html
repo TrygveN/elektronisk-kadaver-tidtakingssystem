@@ -24,7 +24,7 @@
 </nav>
 
   <h2>Sett dato og tid startskuddet gikk:</h2>
-  <form action="/api/config.php" method="POST">
+  <form action="/api/config.php" method="POST" hx-boost="true" hx-target="#updated" hx-swap="show:none">
     <input style="display: none;" type="text" id="password" name="password" required>
     <label>
       Dato og tid
@@ -32,7 +32,7 @@
     </label>
     <button type="submit">Oppdater</button>
   </form>
-
+<div id="updated"></div>
 </div>
 <script>
   function log_out(){
@@ -57,5 +57,6 @@
   console.log(xmlHttpReq.response)
 
 </script>
+<script src="/lib/htmx.min.js"></script>
 </body>
 </html>

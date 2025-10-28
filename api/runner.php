@@ -23,6 +23,8 @@ if ($method == "POST") {
     else {
         $file = "$documentRoot/data/db.csv";
         file_put_contents($file, $line, FILE_APPEND);
+        header("HX-Replace-Url: false");
+        echo("Løper lagt til: $line");
     }
 }
 if ($method == "GET") {

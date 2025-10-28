@@ -46,6 +46,13 @@
   <button type="submit">Søk</button>
 </form>
 <div id="runner_info" class="profile-card"></div>
+
+<button hx-get="/api/email.php" hx-target="#emails" hx-headers='js:{"password": localStorage.getItem("passord")}'>hent alle eposter</button>
+<button hx-get="/api/email.php?course=Kadaverløpet" hx-target="#emails" hx-headers='js:{"password": localStorage.getItem("passord")}'>Hent bare eposter for fullkadavern</button>
+<button hx-get="/api/email.php?course=Minikadaver'n" hx-target="#emails" hx-headers='js:{"password": localStorage.getItem("passord")}'>Hent bare eposter for minikadaver'n</button>
+<div class="flash default">
+<output id="emails"></output>
+</div>
 <h1>Løpende resultater</h1>
 <?php
 include("api/table.php");
@@ -83,6 +90,6 @@ liveresult_table($runners);
   }
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
+<script src="/lib/htmx.min.js"></script>
 </body>
 </html>

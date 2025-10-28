@@ -13,7 +13,7 @@ function write_ini_file($assoc_array, $path) {
         }
         $content .= "\n";
     }
-    file_put_contents($path, $content);
+    file_put_contents($path, data: $content);
 }
 
 $config = parse_ini_file("$documentRoot/data/config.ini");
@@ -31,7 +31,8 @@ if ($method == "POST") {
         $file = "$documentRoot/data/config.ini";
         $config["start_date"] = $start_time . "+01";
         write_ini_file($config, $file);
-        header("Location: $documentRoot/config_editor.html");
+        header("HX-Replace-Url: false");
+        echo("Starttida er oppdatert til: $start_time");
     }
 }
 elseif ($method == "GET"){

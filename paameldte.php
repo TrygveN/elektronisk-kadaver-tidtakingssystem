@@ -19,7 +19,7 @@
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
 <h1>Påmeldte Kadaverløpet 2025</h1>
 </div>
-<h2>Oppdatert 24.10.25</h2>
+<h2>Oppdatert 28.10.25</h2>
 <div class="flash attention">Startnummer blir tildelt nærmere arrangementet. Prøver å oppdatere lista jevnlig. TBN</div>
 <?php
 $query = ["type"=>"paameldte"];

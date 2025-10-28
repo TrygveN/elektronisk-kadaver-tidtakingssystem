@@ -23,7 +23,7 @@
   </menu>
 </nav>
   <h2>Legg til løper</h2>
-  <form action="/api/runner.php" method="POST">
+  <form action="/api/runner.php" method="POST" hx-boost="true" hx-target="#updated" hx-swap="show:none">
     <input style="display: none;" type="text" id="password" name="password" required>
 
     <label for="id">Startnummer:
@@ -51,6 +51,7 @@
   </form>
 
 </div>
+<div id="updated"></div>
 <script>
   function log_out(){
     localStorage.removeItem("navn");
@@ -69,5 +70,6 @@
   document.getElementById('password').value = localStorage.getItem("passord");
 
 </script>
+<script src="/lib/htmx.min.js"></script>
 </body>
 </html>
