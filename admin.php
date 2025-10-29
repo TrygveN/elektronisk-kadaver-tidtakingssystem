@@ -37,6 +37,11 @@
   </menu>
 </nav>
   <button class="danger" onclick="log_out()">Logg ut</button>
+<div class='flex' hx-get="/api/statistics.php" hx-trigger="every 5s">
+<?php
+include("api/statistics.php");
+?>
+</div>
 <h1>Søk opp løper</h1>
 <form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner_info" hx-swap="show:none">
   <label>
@@ -54,9 +59,13 @@
 <output id="emails"></output>
 </div>
 <h1>Løpende resultater</h1>
+<h2>Kadaverløpet</h2>
+<div class='flex' hx-get="api/table.php?type=liveresultater" hx-trigger="load, every 5s"></div>
+<h2>Minikadaver'n</h2>
+<div class='flex' hx-get="api/table.php?type=minikadavern" hx-trigger="load, every 15s"></div>
 <?php
 include("api/table.php");
-liveresult_table($runners);
+//liveresult_table($runners);
 ?>
 <script>
     function update() {

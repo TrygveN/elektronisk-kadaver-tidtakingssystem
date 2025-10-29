@@ -24,9 +24,7 @@ class Runner
         $this->email = $email;
         $this->phone = $phone;
         $this->is_student = $is_student;
-        for ($i = 0; $i < $GLOBALS['number_of_controls']; $i++) {
-            $this->splits[$i] = false;
-        }
+        $this->splits = [false, false, false];
     }
 
     function set_split($control, $timestamp)
@@ -34,14 +32,14 @@ class Runner
         $this->splits[$control] = $timestamp;
     }
 
-    function get_control()
-    {        for ($i = 0; $i < count($this->splits); $i++) {
-
-            if (!is_object($this->splits[$i])) {
-                return $i-1;
+    function get_control(){
+        $control = -1;
+        for ($i = 0; $i < count($this->splits); $i++) {
+            if ($this->splits[$i] != false) {
+                $control++;
             }
-    }
-	return count($this->splits)-1;
+        }
+        return $control;
     }
 }
 
