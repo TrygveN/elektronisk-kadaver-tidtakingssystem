@@ -68,22 +68,6 @@ include("api/table.php");
 //liveresult_table($runners);
 ?>
 <script>
-    function update() {
-        const table = document.querySelector("table");
-        const request = new XMLHttpRequest();
-        request.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            table.innerHTML = this.responseText;
-            localStorage.setItem("ETag", this.getResponseHeader("ETag"));
-        }};
-        request.open("GET", "api/table.php?type=liveresultater");
-        request.setRequestHeader("If-None-Match", localStorage.getItem("ETag"));
-        request.send();
-    }
-    setInterval(update, 5*1000)
-</script>
-
-<script>
   function log_out(){
     localStorage.removeItem("navn");
     localStorage.removeItem("passord");
