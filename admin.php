@@ -36,7 +36,7 @@
   </menu>
 </nav>
   <button class="danger" onclick="log_out()">Logg ut</button>
-<div class='flex' hx-get="/api/statistics.php" hx-trigger="every 5s">
+<div class='flex wrap' hx-get="/api/statistics.php" hx-trigger="every 5s">
 <?php
 include("api/statistics.php");
 ?>

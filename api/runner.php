@@ -11,7 +11,7 @@ if ($method == "POST") {
     $club = $_POST['club'];
     $course = $_POST['course'];
     
-    $line = $runner_id . ";;" . $name . ";;;" . $club . ";" . $course . "\n;;";
+    $line = $runner_id . ";;" . $name . ";;;" . $club . ";" . $course . ";;;\n";
 
     $password = $_POST['password'];
     if (!password_verify($password, $hash)) {

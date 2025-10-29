@@ -37,7 +37,7 @@ function registration_table($runners) {
     }
     if (count($runners) == 0) {
         $runner_id = $query["filter"];
-        $response = "<div class=\"flash default\">Fant ingen løper med dette startnummeret. Registrer likevell? <button onclick=\"register_runner($runner_id)\">Registrer startnummer $runner_id ✓</button></div>";
+        $response = "<div class=\"flash default\">Fant ingen løper med dette startnummeret. Registrer likevell? <button onclick=\"register_runner($runner_id)\">Registrer startnummer $runner_id ✅️</button></div>";
         echo($response);
     } else {
 
@@ -63,16 +63,16 @@ function registration_table($runners) {
             
             if ($runner->get_control() == $matpost-1) {
                 // Løperen har vært på denne matposten og vi farger raden grønn
-                $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
+                $button = "<button onclick=\"register_runner($runner->id)\">☑️</button>";
                 $cssclass = "class=\"bg-success\"";
             }
             elseif ($runner->get_control() > $matpost-1) {
                 // Løperen har vært på denne matposten og vi farger raden grønn
-                $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
+                $button = "<button onclick=\"register_runner($runner->id)\">☑️</button>";
                 $cssclass = "class=\"bg-active\"";
             }
             else {
-                $button = "<button onclick=\"register_runner($runner->id)\">✓</button>";
+                $button = "<button onclick=\"register_runner($runner->id)\">✅️</button>";
                 $cssclass = "";
             }
             echo ("<tr $cssclass><td>$runner->id</td><td>$runner->name</td><td>$tid_passering</td><td>$button</td></tr>\n");
