@@ -6,11 +6,11 @@
  @font-face {
     font-family: Kadaver Mono;
     font-weight: bold;
-    src: url("fonts/KadaverMono-Bold.woff2") format("opentype");
+    src: url("/fonts/KadaverMono-Bold.woff2") format("opentype");
 }
  @font-face {
     font-family: Kadaver Mono;
-    src: url("fonts/KadaverMono-Regular.woff2") format("opentype");
+    src: url("/fonts/KadaverMono-Regular.woff2") format("opentype");
 }
 
 :root{--ft:  Kadaver Mono, Adwaita Mono, Source Code Pro, -apple-system, BlinkMacSystemFont, "Noto Sans", Helvetica, sans-serif, "Apple Color Emoji";--ft-mono: Kadaver Mono, Adwaita Mono, Source Code Pro, ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
