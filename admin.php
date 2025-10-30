@@ -48,14 +48,14 @@ include("api/statistics.php");
 ?>
 </div>
 <h1>Søk opp løper</h1>
-<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner_info" hx-swap="show:none">
+<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none">
   <label>
     Navn, startnummer eller klubb
     <input type="text" name="search" id="search">
   </label>
   <button type="submit">Søk</button>
 </form>
-<div id="runner_info" class="profile-card"></div>
+<div id="runner" class="profile-card"></div>
 
 <button hx-get="/api/email.php" hx-target="#emails" hx-headers='js:{"password": localStorage.getItem("passord")}'>hent alle eposter</button>
 <button hx-get="/api/email.php?course=Kadaverløpet" hx-target="#emails" hx-headers='js:{"password": localStorage.getItem("passord")}'>Hent bare eposter for fullkadavern</button>

@@ -54,6 +54,18 @@
 
     <button type="submit">Legg til løper</button>
   </form>
+<div id="updated"></div>
+  <h2>Endre løper</h2>
+<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none">
+  <input type="hidden" id="edit" name="edit" value="true">
+  <label>
+    Søk etter navn, startnummer eller klubb
+    <input type="text" name="search" id="search">
+  </label>
+  <button type="submit">Søk</button>
+</form>
+<div id="runner"></div>
+
 
 </div>
 <div id="updated"></div>
@@ -76,5 +88,15 @@
 
 </script>
 <script src="/lib/htmx.min.js"></script>
+<script>
+  document.body.addEventListener('htmx:beforeSwap', function(evt) {
+  // Allow 422 and 400 responses to swap
+  // We treat these as form validation errors
+  if (evt.detail.xhr.status === 422 || evt.detail.xhr.status === 400) {
+    evt.detail.shouldSwap = true;
+    evt.detail.isError = false;
+  }
+});
+</script>
 </body>
 </html>

@@ -11,7 +11,7 @@ class Runner
     public string $is_student;
     public array $splits;
 
-    function __construct($id, $name, $club, $course, $email, $phone, $is_student)
+    function __construct($id, $name, $club, $course, $email, $phone, $is_student, $line_in_csv)
     {
         if ($id == null) {
             $id = 0;
@@ -24,6 +24,7 @@ class Runner
         $this->email = $email;
         $this->phone = $phone;
         $this->is_student = $is_student;
+        $this->line_in_csv = $line_in_csv;
         $this->splits = [false, false, false];
     }
 
@@ -120,7 +121,7 @@ function read_runners_from_csv(){
     $csv_runners = str_getcsv($csv_runners, "\n");
     for ($i = 1; $i < count($csv_runners); $i++) {
         $line = str_getcsv($csv_runners[$i], ";");
-        array_push($runners, new Runner($line[0], $line[2], $line[5], $line[6], $line[3], $line[4], $line[7]));
+        array_push($runners, new Runner($line[0], $line[2], $line[5], $line[6], $line[3], $line[4], $line[7], $i));
     }
 
 

@@ -24,10 +24,15 @@ if ($method == "POST") {
     $start_time = $_POST['start_time'];
 
     $password = $_POST['password'];
+
+    $new_time = DateTime::createFromFormat(DateTime::ISO8601, $start_time. "+01");
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
-    }
-    else {
+    } elseif (!$new_time) {
+        http_response_code(response_code: 400);
+        echo("Feil datoformat din noldus!!!!!!!11!!! Skriv inn sekund");
+    } else {
+
         $file = "$documentRoot/data/config.ini";
         $config["start_date"] = $start_time . "+01";
         write_ini_file($config, $file);
