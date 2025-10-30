@@ -5,7 +5,7 @@
     <title>Påmeldte Kadaverløpet</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
-    <link rel="stylesheet" href="matcha.css">
+    <link rel="stylesheet" href="css/matcha.css">
     <style>
         @media (prefers-color-scheme: dark) {
             .invert {
