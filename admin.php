@@ -48,7 +48,7 @@ include("api/statistics.php");
 ?>
 </div>
 <h1>Søk opp løper</h1>
-<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none">
+<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>
   <label>
     Navn, startnummer eller klubb
     <input type="text" name="search" id="search">

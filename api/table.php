@@ -4,6 +4,7 @@ $documentRoot = $_SERVER['DOCUMENT_ROOT'];
 $config = parse_ini_file("$documentRoot/data/config.ini");
 date_default_timezone_set('UTC');
 $GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, $config["start_date"]);
+$GLOBALS['start_time_mini'] = DateTime::createFromFormat(DateTime::ISO8601, $config["start_date_mini"]);
 $GLOBALS['number_of_controls'] = 3;
 /*
 // Caching
@@ -165,7 +166,9 @@ function liveresult_table($runners) {
             $matposter = "<td>$tid_1_mat</td><td>$tid_2_mat</td>";
 	}
         if ($runner->course == "Kadaverløpet") {
-            $kadaver_table .= "<tr><td>". $kadaver_num .".</td><td>$runner->name</td>$matposter<td>$tid_maal</td><td>$tid_etter</td>$sprekk</tr>\n";
+            $runner_number = $kadaver_num .".";
+            if ($runner->get_control() == -1){$runner_number = "";};
+            $kadaver_table .= "<tr><td>". $runner_number ."</td><td>$runner->name</td>$matposter<td>$tid_maal</td><td>$tid_etter</td>$sprekk</tr>\n";
         }
     }
     $kadaver_table .= "</tbody></table>\n";
@@ -174,8 +177,8 @@ function liveresult_table($runners) {
 }
 
 function minikadadvern_table($runners) {
-    usort($runners, "cmp");
-    usort($runners, "cmp_course");
+    //usort($runners, "cmp");
+    //usort($runners, "cmp_course");
     $minikadaver_table = "<table><thead>
     <tr>
     <th>#</th>
@@ -183,53 +186,18 @@ function minikadadvern_table($runners) {
     <th>Mål</th>
     </tr></thead>
     <tbody>";
-       	$kadaver_num = 0;
-       	$mini_num = 0;	
+    $mini_num = 0;	
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
         $tid_maal = "";
-        $sprekk = "<td></td>";
         if ($runner->splits[2] != false) {
-            $tid_maal = $GLOBALS['start_time']->diff($runner->splits[2])->format('%H:%I:%S');
+            $tid_maal = $GLOBALS['start_time_mini']->diff($runner->splits[2])->format('%H:%I:%S');
         }
-	    if ($runner->course == "Kadaverløpet") {
-		$kadaver_num++;
-            $tid_1_mat = "";
-            if ($runner->splits[0] != false) {
-                // https://www.php.net/manual/en/class.dateinterval.php
-                $tid_1_mat = $GLOBALS['start_time']->diff($runner->splits[0])->format('%H:%I:%S');
-            }
-            $tid_2_mat = "";
-
-            //tid etter vinner
-            $tid_etter = "";
-            if ($runner->splits[2] != false && $kadaver_num > 0) {
-                $tid_etter = $runners[0]->splits[2]->diff($runner->splits[2])->format('%I:%S');
-            }
-            //sprekkindekss
-            if ($runner->splits[1] != false) {
-                $tid_2_mat = $GLOBALS['start_time']->diff($runner->splits[1])->format('%H:%I:%S');
-                try {
-                    $sprekk = "<td>" . number_format(100*(time_diff($GLOBALS['start_time'],$runner->splits[2]) - time_diff($GLOBALS['start_time'],$runner->splits[1])) / time_diff($GLOBALS['start_time'],$runner->splits[2]), 0) . "%</td>";
-                }
-                catch (DivisionByZeroError $e){
-                    $sprekk = "<td></td>";
-                }
-                catch (TypeError $e) {
-                    $sprekk = "<td></td>";
-                }
-            }
-            $matposter = "<td>$tid_1_mat</td><td>$tid_2_mat</td>";
-	}
-	else {
-		$mini_num++;
-	}
-
-        if ($runner->course == "Kadaverløpet") {
-            $kadaver_table .= "<tr><td>". $kadaver_num .".</td><td>$runner->name</td>$matposter<td>$tid_maal</td><td>$tid_etter</td>$sprekk</tr>\n";
-        }
-        elseif ($runner->course == "Minikadaver'n") {
-            $minikadaver_table .= "<tr><td>". "" .".</td><td>$runner->name</td><td>$tid_maal</td></tr>\n";
+	    if ($runner->course == "Minikadaver'n") {
+		    $mini_num++;
+            $runner_number = $mini_num . ".";
+            if ($runner->get_control() != 2){$runner_number = "";};
+            $minikadaver_table .= "<tr><td>". "$runner_number" ."</td><td>$runner->name</td><td>$tid_maal</td></tr>\n";
         }
     }
     $minikadaver_table .= "</tbody></table>";

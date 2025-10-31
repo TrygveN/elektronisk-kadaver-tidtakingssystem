@@ -28,7 +28,7 @@
   </menu>
 </nav>
   <h2>Legg til løper</h2>
-  <form action="/api/runner.php" method="POST" hx-boost="true" hx-target="#updated" hx-swap="show:none">
+  <form action="/api/runner.php" method="POST" hx-boost="true" hx-target="#updated" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>
     <input style="display: none;" type="text" id="password" name="password" required>
 
     <label for="id">Startnummer:
@@ -56,7 +56,7 @@
   </form>
 <div id="updated"></div>
   <h2>Endre løper</h2>
-<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none">
+<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>
   <input type="hidden" id="edit" name="edit" value="true">
   <label>
     Søk etter navn, startnummer eller klubb

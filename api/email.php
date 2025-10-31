@@ -7,7 +7,6 @@ if ($method == "GET") {
     parse_str($_SERVER['QUERY_STRING'], $query);
     $course = $query['course'];
     $password = getallheaders()['Password'];
-    print_r(getallheaders());
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
     } else {

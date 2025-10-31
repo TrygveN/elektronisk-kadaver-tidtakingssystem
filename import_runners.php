@@ -34,13 +34,17 @@ class Runner
     }
 
     function get_control(){
-        $control = -1;
-        for ($i = 0; $i < count($this->splits); $i++) {
-            if ($this->splits[$i] != false) {
-                $control++;
-            }
+        if ($this->splits[2] != false) {
+            return 2;
+        } elseif ($this->splits[1] != false) {
+            return 1;
         }
-        return $control;
+        elseif ($this->splits[0] != false) {
+            return 0;
+        }
+        else {
+            return -1;
+        }
     }
 }
 
