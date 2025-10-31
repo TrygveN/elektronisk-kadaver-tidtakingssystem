@@ -57,9 +57,9 @@ include("api/statistics.php");
 </form>
 <div id="runner" class="profile-card"></div>
 
-<button hx-get="/api/email.php" hx-target="#emails" hx-headers='js:{"password": localStorage.getItem("passord")}'>hent alle eposter</button>
-<button hx-get="/api/email.php?course=Kadaverløpet" hx-target="#emails" hx-headers='js:{"password": localStorage.getItem("passord")}'>Hent bare eposter for fullkadavern</button>
-<button hx-get="/api/email.php?course=Minikadaver'n" hx-target="#emails" hx-headers='js:{"password": localStorage.getItem("passord")}'>Hent bare eposter for minikadaver'n</button>
+<button hx-get="/api/email.php" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>hent alle eposter</button>
+<button hx-get="/api/email.php?course=Kadaverløpet" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent bare eposter for fullkadavern</button>
+<button hx-get="/api/email.php?course=Minikadaver'n" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent bare eposter for minikadaver'n</button>
 <div class="flash default">
 <output id="emails"></output>
 </div>

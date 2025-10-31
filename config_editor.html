@@ -29,16 +29,7 @@
 </nav>
 
   <h2>Sett dato og tid startskuddet gikk:</h2>
-  <form action="/api/config.php" method="POST" hx-boost="true" hx-target="#updated" hx-swap="show:none">
-    <input style="display: none;" type="text" id="password" name="password" required>
-    <label>
-      Dato og tid
-      <input type="datetime-local" id="start_time" name="start_time" step="1">
-    </label>
-    <button type="submit">Oppdater</button>
-  </form>
-<div id="updated"></div>
-</div>
+<div hx-get="/api/config.php" hx-swap="outerHTML" hx-trigger="load"></div>
 <script>
   function log_out(){
     localStorage.removeItem("navn");

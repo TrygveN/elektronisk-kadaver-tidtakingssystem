@@ -22,8 +22,11 @@ include("$documentRoot/data/hash.php");
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method == "POST") {
     $start_time = $_POST['start_time'];
+    $start_time_mini = $_POST['mini_time'];
 
-    $password = $_POST['password'];
+    $password = $_POST['Password'];
+    $password = getallheaders()['Password'];
+
 
     $new_time = DateTime::createFromFormat(DateTime::ISO8601, $start_time. "+01");
     if (!password_verify($password, $hash)) {
@@ -35,13 +38,30 @@ if ($method == "POST") {
 
         $file = "$documentRoot/data/config.ini";
         $config["start_date"] = $start_time . "+01";
+        $config["start_date_mini"] = $start_time_mini . "+01";
         write_ini_file($config, $file);
         header("HX-Replace-Url: false");
-        echo("Starttida er oppdatert til: $start_time");
+        echo("Starttida er oppdatert til: $start_time for Kadaver'n <br> $start_time_mini for Minikadaer'n");
     }
 }
 elseif ($method == "GET"){
-    print($config["start_date"]);
+    $start_kadaver = explode("+", $config["start_date"])[0];
+    $start_mini = explode("+", $config["start_date_mini"])[0];
+    $response = "
+      <form action='/api/config.php' method='POST' hx-boost='true' hx-target='#updated' hx-swap='show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
+    <label>
+      Starttid Kadaverløpet
+      <input type='datetime-local' id='start_time' name='start_time' step='1' value='$start_kadaver'>
+    </label>
+        <label>
+      Starttid Minikadaver'n
+        <input type='datetime-local' id='mini_time' name='mini_time' step='1' value='$start_mini'>
+        </label>
+        <button type='submit'>Oppdater</button>
+    </form>
+    <div id='updated'></div>
+    ";
+    echo($response);
 }
 
 
