@@ -18,7 +18,7 @@ function write_ini_file($assoc_array, $path) {
 
 $config = parse_ini_file("$documentRoot/data/config.ini");
 
-$hash = file_get_contents("$documentRoot/data/hash.txt");
+include("$documentRoot/data/hash.php");
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method == "POST") {
     $start_time = $_POST['start_time'];

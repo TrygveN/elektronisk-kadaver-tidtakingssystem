@@ -50,8 +50,8 @@
     <li class="disabled"><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
     <li class="selected">⏳️ Nedtelling matpost
         <menu>
-          <li><a href="http://localhost:8000/matpost_nedtelling.php?matpost=0">1. mat</a></li>
-          <li><a href="http://localhost:8000/matpost_nedtelling.php?matpost=1">2. mat</a></li>
+          <li><a href="/matpost_nedtelling.php?matpost=0">1. mat</a></li>
+          <li><a href="/matpost_nedtelling.php?matpost=1">2. mat</a></li>
         </menu>
     </li>
   </menu>

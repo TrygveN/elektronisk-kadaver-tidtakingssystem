@@ -6,7 +6,7 @@ $runner_id = $_POST['id'];
 $time = $_POST['time'];
 $password = $_POST['password'];
 
-$hash = file_get_contents("$documentRoot/data/hash.txt");
+include("$documentRoot/data/hash.php");
 
 if (!password_verify($password, $hash)) {
     http_response_code(response_code: 401);

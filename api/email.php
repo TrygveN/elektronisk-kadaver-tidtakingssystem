@@ -1,7 +1,7 @@
 <?php
 $documentRoot = $_SERVER['DOCUMENT_ROOT'];
 include("$documentRoot/import_runners.php");
-$hash = file_get_contents("$documentRoot/data/hash.txt");
+include("$documentRoot/data/hash.php");
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method == "GET") {
     parse_str($_SERVER['QUERY_STRING'], $query);
