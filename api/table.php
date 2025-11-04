@@ -117,7 +117,7 @@ function participants_table($runners) {
 function liveresult_table($runners) {
     usort($runners, "cmp");
     usort($runners, "cmp_course");
-    $kadaver_table = "<table><thead>
+    $kadaver_table = "<table id='kadavertabell'><thead>
         <tr>
         <th>#</th>
 	<th>Navn</th>
@@ -148,7 +148,7 @@ function liveresult_table($runners) {
             //tid etter vinner
             $tid_etter = "";
             if ($runner->splits[2] != false && $kadaver_num > 0) {
-                $tid_etter = $runners[0]->splits[2]->diff($runner->splits[2])->format('%I:%S');
+                $tid_etter = $runners[0]->splits[2]->diff($runner->splits[2])->format('%H:%I:%S');
             }
             //sprekkindekss
             if ($runner->splits[1] != false) {
@@ -168,7 +168,7 @@ function liveresult_table($runners) {
         if ($runner->course == "Kadaverløpet") {
             $runner_number = $kadaver_num .".";
             if ($runner->get_control() == -1){$runner_number = "";};
-            $kadaver_table .= "<tr><td>". $runner_number ."</td><td>$runner->name</td>$matposter<td>$tid_maal</td><td>$tid_etter</td>$sprekk</tr>\n";
+            $kadaver_table .= "<tr id='$runner->id'><td>". $runner_number ."</td><td>$runner->name</td>$matposter<td><b>$tid_maal</b></td><td>$tid_etter</td>$sprekk</tr>\n";
         }
     }
     $kadaver_table .= "</tbody></table>\n";
@@ -177,8 +177,7 @@ function liveresult_table($runners) {
 }
 
 function minikadadvern_table($runners) {
-    //usort($runners, "cmp");
-    //usort($runners, "cmp_course");
+    usort($runners, "cmp");
     $minikadaver_table = "<table><thead>
     <tr>
     <th>#</th>
