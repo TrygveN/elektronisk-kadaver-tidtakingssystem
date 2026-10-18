@@ -63,6 +63,11 @@ include("api/statistics.php");
 <div class="flash default">
 <output id="emails"></output>
 </div>
+<h2>Synkroniser løperbase</h2>
+<button hx-get="/api/nettskjema_sync.php" hx-target="#sync-status" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>🔄 Synk fra Nettskjema</button>
+<div class="flash default">
+<output id="sync-status"></output>
+</div>
 <h1>Løpende resultater</h1>
 <h2>Kadaverløpet</h2>
 <div class='flex' hx-get="api/table.php?type=liveresultater" hx-trigger="load, every 5s"></div>

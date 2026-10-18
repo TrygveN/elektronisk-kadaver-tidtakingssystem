@@ -124,7 +124,12 @@ function read_runners_from_csv(){
     $csv_runners = file_get_contents("$documentRoot/data/db.csv");
     $csv_runners = str_getcsv($csv_runners, "\n");
     for ($i = 1; $i < count($csv_runners); $i++) {
-        $line = str_getcsv($csv_runners[$i], ";");
+        // Nettskjema-API-et HTML-enkoder tekstfelta (t.d. Minikadaver&#39;n),
+        // så vi dekoder før verdiane blir brukt.
+        $line = array_map(
+            fn($value) => html_entity_decode($value, ENT_QUOTES | ENT_HTML5, "UTF-8"),
+            str_getcsv($csv_runners[$i], ";")
+        );
         array_push($runners, new Runner($line[0], $line[2], $line[5], $line[6], $line[3], $line[4], $line[7], $i));
     }
 
