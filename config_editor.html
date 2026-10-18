@@ -45,12 +45,6 @@
   if (xmlHttpReq.status != 200){
       window.location.href = "/login.html";
   }
-  document.getElementById('password').value = localStorage.getItem("passord");
-
-  xmlHttpReq.open("GET", "/api/config.php", false);
-  xmlHttpReq.send();
-  document.getElementById('start_time').value = xmlHttpReq.response.split('+')[0]
-  console.log(xmlHttpReq.response)
 
 </script>
 <script src="/lib/htmx.min.js"></script>

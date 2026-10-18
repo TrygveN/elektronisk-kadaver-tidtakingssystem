@@ -18,8 +18,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 $time_limit = 240;
 
 if ($method == "GET") {
-    parse_str($_SERVER['QUERY_STRING'], $query);
-    $control = $query['matpost'];
+    parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
+    $control = $query['matpost'] ?? -1;
     
     $runners = read_runners_from_csv();
     usort($runners, "cmp");

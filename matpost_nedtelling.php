@@ -57,8 +57,8 @@
   </menu>
 </nav>
 <?php
-parse_str($_SERVER['QUERY_STRING'], $query);
-$control = $query['matpost'];
+parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
+$control = $query['matpost'] ?? 0;
 echo("<div hx-get='/api/countdown.php?matpost=$control' hx-trigger='load, every 1s' hx-swap='morph:innerHTML'></div>");
 ?>
 <script src="/lib/htmx.min.js"></script>

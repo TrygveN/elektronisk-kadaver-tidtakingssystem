@@ -4,9 +4,9 @@ include("$documentRoot/import_runners.php");
 include("$documentRoot/data/hash.php");
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method == "GET") {
-    parse_str($_SERVER['QUERY_STRING'], $query);
-    $course = $query['course'];
-    $password = getallheaders()['Password'];
+    parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
+    $course = $query['course'] ?? "";
+    $password = getallheaders()['Password'] ?? "";
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
     } else {

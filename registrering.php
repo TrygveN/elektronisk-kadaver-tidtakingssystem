@@ -83,50 +83,41 @@
 </div>
 <table id="runners"></table>
 <script>
-// Hvilken matpost vi er på:
-var control = location.search[1];
-
 function get_control() {
-    try {
-      return document.querySelector('input[name="post"]:checked').value;
-    }
-    catch (error) {
-      return 0;
-    }
+    const checked = document.querySelector('input[name="post"]:checked');
+    return checked ? checked.value : 0;
 }
 
 function register_runner(id) {
-    control = get_control();
+    const control = get_control();
     if (control == 0) {
       console.error("Ingen post valgt");
       alert("Velg en post!");
       return 0;
     }
-    let formData = new FormData();
-    formData.append(name= 'password', localStorage.getItem("passord"))
-    formData.append(name= 'control', value=control);
-    formData.append(name= 'id', value=id);
-    time = new Date(Date.now()).toISOString().split('.')[0]+"Z"
-    formData.append('time', time);
-    response = fetch("api/passing.php", {
+    const formData = new FormData();
+    formData.append('password', localStorage.getItem("passord"));
+    formData.append('control', control);
+    formData.append('id', id);
+    formData.append('time', new Date(Date.now()).toISOString().split('.')[0] + "Z");
+    fetch("api/passing.php", {
         method: "POST",
         body: formData,
     })
     .then(response => {
       if (response.status == 401) {
-      alert("Feil passord!")
-    }})
-    .then((response) => update());
+        alert("Feil passord!");
+      }
+      update();
+    });
     document.getElementById("search").focus();
-    
 };
 
 function update() {
         const table = document.getElementById("runners");
-        control = get_control();
-        filter = document.getElementById("search").value;
-        let request = new Request(`api/table.php?type=registrering&control=`+control+`&filter=`+filter);
-        fetch(request)
+        const control = get_control();
+        const filter = document.getElementById("search").value;
+        fetch(`api/table.php?type=registrering&control=${control}&filter=${encodeURIComponent(filter)}`)
         .then((response) => response.text())
         .then((text) => {table.innerHTML = text;})
     }
@@ -140,7 +131,6 @@ function update() {
   if (xmlHttpReq.status != 200){
       window.location.href = "/login.html";
   }
-  document.getElementById('password').value = localStorage.getItem("passord");
 
 </script>
 </body>

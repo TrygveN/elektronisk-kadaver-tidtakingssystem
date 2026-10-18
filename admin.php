@@ -73,10 +73,6 @@ include("api/statistics.php");
 <div class='flex' hx-get="api/table.php?type=liveresultater" hx-trigger="load, every 5s"></div>
 <h2>Minikadaver'n</h2>
 <div class='flex' hx-get="api/table.php?type=minikadavern" hx-trigger="load, every 15s"></div>
-<?php
-include("api/table.php");
-//liveresult_table($runners);
-?>
 <script>
   function log_out(){
     localStorage.removeItem("navn");

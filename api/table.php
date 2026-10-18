@@ -25,24 +25,25 @@ if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
 require_once("$documentRoot/import_runners.php");
 
 function registration_table($runners) {
-    parse_str($_SERVER['QUERY_STRING'], $query);
-    $matpost = $query["control"];
+    parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
+    $matpost = (int) ($query["control"] ?? 0);
+    $filter = $query["filter"] ?? "";
     $runners_filtered = [];
-    if ($query["filter"]) {
+    if ($filter !== "") {
         for ($i = 0; $i < count($runners); $i++) {
-            if (filter_runners($runners[$i], $query["filter"])) {
+            if (filter_runners($runners[$i], $filter)) {
                 array_push($runners_filtered, $runners[$i]);
             }
         }
         $runners = $runners_filtered;
     }
     if (count($runners) == 0) {
-        $runner_id = $query["filter"];
+        $runner_id = (int) $filter;
         $response = "<div class=\"flash default\">Fant ingen løper med dette startnummeret. Registrer likevell? <button onclick=\"register_runner($runner_id)\">Registrer startnummer $runner_id ✅️</button></div>";
         echo($response);
     } else {
 
-        
+        $split_index = $matpost - 1;
 
         echo("  <thead><tr>
         <th>#</th>
@@ -53,30 +54,30 @@ function registration_table($runners) {
         <tbody>");
         for ($i = 0; $i < count($runners); $i++) {
             $runner = $runners[$i];
-            
+            $id = (int) $runner->id;
+            $name = esc($runner->name);
+
             // Klokkeslett for denne posten
-            if ($runner->splits[$matpost-1] != false) {
-                $tid_passering = $GLOBALS['start_time']->diff($runner->splits[$matpost-1])->format('%H:%I:%S');
+            $tid_passering = "";
+            if (isset($runner->splits[$split_index]) && $runner->splits[$split_index] != false) {
+                $tid_passering = $GLOBALS['start_time']->diff($runner->splits[$split_index])->format('%H:%I:%S');
             }
-            else {
-                $tid_passering = "";
-            }
-            
-            if ($runner->get_control() == $matpost-1) {
+
+            if ($runner->get_control() == $split_index) {
                 // Løperen har vært på denne matposten og vi farger raden grønn
-                $button = "<button onclick=\"register_runner($runner->id)\">☑️</button>";
+                $button = "<button onclick=\"register_runner($id)\">☑️</button>";
                 $cssclass = "class=\"bg-success\"";
             }
-            elseif ($runner->get_control() > $matpost-1) {
-                // Løperen har vært på denne matposten og vi farger raden grønn
-                $button = "<button onclick=\"register_runner($runner->id)\">☑️</button>";
+            elseif ($runner->get_control() > $split_index) {
+                // Løperen har passert ein seinare post, farger raden lilla
+                $button = "<button onclick=\"register_runner($id)\">☑️</button>";
                 $cssclass = "class=\"bg-active\"";
             }
             else {
-                $button = "<button onclick=\"register_runner($runner->id)\">✅️</button>";
+                $button = "<button onclick=\"register_runner($id)\">✅️</button>";
                 $cssclass = "";
             }
-            echo ("<tr $cssclass><td>$runner->id</td><td>$runner->name</td><td>$tid_passering</td><td>$button</td></tr>\n");
+            echo ("<tr $cssclass><td>$id</td><td>$name</td><td>$tid_passering</td><td>$button</td></tr>\n");
         }
         echo("</tbody>");
     }
@@ -110,9 +111,9 @@ function participants_table($runners) {
     <tbody>");
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
-        echo ("<tr><td>$runner->id</td><td>$runner->name</td><td>$runner->club</td><td>$runner->course</td></tr>\n");
+        echo ("<tr><td>" . (int) $runner->id . "</td><td>" . esc($runner->name) . "</td><td>" . esc($runner->club) . "</td><td>" . esc($runner->course) . "</td></tr>\n");
     }
-    echo("<table><tbody>");
+    echo("</tbody></table>");
 }
 function liveresult_table($runners) {
     usort($runners, "cmp");
@@ -168,7 +169,7 @@ function liveresult_table($runners) {
         if ($runner->course == "Kadaverløpet") {
             $runner_number = $kadaver_num .".";
             if ($runner->get_control() == -1){$runner_number = "";};
-            $kadaver_table .= "<tr id='$runner->id'><td>". $runner_number ."</td><td>$runner->name</td>$matposter<td><b>$tid_maal</b></td><td>$tid_etter</td>$sprekk</tr>\n";
+            $kadaver_table .= "<tr id='" . (int) $runner->id . "'><td>". $runner_number ."</td><td>" . esc($runner->name) . "</td>$matposter<td><b>$tid_maal</b></td><td>$tid_etter</td>$sprekk</tr>\n";
         }
     }
     $kadaver_table .= "</tbody></table>\n";
@@ -196,7 +197,7 @@ function minikadadvern_table($runners) {
 		    $mini_num++;
             $runner_number = $mini_num . ".";
             if ($runner->get_control() != 2){$runner_number = "";};
-            $minikadaver_table .= "<tr><td>". "$runner_number" ."</td><td>$runner->name</td><td>$tid_maal</td></tr>\n";
+            $minikadaver_table .= "<tr><td>". "$runner_number" ."</td><td>" . esc($runner->name) . "</td><td>$tid_maal</td></tr>\n";
         }
     }
     $minikadaver_table .= "</tbody></table>";
@@ -207,17 +208,18 @@ function minikadadvern_table($runners) {
 $runners = read_runners_from_csv();
 
 if (!isset($query)){
-    parse_str($_SERVER['QUERY_STRING'], $query);
-    if ($query["type"] == "registrering"){
+    parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
+    $type = $query["type"] ?? "";
+    if ($type == "registrering"){
         registration_table($runners);
     }
-    elseif ($query["type"] == "paameldte") {
+    elseif ($type == "paameldte") {
         participants_table($runners);
     }
-    elseif ($query["type"] == "liveresultater") {
+    elseif ($type == "liveresultater") {
         liveresult_table($runners);
     }
-    elseif ($query["type"] == "minikadavern") {
+    elseif ($type == "minikadavern") {
         minikadadvern_table($runners);
     }
 }
