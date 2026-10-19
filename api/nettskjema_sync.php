@@ -214,3 +214,6 @@ if ($new_count > 0) {
     }
     echo("</ul></div>");
 }
+else {
+    echo("<div class='flash accent'><b>Ingen nye løpere siden sist synkronisering</b><ul>");
+}

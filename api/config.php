@@ -22,7 +22,7 @@ $config = parse_ini_file("$documentRoot/data/config.ini");
 
 include("$documentRoot/data/hash.php");
 $method = $_SERVER['REQUEST_METHOD'];
-if ($method == "POST") {
+if ($method === "POST") {
     $start_time = $_POST['start_time'] ?? "";
     $start_time_mini = $_POST['mini_time'] ?? "";
 
@@ -40,14 +40,17 @@ if ($method == "POST") {
         $file = "$documentRoot/data/config.ini";
         $config["start_date"] = $start_time . "+01";
         $config["start_date_mini"] = $start_time_mini . "+01";
+        $config["vis_startnummer"] = isset($_POST["vis_startnummer"]) ? "true" : "false";
         write_ini_file($config, $file);
         header("HX-Replace-Url: false");
         echo("Starttida er oppdatert til: $start_time for Kadaver'n <br> $start_time_mini for Minikadaer'n");
     }
 }
-elseif ($method == "GET"){
+elseif ($method === "GET") {
     $start_kadaver = htmlspecialchars(explode("+", $config["start_date"] ?? "")[0], ENT_QUOTES);
     $start_mini = htmlspecialchars(explode("+", $config["start_date_mini"] ?? "")[0], ENT_QUOTES);
+    $vis = $config["vis_startnummer"] ?? "1";
+    $vis_checked = in_array($vis, ["", "0", "false", "off", "no"], true) ? "" : "checked";
     $response = "
       <form action='/api/config.php' method='POST' hx-boost='true' hx-target='#updated' hx-swap='show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
     <label>
@@ -58,11 +61,19 @@ elseif ($method == "GET"){
       Starttid Minikadaver'n
         <input type='datetime-local' id='mini_time' name='mini_time' step='1' value='$start_mini'>
         </label>
+        <label>
+      <input type='checkbox' id='vis_startnummer' name='vis_startnummer' value='true' $vis_checked>
+      Vis startnummer i påmeldtlista
+    </label>
         <button type='submit'>Oppdater</button>
     </form>
     <div id='updated'></div>
     ";
     echo($response);
+}
+else {
+    http_response_code(405);
+    header("Allow: GET, POST");
 }
 
 
