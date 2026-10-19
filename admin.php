@@ -42,6 +42,7 @@
   </menu>
 </nav>
   <button class="danger" onclick="log_out()">Logg ut</button>
+  <button class="accent" onclick="export_results()">📄 Eksporter resultater (HTML)</button>
 <div class='flex wrap' hx-get="/api/statistics.php" hx-trigger="every 5s">
 <?php
 include("api/statistics.php");
@@ -78,6 +79,28 @@ include("api/statistics.php");
     localStorage.removeItem("navn");
     localStorage.removeItem("passord");
     window.location.href = "/login.html";
+  }
+
+  function export_results(){
+    fetch("/api/export.php", { headers: { Password: localStorage.getItem("passord") } })
+      .then(response => {
+        if (response.status === 401) {
+          alert("Feil passord!");
+          return null;
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "resultater-kadaver.html";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
   }
 
   let xmlHttpReq = new XMLHttpRequest();

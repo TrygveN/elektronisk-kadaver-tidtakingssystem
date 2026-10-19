@@ -78,10 +78,43 @@
   </fieldset>
 
 <button onmousedown="update()">Oppdater tabell</button>
+<button type="button" class="accent" onclick="open_manual_dialog()">🕐 Manuell tid</button>
 <input id="search" type="number" class="form-control"  onkeyup="update()"  placeholder="Søk etter startnummer">
 <br>
 </div>
 <table id="runners"></table>
+
+<dialog id="manual-dialog">
+  <header>
+    <h2>Manuell registrering</h2>
+  </header>
+  <form id="manual-form">
+    <label>
+      Startnummer
+      <input type="number" name="id" min="1" required>
+    </label>
+    <label>
+      Post
+      <select name="control" required>
+        <option value="1">1. matpost</option>
+        <option value="2">2. matpost</option>
+        <option value="3">Mål</option>
+      </select>
+    </label>
+    <label>
+      Tidspunkt
+      <input type="datetime-local" name="time" step="1" required>
+    </label>
+    <output id="manual-status" class="flash default" style="display: none;"></output>
+    <button type="submit" class="success">Lagre passering</button>
+  </form>
+  <footer>
+    <form method="dialog">
+      <button type="submit" class="default">Lukk</button>
+    </form>
+  </footer>
+</dialog>
+
 <script>
 function get_control() {
     const checked = document.querySelector('input[name="post"]:checked');
@@ -121,6 +154,56 @@ function update() {
         .then((response) => response.text())
         .then((text) => {table.innerHTML = text;})
     }
+
+function local_datetime_value(date) {
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+        + `T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+function open_manual_dialog() {
+    const dialog = document.getElementById("manual-dialog");
+    const time = dialog.querySelector('input[name="time"]');
+    if (!time.value) {
+        time.value = local_datetime_value(new Date());
+    }
+    const status = document.getElementById("manual-status");
+    status.style.display = "none";
+    status.textContent = "";
+    dialog.showModal();
+}
+
+document.getElementById("manual-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const status = document.getElementById("manual-status");
+    const when = new Date(form.elements["time"].value);
+    if (isNaN(when.getTime())) {
+        status.className = "flash danger";
+        status.style.display = "";
+        status.textContent = "Ugyldig tidspunkt.";
+        return;
+    }
+    const formData = new FormData();
+    formData.append("password", localStorage.getItem("passord"));
+    formData.append("control", form.elements["control"].value);
+    formData.append("id", form.elements["id"].value);
+    formData.append("time", when.toISOString().split(".")[0] + "Z");
+    fetch("api/passing.php", { method: "POST", body: formData })
+        .then(async (response) => {
+            if (response.status === 200) {
+                document.getElementById("manual-dialog").close();
+                form.reset();
+                update();
+            } else {
+                status.className = "flash danger";
+                status.style.display = "";
+                status.textContent = response.status === 401
+                    ? "Feil passord!"
+                    : (await response.text() || "Kunne ikkje lagre passering.");
+            }
+        });
+});
 
 
   // Sjekk om brukeren er logga inn. hvis ikke hiv de ut til innloggingskjermen
