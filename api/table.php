@@ -101,17 +101,26 @@ function participants_table($runners) {
     <div class=\"flash accent\">$kadaverløpere påmeldt Kadaverløpet</div><div class=\"flash accent\">$minikadaverløpere påmeldte i Minikadaver'n</div>
     </div>");
 
+    // vis_startnummer = false/0/"" skjuler startnummer-kolonna.
+    $vis_startnummer = !in_array($GLOBALS['config']['vis_startnummer'] ?? "1", ["", "0", "false", "off", "no"], true);
+
     echo("<table><thead>
-        <tr>
-        <th>S.nr</th>
-        <th>Navn</th>
+        <tr>");
+    if ($vis_startnummer) {
+        echo("<th>S.nr</th>");
+    }
+    echo("<th>Navn</th>
         <th>Klubb/Forening</th>
         <th>Variant</th>
     </tr></thead>
     <tbody>");
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
-        echo ("<tr><td>" . (int) $runner->id . "</td><td>" . esc($runner->name) . "</td><td>" . esc($runner->club) . "</td><td>" . esc($runner->course) . "</td></tr>\n");
+        echo("<tr>");
+        if ($vis_startnummer) {
+            echo("<td>" . (int) $runner->id . "</td>");
+        }
+        echo("<td>" . esc($runner->name) . "</td><td>" . esc($runner->club) . "</td><td>" . esc($runner->course) . "</td></tr>\n");
     }
     echo("</tbody></table>");
 }
