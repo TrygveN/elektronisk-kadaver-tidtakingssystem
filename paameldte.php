@@ -1,3 +1,10 @@
+<?php
+// År og oppdateringsdato hentast frå når løperbasen (db.csv) sist vart endra.
+$db_file = $_SERVER['DOCUMENT_ROOT'] . "/data/db.csv";
+$db_updated = is_readable($db_file) ? filemtime($db_file) : time();
+$year = date("Y", $db_updated);
+$updated = date("d.m.y", $db_updated);
+?>
 <!DOCTYPE html>
 <html lang="no">
 <head>
@@ -17,9 +24,9 @@
 <body>
 <div class="flex align-center">
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
-<h1>Påmeldte Kadaverløpet 2025</h1>
+<h1>Påmeldte Kadaverløpet <?= htmlspecialchars($year) ?></h1>
 </div>
-<h2>Oppdatert 28.10.25</h2>
+<h2>Oppdatert <?= htmlspecialchars($updated) ?></h2>
 <?php
 $query = ["type"=>"paameldte"];
 include("api/table.php");
