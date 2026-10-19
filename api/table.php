@@ -86,43 +86,52 @@ function registration_table($runners) {
 function participants_table($runners) {
     usort($runners, "cmp_course");
 
-    $kadaverløpere = 0;
-    $minikadaverløpere = 0;
-    for ($i = 0; $i < count($runners); $i++) {
-        if ($runners[$i]->course == "Kadaverløpet") {
-            $kadaverløpere++;
-        }
-        elseif ($runners[$i]->course == "Minikadaver'n") {
-            $minikadaverløpere++;
+    // Del løparane i éi gruppe per løype.
+    $groups = [
+        "Kadaverløpet" => [],
+        "Minikadaver'n" => [],
+    ];
+    foreach ($runners as $runner) {
+        if (isset($groups[$runner->course])) {
+            $groups[$runner->course][] = $runner;
         }
     }
-
-    echo("<div class=\"flex space-evenly\">
-    <div class=\"flash accent\">$kadaverløpere påmeldt Kadaverløpet</div><div class=\"flash accent\">$minikadaverløpere påmeldte i Minikadaver'n</div>
-    </div>");
 
     // vis_startnummer = false/0/"" skjuler startnummer-kolonna.
     $vis_startnummer = !in_array($GLOBALS['config']['vis_startnummer'] ?? "1", ["", "0", "false", "off", "no"], true);
 
-    echo("<table><thead>
-        <tr>");
-    if ($vis_startnummer) {
-        echo("<th class=\"col-start\">S.nr</th>");
-    }
-    echo("<th class=\"col-name\">Navn</th>
-        <th class=\"col-club\">Klubb/Forening</th>
-        <th class=\"col-course\">Variant</th>
-    </tr></thead>
-    <tbody>");
-    for ($i = 0; $i < count($runners); $i++) {
-        $runner = $runners[$i];
-        echo("<tr>");
-        if ($vis_startnummer) {
-            echo("<td class=\"col-start\">" . (int) $runner->id . "</td>");
+    foreach ($groups as $course => $course_runners) {
+        $count = count($course_runners);
+        $count_label = $count === 1 ? "1 påmeldt" : "$count påmeldte";
+
+        echo("<section>
+        <h2>" . esc($course) . " <small class=\"muted\">$count_label</small></h2>");
+
+        if ($count === 0) {
+            echo("<p class=\"muted\">Ingen påmeldte.</p>
+        </section>");
+            continue;
         }
-        echo("<td class=\"col-name\">" . esc($runner->name) . "</td><td class=\"col-club\">" . esc($runner->club) . "</td><td class=\"col-course\">" . esc($runner->course) . "</td></tr>\n");
+
+        echo("<table><thead>
+            <tr>");
+        if ($vis_startnummer) {
+            echo("<th class=\"col-start\">S.nr</th>");
+        }
+        echo("<th class=\"col-name\">Navn</th>
+            <th class=\"col-club\">Klubb/Forening</th>
+        </tr></thead>
+        <tbody>");
+        foreach ($course_runners as $runner) {
+            echo("<tr>");
+            if ($vis_startnummer) {
+                echo("<td class=\"col-start\">" . (int) $runner->id . "</td>");
+            }
+            echo("<td class=\"col-name\">" . esc($runner->name) . "</td><td class=\"col-club\">" . esc($runner->club) . "</td></tr>\n");
+        }
+        echo("</tbody></table>
+        </section>");
     }
-    echo("</tbody></table>");
 }
 function liveresult_table($runners) {
     usort($runners, "cmp");

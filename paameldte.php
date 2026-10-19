@@ -40,14 +40,6 @@ $updated = date("d.m.y", $db_updated);
                 font-size: 1.375rem;
                 hyphens: manual;
             }
-            .flex.space-evenly {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-            .flash {
-                padding: 0.5rem 0.75rem;
-                margin: 0.25rem 0;
-            }
             table {
                 display: table;
                 table-layout: fixed;
@@ -58,12 +50,11 @@ $updated = date("d.m.y", $db_updated);
                 padding: 0.25rem;
                 overflow-wrap: anywhere;
             }
-            .col-start { width: 17.5%; }
-            .col-name { width: 27.5%; }
-            .col-club { width: 27.5%; }
-            .col-course { width: 27.5%; }
-            /* Startnummer og variant er korte og skal ikkje brytast over fleire linjer. */
-            .col-start, .col-course {
+            .col-start { width: 17%; }
+            .col-name { width: 41.5%; }
+            .col-club { width: 41.5%; }
+            /* Startnummer er kort og skal ikkje brytast over fleire linjer. */
+            .col-start {
                 font-size: 0.85em;
                 white-space: nowrap;
             }
