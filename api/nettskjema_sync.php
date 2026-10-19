@@ -140,38 +140,54 @@ if (count($report_rows) < 1) {
 
 $header = array_shift($report_rows);
 
+// Eksisterende løpere i db.csv, brukt for å finne nye og for manuell-merge.
+$db_path = "$documentRoot/data/db.csv";
+$existing_rows = [];
+$existing_keys = [];
+if (is_readable($db_path)) {
+    $existing_rows = nettskjema_split_rows(file_get_contents($db_path));
+    array_shift($existing_rows);
+    foreach ($existing_rows as $raw) {
+        $fields = str_getcsv($raw, ";");
+        $existing_keys[nettskjema_normalize_name($fields[2] ?? "")] = true;
+    }
+}
+
 // API-rader indeksert på navn (duplikate innsendinger kollapses, første vinner).
 $merged = [];
+$new_runners = [];
 foreach ($report_rows as $raw) {
     $fields = str_getcsv($raw, ";");
     $name = $fields[2] ?? "";
     $key = nettskjema_normalize_name($name);
     if (!array_key_exists($key, $merged)) {
         $merged[$key] = $raw;
+        if (!isset($existing_keys[$key])) {
+            $new_runners[] = [
+                "id" => $fields[0] ?? "",
+                "name" => html_entity_decode($name, ENT_QUOTES | ENT_HTML5, "UTF-8"),
+            ];
+        }
     }
 }
 $api_count = count($merged);
 
 // Manuelle rader fra eksisterende db.csv (tom $created-kolonne). De vinner ved kollisjon.
 $merge_count = 0;
-$db_path = "$documentRoot/data/db.csv";
-if (is_readable($db_path)) {
-    $existing_rows = nettskjema_split_rows(file_get_contents($db_path));
-    array_shift($existing_rows);
-    foreach ($existing_rows as $raw) {
-        $fields = str_getcsv($raw, ";");
-        if (count($fields) < 2 || trim($fields[1]) !== "") {
-            continue;
-        }
-        $key = nettskjema_normalize_name($fields[2] ?? "");
-        if (array_key_exists($key, $merged)) {
-            $merge_count++;
-        }
-        $merged[$key] = $raw;
+foreach ($existing_rows as $raw) {
+    $fields = str_getcsv($raw, ";");
+    if (count($fields) < 2 || trim($fields[1]) !== "") {
+        continue;
     }
+    $key = nettskjema_normalize_name($fields[2] ?? "");
+    if (array_key_exists($key, $merged)) {
+        $merge_count++;
+    }
+    $merged[$key] = $raw;
 }
 
 $manual_count = count($merged) - $api_count;
+$new_count = count($new_runners);
 
 $content = $header . "\n" . implode("\n", array_values($merged)) . "\n";
 $tmp_path = "$documentRoot/data/db.csv.tmp";
@@ -187,4 +203,14 @@ header("HX-Replace-Url: false");
 echo("<span class='bg-success'>Synk fullført: $api_count løpere fra Nettskjema"
     . ($merge_count > 0 ? ", $merge_count manuelle erstattet" : "")
     . ($manual_count > 0 ? ", $manual_count manuelle beholdt" : "")
+    . ($new_count > 0 ? ", $new_count nye" : "")
     . ".</span>");
+
+if ($new_count > 0) {
+    echo("<div class='flash accent'><b>$new_count nye løpere:</b><ul>");
+    foreach ($new_runners as $runner) {
+        echo("<li>" . htmlspecialchars($runner["id"], ENT_QUOTES, "UTF-8") . " "
+            . htmlspecialchars($runner["name"], ENT_QUOTES, "UTF-8") . "</li>");
+    }
+    echo("</ul></div>");
+}
