@@ -107,20 +107,20 @@ function participants_table($runners) {
     echo("<table><thead>
         <tr>");
     if ($vis_startnummer) {
-        echo("<th>S.nr</th>");
+        echo("<th class=\"col-start\">S.nr</th>");
     }
-    echo("<th>Navn</th>
-        <th>Klubb/Forening</th>
-        <th>Variant</th>
+    echo("<th class=\"col-name\">Navn</th>
+        <th class=\"col-club\">Klubb/Forening</th>
+        <th class=\"col-course\">Variant</th>
     </tr></thead>
     <tbody>");
     for ($i = 0; $i < count($runners); $i++) {
         $runner = $runners[$i];
         echo("<tr>");
         if ($vis_startnummer) {
-            echo("<td>" . (int) $runner->id . "</td>");
+            echo("<td class=\"col-start\">" . (int) $runner->id . "</td>");
         }
-        echo("<td>" . esc($runner->name) . "</td><td>" . esc($runner->club) . "</td><td>" . esc($runner->course) . "</td></tr>\n");
+        echo("<td class=\"col-name\">" . esc($runner->name) . "</td><td class=\"col-club\">" . esc($runner->club) . "</td><td class=\"col-course\">" . esc($runner->course) . "</td></tr>\n");
     }
     echo("</tbody></table>");
 }

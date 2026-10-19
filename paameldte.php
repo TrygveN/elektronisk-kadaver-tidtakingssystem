@@ -19,6 +19,55 @@ $updated = date("d.m.y", $db_updated);
                 filter: invert(1);
             }
         }
+        @media (max-width: 544px) {
+            :root {
+                --page-pad: 0.5rem;
+            }
+            body {
+                padding-inline: var(--page-pad);
+                font-size: 16px;
+            }
+            /* matcha forskyver footer med -1.5rem, hald han i takt med sidepadingen. */
+            body > footer:last-child {
+                margin-inline: calc(-1 * var(--page-pad));
+                padding-inline: var(--page-pad);
+            }
+            figure {
+                margin: 0;
+                flex-shrink: 0;
+            }
+            h1 {
+                font-size: 1.375rem;
+                hyphens: manual;
+            }
+            .flex.space-evenly {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .flash {
+                padding: 0.5rem 0.75rem;
+                margin: 0.25rem 0;
+            }
+            table {
+                display: table;
+                table-layout: fixed;
+                width: 100%;
+                font-size: clamp(0.7rem, 3.5vw, 1rem);
+            }
+            td, th {
+                padding: 0.25rem;
+                overflow-wrap: anywhere;
+            }
+            .col-start { width: 17.5%; }
+            .col-name { width: 27.5%; }
+            .col-club { width: 27.5%; }
+            .col-course { width: 27.5%; }
+            /* Startnummer og variant er korte og skal ikkje brytast over fleire linjer. */
+            .col-start, .col-course {
+                font-size: 0.85em;
+                white-space: nowrap;
+            }
+        }
     </style>
 </head>
 <body>
