@@ -28,21 +28,20 @@
 	}
     </style>
 </head>
-<body hx-ext="morph">
+<body>
 <div class="flex align-center">
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
 <h1>Løpende resultater Kadaverløpet 2025</h1>
 </div>
 <h2>Vi tar forbehold om feil. Dette er ikke offisielle resultater</h2>
-<div id='tabellkonteiner' class='flex' hx-get="api/table.php?type=liveresultater" hx-swap="morph" hx-trigger="load, every 5s"></div>
+<div id='tabellkonteiner' class='flex' hx-get="api/table.php?type=liveresultater" hx-swap="innerMorph" hx-trigger="load, every 5s"></div>
 <h2>Minikadaver'n</h2>
-<div class='flex' hx-get="api/table.php?type=minikadavern" hx-swap="morph" hx-trigger="load, every 15s"></div>
+<div class='flex' hx-get="api/table.php?type=minikadavern" hx-swap="innerMorph" hx-trigger="load, every 15s"></div>
 
 <footer>
 <h3>Laget av Trygve. <a href="https://git.willy.club/Trygve/elektronisk-kadaver-tidtakingssystem">Kildekode</a></h3>
 <figure><img src="img/NMBUI.webp" alt="" width="200px"></figure>
 </footer>
 <script src="/lib/htmx.min.js"></script>
-<script src="https://unpkg.com/idiomorph@0.7.4/dist/idiomorph-ext.min.js" integrity="sha384-SsScJKzATF/w6suEEdLbgYGsYFLzeKfOA6PY+/C5ZPxOSuA+ARquqtz/BZz9JWU8" crossorigin="anonymous"></script>
 </body>
 </html>

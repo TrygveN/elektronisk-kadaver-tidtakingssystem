@@ -41,7 +41,7 @@
         }
     </style>
 </head>
-<body hx-ext="morph">
+<body>
   <nav class="ui">
   <menu>
     <li class="disabled"><a href="/admin.php">📊 Dashbord</a></li>
@@ -59,9 +59,8 @@
 <?php
 parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
 $control = $query['matpost'] ?? 0;
-echo("<div hx-get='/api/countdown.php?matpost=$control' hx-trigger='load, every 1s' hx-swap='morph:innerHTML'></div>");
+echo("<div hx-get='/api/countdown.php?matpost=$control' hx-trigger='load, every 1s' hx-swap='innerMorph'></div>");
 ?>
 <script src="/lib/htmx.min.js"></script>
-<script src="https://unpkg.com/idiomorph@0.7.4/dist/idiomorph-ext.min.js" integrity="sha384-SsScJKzATF/w6suEEdLbgYGsYFLzeKfOA6PY+/C5ZPxOSuA+ARquqtz/BZz9JWU8" crossorigin="anonymous"></script>
 </body>
 </html>
