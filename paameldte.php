@@ -1,8 +1,12 @@
 <?php
-// År og oppdateringsdato hentast frå når løperbasen (db.csv) sist vart endra.
+// Oppdateringsdato hentast frå når løperbasen (db.csv) sist vart endra,
+// medan årstalet kjem frå starttida i config.ini.
 $db_file = $_SERVER['DOCUMENT_ROOT'] . "/data/db.csv";
+$config_file = $_SERVER['DOCUMENT_ROOT'] . "/data/config.ini";
 $db_updated = is_readable($db_file) ? filemtime($db_file) : time();
-$year = date("Y", $db_updated);
+$config = is_readable($config_file) ? (parse_ini_file($config_file) ?: []) : [];
+$start_timestamp = strtotime($config["start_date"] ?? "");
+$year = $start_timestamp !== false ? date("Y", $start_timestamp) : date("Y", $db_updated);
 $updated = date("d.m.y", $db_updated);
 ?>
 <!DOCTYPE html>

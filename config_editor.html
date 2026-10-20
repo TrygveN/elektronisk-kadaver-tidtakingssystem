@@ -15,16 +15,12 @@
 <body>
   <nav>
   <menu>
-    <li class="disabled"><a href="/admin.php">📊 Dashbord</a></li>
-    <li class="disabled"><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
-    <li class="disabled"><a href="/db_editor.html">👥 Endre løperbase</a></li>
+    <li><a href="/admin.php">📊 Dashbord</a></li>
+    <li><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
+    <li><a href="/db_editor.html">👥 Endre løperbase</a></li>
     <li class="selected"><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
-    <li class="disabled">⏳️ Nedtelling matpost
-        <menu>
-          <li><a href="/matpost_nedtelling.php?matpost=0">1. mat</a></li>
-          <li><a href="/matpost_nedtelling.php?matpost=1">2. mat</a></li>
-        </menu>
-    </li>
+    <li><a href="/matpost_nedtelling.php?matpost=0">⏳ Nedtelling 1. mat</a></li>
+    <li><a href="/matpost_nedtelling.php?matpost=1">⏳ Nedtelling 2. mat</a></li>
   </menu>
 </nav>
 
@@ -41,7 +37,10 @@
   let xmlHttpReq = new XMLHttpRequest();
   xmlHttpReq.open("POST", "/api/is_authorized.php", false);
   xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
-  xmlHttpReq.send("username=" + localStorage.getItem("navn")+"&"+"password=" + localStorage.getItem("passord"));
+  xmlHttpReq.send(new URLSearchParams({
+    username: localStorage.getItem("navn") ?? "",
+    password: localStorage.getItem("passord") ?? "",
+  }).toString());
   if (xmlHttpReq.status != 200){
       window.location.href = "/login.html";
   }

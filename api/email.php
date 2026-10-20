@@ -11,16 +11,16 @@ if ($method == "GET") {
         http_response_code(response_code: 401);
     } else {
         $runners = read_runners_from_csv();
-        $emails = "";
+        $emails = [];
         for ($i = 0; $i < count($runners); $i++) {
-                $email = $runners[$i]->email;
-                if (!isset($query['course'])){
-                    $emails .= "$email, ";
+                $email = trim($runners[$i]->email);
+                if ($email === "") {
+                    continue;
                 }
-                elseif ($course == $runners[$i]->course) {
-                    $emails .= "$email, ";
+                if (!isset($query['course']) || $course == $runners[$i]->course) {
+                    $emails[] = $email;
                 }
             }
-        echo($emails);
+        echo(implode(", ", $emails));
     }
 }

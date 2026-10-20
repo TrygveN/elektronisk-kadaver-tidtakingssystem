@@ -1,53 +1,73 @@
 <!doctype html>
-<html lang="en">
+<html lang="no">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login (GET)</title>
-  <!-- css/matcha.css -->
+  <title>Logg inn – EKT</title>
   <link rel="stylesheet" href="css/matcha.css">
+</head>
+<body>
   <main>
-    <h2>Login</h2>
+    <h1>Logg inn</h1>
     <form method="POST" action="/api/is_authorized.php" id="login">
-      <label for="username">Navn</label>
-      <input id="navn" name="username" type="text" required>
+      <label for="navn">Navn</label>
+      <input id="navn" name="username" type="text" autocomplete="username">
 
       <label for="password">Passord</label>
-      <input id="password" name="password" type="password" required>
-      <div class="flash danger" style="display: none;" id="feil">Feil passord</div>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <div class="flash danger" style="display: none;" id="feil" role="alert" aria-live="assertive"></div>
 
-      <button type="submit">Log inn</button>
-      
+      <button type="submit" id="login-button">Logg inn</button>
     </form>
   </main>
-</body>
-</html>
-
 
 <script>
+// Sjekk om brukaren allereie er innlogga.
 let xmlHttpReq = new XMLHttpRequest();
 xmlHttpReq.open("POST", "/api/is_authorized.php", false);
-xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
-xmlHttpReq.send("username=" + localStorage.getItem("navn")+"&"+"password=" + localStorage.getItem("passord"));
-if (xmlHttpReq.status == 200){
-    window.location.replace("/admin.php");
+xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+xmlHttpReq.send(new URLSearchParams({
+  username: localStorage.getItem("navn") ?? "",
+  password: localStorage.getItem("passord") ?? "",
+}).toString());
+if (xmlHttpReq.status == 200) {
+  window.location.replace("/admin.php");
 }
 
-document.forms["login"].addEventListener("submit", async (event) => {
+const loginForm = document.forms["login"];
+const loginButton = document.getElementById("login-button");
+const errorBox = document.getElementById("feil");
+
+function show_error(message) {
+  errorBox.textContent = message;
+  errorBox.style.display = "block";
+}
+
+loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const resp = await fetch(event.target.action, {
-    method: "POST",
-    body: new URLSearchParams(new FormData(event.target)),
-  });
-  const status = await resp.status;
-  if (status == 200){
-    localStorage.setItem("navn", document.getElementById('navn').value);
-    localStorage.setItem("passord", document.getElementById('password').value);
-    window.location.replace("/admin.php");
-  }
-  else{
-    document.getElementById('feil').style.display = "block"
+  errorBox.style.display = "none";
+  loginButton.disabled = true;
+  loginButton.textContent = "Logger inn …";
+
+  try {
+    const response = await fetch(event.target.action, {
+      method: "POST",
+      body: new URLSearchParams(new FormData(event.target)),
+    });
+    if (response.status == 200) {
+      localStorage.setItem("navn", document.getElementById("navn").value);
+      localStorage.setItem("passord", document.getElementById("password").value);
+      window.location.replace("/admin.php");
+      return;
+    }
+    show_error("Feil passord. Prøv igjen.");
+  } catch (error) {
+    show_error("Fikk ikke kontakt med serveren. Sjekk nettet og prøv igjen.");
+  } finally {
+    loginButton.disabled = false;
+    loginButton.textContent = "Logg inn";
   }
 });
-localStorage.setItem("name", "Chris");
 </script>
+</body>
+</html>

@@ -34,7 +34,7 @@ if ($method === "POST") {
         http_response_code(response_code: 401);
     } elseif (!$new_time || !$new_time_mini) {
         http_response_code(response_code: 400);
-        echo("Feil datoformat din noldus!!!!!!!11!!! Skriv inn sekund");
+        echo("Ugyldig datoformat. Bruk formatet ÅÅÅÅ-MM-DD TT:MM:SS.");
     } else {
 
         $file = "$documentRoot/data/config.ini";

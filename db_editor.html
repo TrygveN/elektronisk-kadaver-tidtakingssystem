@@ -15,16 +15,12 @@
 <body>
   <nav>
   <menu>
-    <li class="disabled"><a href="/admin.php">📊 Dashbord</a></li>
-    <li class="disabled"><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
+    <li><a href="/admin.php">📊 Dashbord</a></li>
+    <li><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
     <li class="selected"><a href="/db_editor.html">👥 Endre løperbase</a></li>
-    <li class="disabled"><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
-    <li class="disabled">⏳️ Nedtelling matpost
-        <menu>
-          <li><a href="/matpost_nedtelling.php?matpost=0">1. mat</a></li>
-          <li><a href="/matpost_nedtelling.php?matpost=1">2. mat</a></li>
-        </menu>
-    </li>
+    <li><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
+    <li><a href="/matpost_nedtelling.php?matpost=0">⏳ Nedtelling 1. mat</a></li>
+    <li><a href="/matpost_nedtelling.php?matpost=1">⏳ Nedtelling 2. mat</a></li>
   </menu>
 </nav>
   <h2>Legg til løper</h2>
@@ -34,7 +30,7 @@
     <label for="id">Startnummer:
     <input type="text" id="id" name="id" required>
     </label>
-    <label for="navn">Navn:
+    <label for="name">Navn:
     <input type="text" id="name" name="name">
     </label>
     <label for="club">Klubb:
@@ -66,9 +62,6 @@
 </form>
 <div id="runner"></div>
 
-
-</div>
-<div id="updated"></div>
 <script>
   function log_out(){
     localStorage.removeItem("navn");
@@ -80,7 +73,10 @@
   let xmlHttpReq = new XMLHttpRequest();
   xmlHttpReq.open("POST", "/api/is_authorized.php", false);
   xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
-  xmlHttpReq.send("username=" + localStorage.getItem("navn")+"&"+"password=" + localStorage.getItem("passord"));
+  xmlHttpReq.send(new URLSearchParams({
+    username: localStorage.getItem("navn") ?? "",
+    password: localStorage.getItem("passord") ?? "",
+  }).toString());
   if (xmlHttpReq.status != 200){
       window.location.href = "/login.html";
   }

@@ -30,15 +30,11 @@
   <nav>
   <menu>
     <li class="selected"><a href="/admin.php">📊 Dashbord</a></li>
-    <li class="disabled"><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
-    <li class="disabled"><a href="/db_editor.html">👥 Endre løperbase</a></li>
-    <li class="disabled"><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
-    <li class="disabled">⏳️ Nedtelling matpost
-        <menu>
-          <li><a href="/matpost_nedtelling.php?matpost=0">1. mat</a></li>
-          <li><a href="/matpost_nedtelling.php?matpost=1">2. mat</a></li>
-        </menu>
-    </li>
+    <li><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
+    <li><a href="/db_editor.html">👥 Endre løperbase</a></li>
+    <li><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
+    <li><a href="/matpost_nedtelling.php?matpost=0">⏳ Nedtelling 1. mat</a></li>
+    <li><a href="/matpost_nedtelling.php?matpost=1">⏳ Nedtelling 2. mat</a></li>
   </menu>
 </nav>
   <button class="danger" onclick="log_out()">Logg ut</button>
@@ -52,22 +48,27 @@ include("api/statistics.php");
 <form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>
   <label>
     Navn, startnummer eller klubb
-    <input type="text" name="search" id="search">
+    <input type="text" name="search" id="search" autocomplete="off" autofocus>
   </label>
   <button type="submit">Søk</button>
 </form>
 <div id="runner" class="profile-card"></div>
 
-<button hx-get="/api/email.php" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>hent alle eposter</button>
-<button hx-get="/api/email.php?course=Kadaverløpet" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent bare eposter for fullkadavern</button>
-<button hx-get="/api/email.php?course=Minikadaver'n" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent bare eposter for minikadaver'n</button>
+<button hx-get="/api/email.php" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent alle e-poster</button>
+<button hx-get="/api/email.php?course=Kadaverløpet" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent e-poster for Kadaverløpet</button>
+<button hx-get="/api/email.php?course=Minikadaver'n" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent e-poster for Minikadaver'n</button>
+<div class="flex wrap align-center">
+  <button class="default" onclick="copy_emails()">📋 Kopier e-postliste</button>
+  <span id="email-count" class="muted smaller"></span>
+</div>
 <div class="flash default">
-<output id="emails"></output>
+<output id="emails" aria-live="polite"></output>
 </div>
 <h2>Synkroniser løperbase</h2>
-<button hx-get="/api/nettskjema_sync.php" hx-target="#sync-status" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>🔄 Synk fra Nettskjema</button>
+<button id="sync-button" hx-get="/api/nettskjema_sync.php" hx-target="#sync-status" hx-swap="show:none"
+        hx-headers='js:{"Password": localStorage.getItem("passord")}'>🔄 Synk fra Nettskjema</button>
 <div class="flash default">
-<output id="sync-status"></output>
+<output id="sync-status" aria-live="polite"></output>
 </div>
 <h1>Løpende resultater</h1>
 <h2>Kadaverløpet</h2>
@@ -103,10 +104,74 @@ include("api/statistics.php");
       });
   }
 
+  function email_list() {
+    const text = document.getElementById("emails").textContent.trim();
+    return text ? text.split(",").map((email) => email.trim()).filter(Boolean) : [];
+  }
+
+  function update_email_count() {
+    const emails = email_list();
+    document.getElementById("email-count").textContent = emails.length
+      ? `${emails.length} e-postadresser`
+      : "";
+  }
+
+  function fallback_copy(text) {
+    const field = document.createElement("textarea");
+    field.value = text;
+    document.body.appendChild(field);
+    field.select();
+    const copied = document.execCommand("copy");
+    field.remove();
+    return copied;
+  }
+
+  async function copy_emails() {
+    const emails = email_list();
+    if (emails.length === 0) {
+      document.getElementById("email-count").textContent = "Ingen e-poster å kopiere";
+      return;
+    }
+    const text = emails.join(", ");
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      fallback_copy(text);
+    }
+    document.getElementById("email-count").textContent =
+      `${emails.length} e-postadresser kopiert`;
+    setTimeout(update_email_count, 3000);
+  }
+
+  // htmx 4 bruker namespace-aktige hendingsnamn.
+  document.body.addEventListener("htmx:after:swap", (event) => {
+    const element = event.detail && event.detail.elt ? event.detail.elt : event.target;
+    if (element && element.id === "emails") {
+      update_email_count();
+    }
+  });
+
+  // Hindre dobbel synkronisering medan førespurnaden går.
+  document.body.addEventListener("htmx:before:request", (event) => {
+    const element = event.detail && event.detail.elt ? event.detail.elt : event.target;
+    if (element && element.id === "sync-button") {
+      element.disabled = true;
+    }
+  });
+  document.body.addEventListener("htmx:after:request", (event) => {
+    const element = event.detail && event.detail.elt ? event.detail.elt : event.target;
+    if (element && element.id === "sync-button") {
+      element.disabled = false;
+    }
+  });
+
   let xmlHttpReq = new XMLHttpRequest();
   xmlHttpReq.open("POST", "/api/is_authorized.php", false);
   xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
-  xmlHttpReq.send("username=" + localStorage.getItem("navn")+"&"+"password=" + localStorage.getItem("passord"));
+  xmlHttpReq.send(new URLSearchParams({
+    username: localStorage.getItem("navn") ?? "",
+    password: localStorage.getItem("passord") ?? "",
+  }).toString());
   if (xmlHttpReq.status != 200){
       window.location.href = "/login.html";
   }

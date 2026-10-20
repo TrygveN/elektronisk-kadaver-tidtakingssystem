@@ -19,32 +19,63 @@ $time_limit = 240;
 
 if ($method == "GET") {
     parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
-    $control = $query['matpost'] ?? -1;
-    
+    $control = (int) ($query['matpost'] ?? -1);
+
     $runners = read_runners_from_csv();
-    usort($runners, "cmp");
-    $runners = array_reverse($runners);
-    $hourMin = date('H:i:s');
-    $waiting = "$hourMin
-    <h1>Tid igjen på matpost:<h1><div class='flex wrap center'>";
-    $finished = "<h1>Kan løpe videre:<h1><div class='flex wrap center'>";
-    for ($i = 0; $i < count($runners); $i++) {
-        $runner = $runners[$i];
-        if ($runner->get_control() == $control){
-            $time_since_punch = time() - ($runner->splits[$control])->getTimestamp();
+    $now = time();
+    $waiting = [];
+    $finished = [];
 
-            //Løperen har ikke venta 4 minutt:
-            if ($time_since_punch < $time_limit) {
-                $time = format($time_limit - $time_since_punch);
-                $waiting .= "<div class=\"flash attention\">$runner->id $runner->name <span class=\"time\">-$time</span></div>";
-            } elseif ($time_since_punch >= $time_limit && $time_since_punch <900){ //Løperen har venta ferdig 
-                $time = format(time()-$runner->splits[$control]->getTimestamp() - $time_limit) ;
-                $finished .= "<div class=\"flash success\">$runner->id $runner->name <span class=\"time\">+$time</span></div>";
-            }
-            
+    foreach ($runners as $runner) {
+        if ($runner->get_control() != $control) {
+            continue;
+        }
+        $split = $runner->splits[$control] ?? false;
+        if (!($split instanceof DateTime)) {
+            continue;
+        }
 
-            
+        $since_punch = max(0, $now - $split->getTimestamp());
+        if ($since_punch < $time_limit) {
+            $waiting[] = ["runner" => $runner, "remaining" => $time_limit - $since_punch];
+        } elseif ($since_punch < 900) {
+            // Løperen har venta ferdig, men er ikkje meir enn 15 minutt sidan passeringa.
+            $finished[] = ["runner" => $runner, "elapsed" => $since_punch - $time_limit];
         }
     }
-    echo($waiting . "</div>". $finished . "</div>");
+
+    // Kortast ventetid først, og dei som nett har blitt klare først.
+    usort($waiting, fn($a, $b) => $a["remaining"] <=> $b["remaining"]);
+    usort($finished, fn($a, $b) => $a["elapsed"] <=> $b["elapsed"]);
+
+    echo("<p class=\"muted\">Klokka er " . date("H:i:s") . "</p>");
+    echo("<h1>Tid igjen på matpost</h1>");
+    if (count($waiting) === 0) {
+        echo("<p class=\"muted\">Ingen løpere venter akkurat nå.</p>");
+    } else {
+        echo("<div class=\"flex wrap center\">");
+        foreach ($waiting as $item) {
+            $runner = $item["runner"];
+            echo("<div id=\"waiting-" . (int) $runner->id . "\" class=\"flash attention countdown-card\">"
+                . "<span class=\"countdown-name\">" . (int) $runner->id . " " . esc($runner->name) . "</span>"
+                . "<span class=\"time\">−" . format($item["remaining"]) . "</span>"
+                . "</div>");
+        }
+        echo("</div>");
+    }
+
+    echo("<h1>Klar til å løpe</h1>");
+    if (count($finished) === 0) {
+        echo("<p class=\"muted\">Ingen har ventet ferdig ennå.</p>");
+    } else {
+        echo("<div class=\"flex wrap center\">");
+        foreach ($finished as $item) {
+            $runner = $item["runner"];
+            echo("<div id=\"ready-" . (int) $runner->id . "\" class=\"flash success countdown-card ready-card\" data-ready-id=\"" . (int) $runner->id . "\">"
+                . "<span class=\"countdown-name\">" . (int) $runner->id . " " . esc($runner->name) . "</span>"
+                . "<span class=\"time\">+" . format($item["elapsed"]) . "</span>"
+                . "</div>");
+        }
+        echo("</div>");
+    }
 }

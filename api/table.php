@@ -37,50 +37,91 @@ function registration_table($runners) {
         }
         $runners = $runners_filtered;
     }
-    if (count($runners) == 0) {
-        $runner_id = (int) $filter;
-        $response = "<div class=\"flash default\">Fant ingen løper med dette startnummeret. Registrer likevell? <button onclick=\"register_runner($runner_id)\">Registrer startnummer $runner_id ✅️</button></div>";
-        echo($response);
-    } else {
+    $valid_post = in_array($matpost, [1, 2, 3], true);
+    $split_index = $valid_post ? $matpost - 1 : -1;
+    $control_label = $valid_post ? ["1. matpost", "2. matpost", "Mål"][$split_index] : "post";
 
-        $split_index = $matpost - 1;
-
-        echo("  <thead><tr>
+    echo("<thead><tr>
         <th>#</th>
         <th>Navn</th>
         <th>Tid</th>
+        <th>Status</th>
         <th></th>
         </tr></thead>
         <tbody>");
+
+    if (count($runners) == 0) {
+        $runner_id = (int) $filter;
+        $message = $filter === ""
+            ? "Ingen løpere i løperbasen."
+            : "Fant ingen løper med startnummer $runner_id. Registrer likevel?";
+        echo("<tr data-empty=\"1\"><td colspan=\"5\">" . esc($message) . " ");
+        if ($filter !== "") {
+            echo("<button class=\"register-button\" onclick=\"register_runner($runner_id)\">Registrer startnummer $runner_id ✅️</button>");
+        }
+        echo("</td></tr>");
+    } else {
         for ($i = 0; $i < count($runners); $i++) {
             $runner = $runners[$i];
             $id = (int) $runner->id;
             $name = esc($runner->name);
 
-            // Klokkeslett for denne posten
+            // Tid frå start og klokkeslett for denne posten.
             $tid_passering = "";
+            $tid_klokke = "";
             if (isset($runner->splits[$split_index]) && $runner->splits[$split_index] != false) {
-                $tid_passering = $GLOBALS['start_time']->diff($runner->splits[$split_index])->format('%H:%I:%S');
+                $split = $runner->splits[$split_index];
+                $tid_passering = $GLOBALS['start_time']->diff($split)->format('%H:%I:%S');
+                $tid_klokke = (clone $split)->setTimezone($GLOBALS['start_time']->getTimezone())->format('H:i:s');
             }
 
-            if ($runner->get_control() == $split_index) {
-                // Løperen har vært på denne matposten og vi farger raden grønn
-                $button = "<button onclick=\"register_runner($id)\">☑️</button>";
-                $cssclass = "class=\"bg-success\"";
-            }
-            elseif ($runner->get_control() > $split_index) {
-                // Løperen har passert ein seinare post, farger raden lilla
-                $button = "<button onclick=\"register_runner($id)\">☑️</button>";
-                $cssclass = "class=\"bg-active\"";
-            }
-            else {
-                $button = "<button onclick=\"register_runner($id)\">✅️</button>";
+            if (!$valid_post) {
+                $button = "<button class=\"register-button\" disabled>Velg post</button>";
                 $cssclass = "";
+                $status = "<span class=\"muted\">Velg post</span>";
+                $status_text = "Velg post";
+            } elseif ($runner->get_control() == $split_index) {
+                // Løperen har vore på denne posten. Grøn rad + tydeleg tekst.
+                $button = "<button class=\"register-button\" data-time=\"$tid_klokke\" "
+                    . "aria-label=\"Endre passering for startnummer $id\" onclick=\"register_runner($id, this)\">☑️ Endre</button>";
+                $cssclass = "class=\"bg-success\"";
+                $status = "<span class=\"success\">✓ Registrert</span>";
+                $status_text = "✓ Registrert";
+            } elseif ($runner->get_control() > $split_index) {
+                // Løperen har passert ein seinare post. Lilla rad, men passeringa
+                // på denne posten kan framleis endrast.
+                $data_time = $tid_klokke !== "" ? " data-time=\"$tid_klokke\"" : "";
+                $button = "<button class=\"register-button\"$data_time "
+                    . "aria-label=\"Endre passering for startnummer $id\" onclick=\"register_runner($id, this)\">☑️ Endre</button>";
+                $cssclass = "class=\"bg-active\"";
+                $status = "<span class=\"active\">→ Passert senere</span>";
+                $status_text = "→ Passert senere";
+            } else {
+                $button = "<button class=\"register-button\" "
+                    . "aria-label=\"Registrer passering for startnummer $id\" onclick=\"register_runner($id, this)\">✅️ Registrer</button>";
+                $cssclass = "";
+                $status = "<span class=\"muted\">Ikke registrert</span>";
+                $status_text = "Ikke registrert";
             }
-            echo ("<tr $cssclass><td>$id</td><td>$name</td><td>$tid_passering</td><td>$button</td></tr>\n");
+
+            // Kompakt tekst under namnet på mobil, der kolonnene for tid/status er skjulte.
+            $meta_parts = [];
+            if ($tid_klokke !== "") {
+                $meta_parts[] = "Registrert $tid_klokke";
+            }
+            //$meta_parts[] = $status_text;
+            $meta = implode(" · ", $meta_parts);
+
+            $title = $tid_klokke !== "" ? " title=\"Registrert kl. $tid_klokke på $control_label\"" : "";
+            echo("<tr $cssclass><td class=\"id-cell\">$id</td>"
+                . "<td class=\"name-cell\"><span class=\"runner-name\">$name</span>"
+                . "<span class=\"runner-meta\">$meta</span></td>"
+                . "<td class=\"time-cell\"$title>$tid_passering</td>"
+                . "<td class=\"status-cell\">$status</td>"
+                . "<td class=\"action-cell\">$button</td></tr>\n");
         }
-        echo("</tbody>");
     }
+    echo("</tbody>");
 }
 
 function participants_table($runners) {
@@ -144,7 +185,7 @@ function liveresult_table($runners) {
         <th>2. matpost</th>
         <th>Mål</th>
         <th>Etter</th>
-        <th>Sprekkindeks</th>
+        <th><abbr title='Andel av totaltida som gjekk mellom 2. matpost og mål'>Sprekkindeks</abbr></th>
     </tr></thead>
     <tbody>";
        	$kadaver_num = 0;
