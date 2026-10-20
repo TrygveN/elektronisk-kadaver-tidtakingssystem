@@ -66,11 +66,13 @@ $updated = date("d.m.y", $db_updated);
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
 <div>
 <h1>Påmeldte Kadaverløpet <?= htmlspecialchars($year) ?></h1>
-<a href="https://nettskjema.no/a/kadavern26">👉️Meld deg på her!👈️</a>
+<strong>Oppdatert <?= htmlspecialchars($updated) ?></strong>
+<br><a href="https://nettskjema.no/a/kadavern26">👉️Meld deg på her!👈️</a>
 <br><a href="https://kadavern.oj-oj.net/">Les mer om løpet</a>
+
 </div>
 </div>
-<h2>Oppdatert <?= htmlspecialchars($updated) ?></h2>
+
 <?php
 $query = ["type"=>"paameldte"];
 include("api/table.php");
