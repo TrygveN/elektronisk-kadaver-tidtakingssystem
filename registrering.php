@@ -66,12 +66,7 @@
       }
       #runners {
         width: 100%;
-        inline-size: 100%;
         overflow-anchor: none;
-      }
-      /* Hald sida lang nok når søket filtrerer lista ned til éin rad. */
-      .page-tail {
-        height: 40vh;
       }
       #runners .register-button {
         min-width: 7.5rem;
@@ -190,9 +185,6 @@
         .settings {
           padding: 0 .75rem;
         }
-        .page-tail {
-          display: none;
-        }
         /* Når tastaturet er oppe, skjul alt utanom post, søk og treff. */
         body.searching nav,
         body.searching fieldset,
@@ -306,7 +298,6 @@
 </div>
 
 <table id="runners" aria-label="Løpere"></table>
-<div class="page-tail" aria-hidden="true"></div>
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
@@ -379,9 +370,13 @@ function ensure_result_visible(table) {
     if (!row || !bar) {
         return;
     }
-    const visible_top = bar.getBoundingClientRect().bottom;
-    const visible_bottom = window.visualViewport
-        ? window.visualViewport.height
+    const viewport = window.visualViewport;
+    const visible_top = Math.max(
+        bar.getBoundingClientRect().bottom,
+        viewport ? viewport.offsetTop : 0
+    );
+    const visible_bottom = viewport
+        ? viewport.offsetTop + viewport.height
         : window.innerHeight;
     const row_rect = row.getBoundingClientRect();
     if (row_rect.top >= visible_top && row_rect.bottom <= visible_bottom) {
@@ -497,6 +492,14 @@ function show_toast({ kind = "success", title = "", name = "", detail = "" }) {
     }
 }
 
+function show_no_post_toast() {
+    show_toast({
+        kind: "danger",
+        title: "Velg post",
+        detail: "Velg en post før du registrerer.",
+    });
+}
+
 function runner_label(id, name) {
     return name ? `${id} ${name}` : `Startnummer ${id}`;
 }
@@ -568,11 +571,7 @@ async function register_runner(id, button) {
     }
     const control = get_control();
     if (!control) {
-        show_toast({
-            kind: "danger",
-            title: "Velg post",
-            detail: "Velg en post før du registrerer.",
-        });
+        show_no_post_toast();
         return;
     }
 
@@ -585,7 +584,6 @@ async function register_runner(id, button) {
         return;
     }
 
-    const scroll_after_save = searchInput.value.trim() !== "";
     const time = new Date(Date.now()).toISOString().split(".")[0] + "Z";
     const formData = new FormData();
     formData.append("password", localStorage.getItem("passord"));
@@ -647,10 +645,6 @@ async function register_runner(id, button) {
             button.disabled = false;
         }
         searchInput.focus();
-        if (scroll_after_save) {
-            // La fokus og layout få setje seg før vi rullar til post-banneret.
-            setTimeout(scroll_to_post_banner, 0);
-        }
     }
 }
 
@@ -664,11 +658,7 @@ async function register_from_search(event) {
         return;
     }
     if (!get_control()) {
-        show_toast({
-            kind: "danger",
-            title: "Velg post",
-            detail: "Velg en post før du registrerer.",
-        });
+        show_no_post_toast();
         return;
     }
 
@@ -676,13 +666,9 @@ async function register_from_search(event) {
     clearTimeout(searchTimer);
     searchTimer = null;
     await update();
-    const row = Array.from(document.querySelectorAll("#runners tbody tr")).find((tr) => {
-        if (tr.dataset.empty === "1") {
-            return false;
-        }
-        const idCell = tr.querySelector("td");
-        return idCell && Number(idCell.textContent.trim()) === Number(value);
-    });
+    const row = Array.from(document.querySelectorAll("#runners tbody tr")).find(
+        (tr) => Number(tr.querySelector(".id-cell")?.textContent.trim()) === Number(value)
+    );
     if (!row) {
         show_toast({
             kind: "attention",
@@ -705,9 +691,7 @@ function local_datetime_value(date) {
 function open_manual_dialog() {
     const dialog = document.getElementById("manual-dialog");
     const time = dialog.querySelector('input[name="time"]');
-    if (!time.value) {
-        time.value = local_datetime_value(new Date());
-    }
+    time.value = local_datetime_value(new Date());
     const control = dialog.querySelector('select[name="control"]');
     if (get_control()) {
         control.value = get_control();
