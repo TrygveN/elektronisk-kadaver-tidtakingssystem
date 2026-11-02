@@ -104,7 +104,7 @@ if ($method == "GET") {
             $student_blank = $r->is_student == "" ? "selected" : "";
             $response .= "
             <h2>Endre " . (int) $r->id . " " . esc($r->name) . "</h2>
-            <form hx-patch='/api/runner.php' hx-target='#runner' hx-swap='show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
+            <form class='form-grid' hx-patch='/api/runner.php' hx-target='#runner' hx-swap='show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
                 <label>Startnummer<input type='number' name='id' min='0' required value='" . (int) $r->id . "'></label>
                 <label>Navn<input type='text' name='name' required value='" . esc($r->name) . "'></label>
                 <label>Klubb/forening<input type='text' name='club' required value='" . esc($r->club) . "'></label>
@@ -123,10 +123,12 @@ if ($method == "GET") {
                     </select>
                 </label>
                 <input type='hidden' name='line_in_csv' value='" . (int) $r->line_in_csv . "'>
-                <button type='submit'>Lagre endringer</button>
-                <button type='button' class='default' hx-get='/api/runner.php?get=" . (int) $r->id . "'
-                    hx-target='#runner' hx-swap='show:none'
-                    hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>Avbryt</button>
+                <div class='form-actions'>
+                    <button type='submit'>Lagre endringer</button>
+                    <button type='button' class='default' hx-get='/api/runner.php?get=" . (int) $r->id . "'
+                        hx-target='#runner' hx-swap='show:none'
+                        hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>Avbryt</button>
+                </div>
             </form>
             ";
             header("HX-Replace-Url: false");
@@ -149,6 +151,7 @@ if ($method == "GET") {
             echo($response);
         }
         elseif (count($filtered) > 1){
+            $response .= "<div class='runner-list'>";
             for ($i = 0; $i < count($filtered); $i++) {
                 $runner = $filtered[$i];
                 if ($edit == "true") {
@@ -159,6 +162,7 @@ if ($method == "GET") {
                 $response .= "<button class=\"default\" hx-get=\"$url\" hx-target=\"#runner\" hx-swap=\"show:none\" hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>" . (int) $runner->id . " " . esc($runner->name) . "</button>";
                 header("HX-Replace-Url: false");
             }
+            $response .= "</div>";
             echo($response);
         }
         else{
