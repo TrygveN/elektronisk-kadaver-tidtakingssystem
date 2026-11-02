@@ -64,6 +64,8 @@ $updated = date("d.m.y", $db_updated);
             }
         }
     </style>
+    <script data-goatcounter="https://teller.ekt.trygve.net/count"
+        async src="//teller.ekt.trygve.net/count.js"></script>
 </head>
 <body>
 <div class="flex align-center">

@@ -55,6 +55,8 @@ $control_label = $control === 0 ? "1. matpost" : "2. matpost";
         50% { transform: scale(1.04); }
       }
     </style>
+    <script data-goatcounter="https://teller.ekt.trygve.net/count"
+        async src="//teller.ekt.trygve.net/count.js"></script>
 </head>
 <body>
   <nav class="ui">
