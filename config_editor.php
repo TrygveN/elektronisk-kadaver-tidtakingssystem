@@ -15,17 +15,7 @@
         async src="//teller.ekt.trygve.net/count.js"></script>
 </head>
 <body>
-  <nav>
-  <menu>
-    <li><a href="/admin.php">📊 Dashbord</a></li>
-    <li><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
-    <li><a href="/db_editor.html">👥 Løperbase</a></li>
-    <li><a href="/start_og_betaling.php">✅ Start og betaling</a></li>
-    <li class="selected"><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
-    <li><a href="/matpost_nedtelling.php?matpost=0">⏳ Nedtelling 1. mat</a></li>
-    <li><a href="/matpost_nedtelling.php?matpost=1">⏳ Nedtelling 2. mat</a></li>
-  </menu>
-</nav>
+<?php $selected_page = "config"; include(__DIR__ . "/nav.php"); ?>
 
   <h1>Konfigurasjon</h1>
 <div hx-get="/api/config.php" hx-swap="outerHTML" hx-trigger="load"></div>
