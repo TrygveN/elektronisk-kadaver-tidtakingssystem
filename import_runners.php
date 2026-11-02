@@ -9,10 +9,12 @@ class Runner
     public string $email;
     public string $phone;
     public string $is_student;
+    public bool $started;
+    public bool $paid;
     public int $line_in_csv;
     public array $splits;
 
-    function __construct($id, $name, $club, $course, $email, $phone, $is_student, $line_in_csv)
+    function __construct($id, $name, $club, $course, $email, $phone, $is_student, $line_in_csv, $started = false, $paid = false)
     {
         if ($id == null) {
             $id = 0;
@@ -25,6 +27,8 @@ class Runner
         $this->email = $email;
         $this->phone = $phone;
         $this->is_student = $is_student;
+        $this->started = csv_flag($started);
+        $this->paid = csv_flag($paid);
         $this->line_in_csv = $line_in_csv;
         $this->splits = [false, false, false];
     }
@@ -53,6 +57,15 @@ class Runner
 function esc($value)
 {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, "UTF-8");
+}
+
+// Tolk boolske verdiar frå CSV og skjema.
+function csv_flag($value)
+{
+    if (is_bool($value)) {
+        return $value;
+    }
+    return in_array(strtolower(trim((string) $value)), ["1", "true", "on", "yes", "ja"], true);
 }
 
 // Formaterer eit felt trygt for den ;-delte db.csv-fila.
@@ -88,11 +101,12 @@ function append_line($path, $line)
 }
 
 // Byggjer ei manuelt registrert løparline i same kolonneformat som Nettskjema.
-function csv_runner_line($id, $name, $email, $phone, $club, $course, $student)
+function csv_runner_line($id, $name, $email, $phone, $club, $course, $student, $started = false, $paid = false)
 {
     return csv_field($id) . ";;" . csv_field($name) . ";" . csv_field($email) . ";"
         . csv_field($phone) . ";" . csv_field($club) . ";" . csv_field($course) . ";"
-        . csv_field($student) . ";\n";
+        . csv_field($student) . ";" . (csv_flag($started) ? "true" : "false") . ";"
+        . (csv_flag($paid) ? "true" : "false") . ";\n";
 }
 
 //find runner by id in list of Runner objects
@@ -177,7 +191,10 @@ function read_runners_from_csv(){
         if (count($line) < 8) {
             continue;
         }
-        array_push($runners, new Runner($line[0], $line[2], $line[5], $line[6], $line[3], $line[4], $line[7], $i));
+        array_push($runners, new Runner(
+            $line[0], $line[2], $line[5], $line[6], $line[3], $line[4], $line[7], $i,
+            $line[9] ?? false, $line[10] ?? false
+        ));
     }
 
 

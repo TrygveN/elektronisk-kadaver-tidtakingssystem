@@ -64,6 +64,7 @@ $control_label = $control === 0 ? "1. matpost" : "2. matpost";
     <li><a href="/admin.php">📊 Dashbord</a></li>
     <li><a href="/registrering.php">⏱️ Registrer passering på matpost/mål</a></li>
     <li><a href="/db_editor.html">👥 Løperbase</a></li>
+    <li><a href="/start_og_betaling.php">✅ Start og betaling</a></li>
     <li><a href="/config_editor.html">⚙️ Konfigurasjon</a></li>
     <li<?= $control === 0 ? ' class="selected"' : '' ?>><a href="/matpost_nedtelling.php?matpost=0">⏳ Nedtelling 1. mat</a></li>
     <li<?= $control === 1 ? ' class="selected"' : '' ?>><a href="/matpost_nedtelling.php?matpost=1">⏳ Nedtelling 2. mat</a></li>

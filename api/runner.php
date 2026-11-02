@@ -63,14 +63,18 @@ if ($method == "PATCH") {
             http_response_code(response_code: 400);
             echo("<span class='bg-danger'>Startnummer må vere eit tal.</span>");
         } else {
-            $old_id = str_getcsv($all_lines[(int) $csv_line], ";")[0];
+            $old_fields = str_getcsv($all_lines[(int) $csv_line], ";");
+            $old_id = $old_fields[0];
             $runners = read_runners_from_csv();
 
             if (get_runner($runners, (int) $id) !== false && $id != $old_id) {
                 http_response_code(response_code: 400);
                 echo("<span class='bg-danger'>Startnummer er allerede i bruk!</span>");
             } else {
-                $line = csv_runner_line($id, $name, $email, $phone, $club, $course, $student);
+                $line = csv_runner_line(
+                    $id, $name, $email, $phone, $club, $course, $student,
+                    $old_fields[9] ?? false, $old_fields[10] ?? false
+                );
                 $all_lines[(int) $csv_line] = $line;
                 file_put_contents("$documentRoot/data/db.csv", implode("", $all_lines), LOCK_EX);
                 echo("<span class='bg-success'>Endret: " . esc($line) . "</span>");

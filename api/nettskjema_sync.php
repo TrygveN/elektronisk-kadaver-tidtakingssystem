@@ -138,18 +138,21 @@ if (count($report_rows) < 1) {
     nettskjema_error("tomt svar fra Nettskjema.", 502);
 }
 
-$header = array_shift($report_rows);
+$header = array_shift($report_rows) . ";Startet;Betalt";
 
 // Eksisterende løpere i db.csv, brukt for å finne nye og for manuell-merge.
 $db_path = "$documentRoot/data/db.csv";
 $existing_rows = [];
 $existing_keys = [];
+$existing_status = [];
 if (is_readable($db_path)) {
     $existing_rows = nettskjema_split_rows(file_get_contents($db_path));
     array_shift($existing_rows);
     foreach ($existing_rows as $raw) {
         $fields = str_getcsv($raw, ";");
-        $existing_keys[nettskjema_normalize_name($fields[2] ?? "")] = true;
+        $key = nettskjema_normalize_name($fields[2] ?? "");
+        $existing_keys[$key] = true;
+        $existing_status[$key] = [$fields[9] ?? "false", $fields[10] ?? "false"];
     }
 }
 
@@ -161,7 +164,8 @@ foreach ($report_rows as $raw) {
     $name = $fields[2] ?? "";
     $key = nettskjema_normalize_name($name);
     if (!array_key_exists($key, $merged)) {
-        $merged[$key] = $raw;
+        $status = $existing_status[$key] ?? ["false", "false"];
+        $merged[$key] = $raw . ";" . $status[0] . ";" . $status[1];
         if (!isset($existing_keys[$key])) {
             $new_runners[] = [
                 "id" => $fields[0] ?? "",
@@ -182,6 +186,10 @@ foreach ($existing_rows as $raw) {
     $key = nettskjema_normalize_name($fields[2] ?? "");
     if (array_key_exists($key, $merged)) {
         $merge_count++;
+    }
+    if (count($fields) < 11) {
+        $status = $existing_status[$key] ?? ["false", "false"];
+        $raw .= ";" . $status[0] . ";" . $status[1];
     }
     $merged[$key] = $raw;
 }
