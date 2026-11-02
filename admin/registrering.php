@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Kadaver'n" />
     <link rel="manifest" href="/img/site.webmanifest" />
-    <link rel="stylesheet" href="css/matcha.css">
+    <link rel="stylesheet" href="/css/matcha.css">
     <style>
       html {
         scrollbar-gutter: stable;
@@ -528,7 +528,7 @@ async function update() {
     const filter = searchInput.value;
     try {
         const response = await fetch(
-            `api/table.php?type=registrering&control=${control}&filter=${encodeURIComponent(filter)}`,
+            `/api/table.php?type=registrering&control=${control}&filter=${encodeURIComponent(filter)}`,
             { cache: "no-store" }
         );
         if (!response.ok) {
@@ -753,7 +753,7 @@ xmlHttpReq.send(new URLSearchParams({
     password: localStorage.getItem("passord") ?? "",
 }).toString());
 if (xmlHttpReq.status != 200) {
-    window.location.href = "/login.html";
+    window.location.href = "/admin/login.html";
 }
 
 searchInput.addEventListener("focus", update_search_mode);

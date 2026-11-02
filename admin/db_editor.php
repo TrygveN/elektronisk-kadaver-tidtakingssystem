@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Kadaver'n" />
     <link rel="manifest" href="/img/site.webmanifest" />
-    <link rel="stylesheet" href="css/matcha.css">
+    <link rel="stylesheet" href="/css/matcha.css">
     <style>
       .page-header {
         display: flex;
@@ -207,7 +207,7 @@
   function log_out() {
     localStorage.removeItem("navn");
     localStorage.removeItem("passord");
-    window.location.href = "/login.html";
+    window.location.href = "/admin/login.html";
   }
 
   function email_list() {
@@ -280,7 +280,7 @@
     password: localStorage.getItem("passord") ?? "",
   }).toString());
   if (xmlHttpReq.status !== 200) {
-    window.location.href = "/login.html";
+    window.location.href = "/admin/login.html";
   }
   document.getElementById("password").value = localStorage.getItem("passord");
 </script>

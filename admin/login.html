@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Logg inn – EKT</title>
-  <link rel="stylesheet" href="css/matcha.css">
+  <link rel="stylesheet" href="/css/matcha.css">
   <script data-goatcounter="https://teller.ekt.trygve.net/count"
         async src="//teller.ekt.trygve.net/count.js"></script>
 </head>
@@ -33,7 +33,7 @@ xmlHttpReq.send(new URLSearchParams({
   password: localStorage.getItem("passord") ?? "",
 }).toString());
 if (xmlHttpReq.status == 200) {
-  window.location.replace("/admin.php");
+  window.location.replace("/admin/");
 }
 
 const loginForm = document.forms["login"];
@@ -59,7 +59,7 @@ loginForm.addEventListener("submit", async (event) => {
     if (response.status == 200) {
       localStorage.setItem("navn", document.getElementById("navn").value);
       localStorage.setItem("passord", document.getElementById("password").value);
-      window.location.replace("/admin.php");
+      window.location.replace("/admin/");
       return;
     }
     show_error("Feil passord. Prøv igjen.");

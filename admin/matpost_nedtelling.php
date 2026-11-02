@@ -16,7 +16,7 @@ $control_label = $control === 0 ? "1. matpost" : "2. matpost";
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Kadaver'n" />
     <link rel="manifest" href="/img/site.webmanifest" />
-    <link rel="stylesheet" href="css/matcha.css">
+    <link rel="stylesheet" href="/css/matcha.css">
     <style>
       body {
         padding: 0;

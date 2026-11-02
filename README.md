@@ -63,15 +63,15 @@ mkdir -p data
 php -S localhost:3000 -t .
 ```
 
-Åpne så `http://localhost:3000/admin.php` (innlogging) eller
+Åpne så `http://localhost:3000/admin/` (innlogging) eller
 `http://localhost:3000/index.php` (offentlige resultater).
 
 ## Filer
 
 - `index.php` – offentlige live-resultater.
-- `admin.php`, `registrering.php`, `db_editor.php`, `start_og_betaling.php`,
-  `config_editor.php`, `matpost_nedtelling.php` – admin-grensesnitt.
-- `nav.php` – felles navigasjonsmeny for admin-sidene.
+- `admin/` – innlogging og admin-grensesnitt, inkludert registrering, løperbase,
+  start/betaling, konfigurasjon og nedtelling.
+- `admin/nav.php` – felles navigasjonsmeny for admin-sidene.
 - `api/` – endepunktene som grensesnittene kaller.
 - `import_runners.php` – leser CSV-filene og definerer `Runner`.
 - `set_password.php` – setter admin-passord (kun CLI).

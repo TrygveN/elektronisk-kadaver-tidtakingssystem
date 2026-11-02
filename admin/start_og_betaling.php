@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . "/import_runners.php");
+require_once(__DIR__ . "/../import_runners.php");
 $runners = read_runners_from_csv();
 usort($runners, fn($a, $b) => strcasecmp($a->name, $b->name));
 ?>
@@ -10,7 +10,7 @@ usort($runners, fn($a, $b) => strcasecmp($a->name, $b->name));
     <title>Start og betaling – EKT admin</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
-    <link rel="stylesheet" href="css/matcha.css">
+    <link rel="stylesheet" href="/css/matcha.css">
     <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
     <link rel="shortcut icon" href="/img/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
@@ -112,7 +112,7 @@ usort($runners, fn($a, $b) => strcasecmp($a->name, $b->name));
   function log_out() {
     localStorage.removeItem("navn");
     localStorage.removeItem("passord");
-    window.location.href = "/login.html";
+    window.location.href = "/admin/login.html";
   }
 
   function update_summary() {
@@ -174,7 +174,7 @@ usort($runners, fn($a, $b) => strcasecmp($a->name, $b->name));
     password: localStorage.getItem("passord") ?? "",
   }).toString());
   if (xmlHttpReq.status !== 200) {
-    window.location.href = "/login.html";
+    window.location.href = "/admin/login.html";
   }
 </script>
 <script src="/lib/htmx.min.js"></script>

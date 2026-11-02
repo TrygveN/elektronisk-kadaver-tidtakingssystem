@@ -9,7 +9,7 @@ db.csv har alle løperene og passering.csv har alle registreringene gjort på ma
 Når du registrerer en løper vil en ny linje bli lagt til i passering.csv. Registrerer du eller noen andre samme person på samme matpost igjen vil den siste registreringa gjelde. Det betyr i praksis at det ikke er mulig å gjøre noe galt siden ingenting blir skrevet over eller sletta. Trykker man feil blir i verste fall en mellomtid feil og dette kan enkelt rettes opp i etter løpet.
 
 # I Praksis
-Gå til [ekt.trygve.net/admin.php](https://ekt.trygve.net/admin.php)
+Gå til [ekt.trygve.net/admin/](https://ekt.trygve.net/admin/)
 
 Blir du bedt om å logge inn skriver du inn et vilkårlig brukernavn og passordet du fikk av løpsleder.
 

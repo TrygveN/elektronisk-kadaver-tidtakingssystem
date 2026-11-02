@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Kadaver'n" />
     <link rel="manifest" href="/img/site.webmanifest" />
-    <link rel="stylesheet" href="css/matcha.css">
+    <link rel="stylesheet" href="/css/matcha.css">
     <script data-goatcounter="https://teller.ekt.trygve.net/count"
         async src="//teller.ekt.trygve.net/count.js"></script>
 </head>
@@ -23,7 +23,7 @@
   function log_out(){
     localStorage.removeItem("navn");
     localStorage.removeItem("passord");
-    window.location.href = "/login.html";
+    window.location.href = "/admin/login.html";
   }
 
   // Sjekk om brukeren er logga inn. hvis ikke hiv de ut til innloggingskjermen
@@ -35,7 +35,7 @@
     password: localStorage.getItem("passord") ?? "",
   }).toString());
   if (xmlHttpReq.status != 200){
-      window.location.href = "/login.html";
+      window.location.href = "/admin/login.html";
   }
 
 </script>

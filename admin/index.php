@@ -5,7 +5,7 @@
     <title>EKT admin</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Elektronisk Kadaver Tidtakningssystem" />
-    <link rel="stylesheet" href="css/matcha.css">
+    <link rel="stylesheet" href="/css/matcha.css">
     <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
     <link rel="shortcut icon" href="/img/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
@@ -20,19 +20,19 @@
   <button class="accent" onclick="export_results()">📄 Eksporter resultater (HTML)</button>
 <div class='flex wrap' hx-get="/api/statistics.php" hx-trigger="every 5s">
 <?php
-include("api/statistics.php");
+include(__DIR__ . "/../api/statistics.php");
 ?>
 </div>
 <h1>Løpende resultater</h1>
 <h2>Kadaverløpet</h2>
-<div class='flex' hx-get="api/table.php?type=liveresultater" hx-trigger="load, every 5s"></div>
+<div class='flex' hx-get="/api/table.php?type=liveresultater" hx-trigger="load, every 5s"></div>
 <h2>Minikadaver'n</h2>
-<div class='flex' hx-get="api/table.php?type=minikadavern" hx-trigger="load, every 15s"></div>
+<div class='flex' hx-get="/api/table.php?type=minikadavern" hx-trigger="load, every 15s"></div>
 <script>
   function log_out(){
     localStorage.removeItem("navn");
     localStorage.removeItem("passord");
-    window.location.href = "/login.html";
+    window.location.href = "/admin/login.html";
   }
 
   function export_results(){
@@ -65,7 +65,7 @@ include("api/statistics.php");
     password: localStorage.getItem("passord") ?? "",
   }).toString());
   if (xmlHttpReq.status != 200){
-      window.location.href = "/login.html";
+      window.location.href = "/admin/login.html";
   }
 
 </script>
