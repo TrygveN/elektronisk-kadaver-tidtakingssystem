@@ -99,27 +99,34 @@ if ($method == "GET") {
             $r = $filtered[0];
             $kadaver_checked = $r->course == "Kadaverløpet" ? "checked='checked'" : "";
             $mini_checked = $r->course == "Minikadaver'n" ? "checked='checked'" : "";
+            $student_ja = $r->is_student == "Ja" ? "selected" : "";
+            $student_nei = $r->is_student == "Nei" ? "selected" : "";
+            $student_blank = $r->is_student == "" ? "selected" : "";
             $response .= "
             <h2>Endre " . (int) $r->id . " " . esc($r->name) . "</h2>
-            <form hx-patch='/api/runner.php' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
-                <label>Startnummer<input type='number' id='id' name='id' required value='" . (int) $r->id . "'></label>
-                <label>Navn<input type='text' id='name' name='name' required value='" . esc($r->name) . "'></label>
-                <label>Forening<input type='text' id='club' name='club' required value='" . esc($r->club) . "'></label>
-                <label>
+            <form hx-patch='/api/runner.php' hx-target='#runner' hx-swap='show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
+                <label>Startnummer<input type='number' name='id' min='0' required value='" . (int) $r->id . "'></label>
+                <label>Navn<input type='text' name='name' required value='" . esc($r->name) . "'></label>
+                <label>Klubb/forening<input type='text' name='club' required value='" . esc($r->club) . "'></label>
                 <fieldset>
-                <input type='radio' name='course' value='Kadaverløpet' $kadaver_checked>
-                Kadaverløpet
-                </label>
-                    <label>
-                <input type='radio' name='course' value=\"Minikadaver'n\" $mini_checked>
-                Minikadaver'n
-                </label>
+                    <legend>Klasse</legend>
+                    <label><input type='radio' name='course' value='Kadaverløpet' $kadaver_checked required> Kadaverløpet</label>
+                    <label><input type='radio' name='course' value=\"Minikadaver'n\" $mini_checked required> Minikadaver'n</label>
                 </fieldset>
-                <label>epost<input type='text' id='email' name='email' value='" . esc($r->email) . "'></label>
-                <label>telefon<input type='text' id='phone' name='phone' value='" . esc($r->phone) . "'></label>
-                <label><input type='hidden' id='student' name='student' value='" . esc($r->is_student) . "'></label>
-                <label><input type='hidden' id='line_in_csv' name='line_in_csv' value='" . (int) $r->line_in_csv . "'></label>
-                <button type='submit'>Endre løper</button>
+                <label>E-post<input type='email' name='email' value='" . esc($r->email) . "'></label>
+                <label>Telefon<input type='tel' name='phone' value='" . esc($r->phone) . "'></label>
+                <label>Student?
+                    <select name='student'>
+                        <option value='' $student_blank>Ikke oppgitt</option>
+                        <option value='Ja' $student_ja>Ja</option>
+                        <option value='Nei' $student_nei>Nei</option>
+                    </select>
+                </label>
+                <input type='hidden' name='line_in_csv' value='" . (int) $r->line_in_csv . "'>
+                <button type='submit'>Lagre endringer</button>
+                <button type='button' class='default' hx-get='/api/runner.php?get=" . (int) $r->id . "'
+                    hx-target='#runner' hx-swap='show:none'
+                    hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>Avbryt</button>
             </form>
             ";
             header("HX-Replace-Url: false");
@@ -127,12 +134,16 @@ if ($method == "GET") {
         } elseif (count($filtered) == 1){
             $r = $filtered[0];
             $response .= "
-            <h2> " . esc($r->name) . "</h2>
+            <h2>" . esc($r->name) . "</h2>
+            <p> <b>Startnummer:</b> " . (int) $r->id . "</p>
             <p> <b>Klubb:</b> " . esc($r->club) . "</p>
             <p> <b>Løype:</b> " . esc($r->course) . "</p>
             <p> <b>Epost:</b> <a href=\"mailto:" . esc($r->email) . "\">" . esc($r->email) . "</a></p>
             <p> <b>Mobilnummer:</b> <a href=\"tel:" . esc($r->phone) . "\">" . esc($r->phone) . "</a></p>
             <p> <b>Student?</b> " . esc($r->is_student) . "</p>
+            <button type='button' hx-get='/api/runner.php?get=" . (int) $r->id . "&edit=true'
+                hx-target='#runner' hx-swap='show:none'
+                hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>✏️ Endre løper</button>
             ";
             header("HX-Replace-Url: false");
             echo($response);

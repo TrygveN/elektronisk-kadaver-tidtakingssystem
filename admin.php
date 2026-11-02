@@ -11,20 +11,6 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Kadaver'n" />
     <link rel="manifest" href="/img/site.webmanifest" />
-    <style>
-      .profile-card{
-        background-color: var(--bg-active);
-        font-size: 1.4em;
-        padding: 1rem;
-	      border-radius: var(--bd-radius);
-        width: fit-content;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      .profile-card h2{
-        font-size: 2rem;
-      }
-    </style>
     <script data-goatcounter="https://teller.ekt.trygve.net/count"
         async src="//teller.ekt.trygve.net/count.js"></script>
 </head>
@@ -46,16 +32,6 @@
 include("api/statistics.php");
 ?>
 </div>
-<h1>Søk opp løper</h1>
-<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>
-  <label>
-    Navn, startnummer eller klubb
-    <input type="text" name="search" id="search" autocomplete="off" autofocus>
-  </label>
-  <button type="submit">Søk</button>
-</form>
-<div id="runner" class="profile-card"></div>
-
 <button hx-get="/api/email.php" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent alle e-poster</button>
 <button hx-get="/api/email.php?course=Kadaverløpet" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent e-poster for Kadaverløpet</button>
 <button hx-get="/api/email.php?course=Minikadaver'n" hx-target="#emails" hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent e-poster for Minikadaver'n</button>

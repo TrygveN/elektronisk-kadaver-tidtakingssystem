@@ -11,6 +11,15 @@
     <meta name="apple-mobile-web-app-title" content="Kadaver'n" />
     <link rel="manifest" href="/img/site.webmanifest" />
     <link rel="stylesheet" href="css/matcha.css">
+    <style>
+      .profile-card {
+        background-color: var(--bg-active);
+        font-size: 1.2em;
+        padding: 1rem;
+        border-radius: var(--bd-radius);
+        width: fit-content;
+      }
+    </style>
     <script data-goatcounter="https://teller.ekt.trygve.net/count"
         async src="//teller.ekt.trygve.net/count.js"></script>
 </head>
@@ -25,6 +34,17 @@
     <li><a href="/matpost_nedtelling.php?matpost=1">⏳ Nedtelling 2. mat</a></li>
   </menu>
 </nav>
+  <h1>Løperbase</h1>
+  <h2>Søk opp løper</h2>
+  <form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>
+    <label>
+      Navn, startnummer eller klubb
+      <input type="search" name="search" id="search" autocomplete="off" autofocus required>
+    </label>
+    <button type="submit">Søk</button>
+  </form>
+  <div id="runner" class="profile-card" aria-live="polite"></div>
+
   <h2>Legg til løper</h2>
   <form action="/api/runner.php" method="POST" hx-boost="true" hx-target="#updated" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>
     <input style="display: none;" type="text" id="password" name="password" required>
@@ -52,17 +72,7 @@
 
     <button type="submit">Legg til løper</button>
   </form>
-<div id="updated"></div>
-  <h2>Endre løper</h2>
-<form action="/api/runner.php" method="GET" hx-boost="true" hx-target="#runner" hx-swap="show:none" hx-headers='js:{"Password": localStorage.getItem("passord")}'>
-  <input type="hidden" id="edit" name="edit" value="true">
-  <label>
-    Søk etter navn, startnummer eller klubb
-    <input type="text" name="search" id="search">
-  </label>
-  <button type="submit">Søk</button>
-</form>
-<div id="runner"></div>
+<div id="updated" aria-live="polite"></div>
 
 <script>
   function log_out(){
