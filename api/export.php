@@ -17,6 +17,10 @@ $start_mini = DateTime::createFromFormat(DateTime::ISO8601, $config['start_date_
 $year = $start ? $start->format('Y') : date('Y');
 
 $runners = read_runners_from_csv();
+$hide_unstarted = in_array($config['skjul_ikke_startet'] ?? "0", ["1", "true", "on", "yes"], true);
+if ($hide_unstarted) {
+    $runners = array_values(array_filter($runners, fn($runner) => $runner->started));
+}
 
 // Tid frå start til ei passing, t.d. 01:46:45.
 function elapsed(DateTime $start, $split)

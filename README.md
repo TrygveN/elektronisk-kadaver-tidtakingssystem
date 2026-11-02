@@ -32,10 +32,12 @@ mkdir -p data
    start_date = "2025-11-01T09:00:01+01"
    start_date_mini = "2025-11-01T11:25:46+01"
    skjul_resultater = false
+   skjul_ikke_startet = false
    ```
 
    Sett `skjul_resultater = true` for å skjule resultattabellene på forsiden.
-   Resultatene i admin-grensesnittet påvirkes ikke.
+   Resultatene i admin-grensesnittet påvirkes ikke. Sett `skjul_ikke_startet = true`
+   for å skjule løpere som ikke har startet fra resultatlistene og eksporten.
 
 3. **Løperbase** – `data/db.csv`. Første linje er header; feltene er
    `;`-separert i samme rekkefølge som Nettskjema-eksporten:

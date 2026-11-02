@@ -174,7 +174,20 @@ function participants_table($runners) {
         </section>");
     }
 }
+function filter_result_runners($runners) {
+    $hide_unstarted = in_array(
+        $GLOBALS['config']['skjul_ikke_startet'] ?? "0",
+        ["1", "true", "on", "yes"],
+        true
+    );
+    if ($hide_unstarted) {
+        $runners = array_values(array_filter($runners, fn($runner) => $runner->started));
+    }
+    return $runners;
+}
+
 function liveresult_table($runners) {
+    $runners = filter_result_runners($runners);
     usort($runners, "cmp");
     usort($runners, "cmp_course");
     $kadaver_table = "<table id='kadavertabell'><thead>
@@ -237,6 +250,7 @@ function liveresult_table($runners) {
 }
 
 function minikadadvern_table($runners) {
+    $runners = filter_result_runners($runners);
     usort($runners, "cmp");
     $minikadaver_table = "<table><thead>
     <tr>
