@@ -41,6 +41,7 @@ if ($method === "POST") {
         $config["start_date"] = $start_time . "+01";
         $config["start_date_mini"] = $start_time_mini . "+01";
         $config["vis_startnummer"] = isset($_POST["vis_startnummer"]) ? "true" : "false";
+        $config["skjul_resultater"] = isset($_POST["skjul_resultater"]) ? "true" : "false";
         write_ini_file($config, $file);
         header("HX-Replace-Url: false");
         echo("Starttida er oppdatert til: $start_time for Kadaver'n <br> $start_time_mini for Minikadaer'n");
@@ -51,6 +52,8 @@ elseif ($method === "GET") {
     $start_mini = htmlspecialchars(explode("+", $config["start_date_mini"] ?? "")[0], ENT_QUOTES);
     $vis = $config["vis_startnummer"] ?? "1";
     $vis_checked = in_array($vis, ["", "0", "false", "off", "no"], true) ? "" : "checked";
+    $skjul = $config["skjul_resultater"] ?? "0";
+    $skjul_checked = in_array($skjul, ["1", "true", "on", "yes"], true) ? "checked" : "";
     $response = "
       <form action='/api/config.php' method='POST' hx-boost='true' hx-target='#updated' hx-swap='show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
     <label>
@@ -64,6 +67,10 @@ elseif ($method === "GET") {
         <label>
       <input type='checkbox' id='vis_startnummer' name='vis_startnummer' value='true' $vis_checked>
       Vis startnummer i påmeldtlista
+    </label>
+    <label>
+      <input type='checkbox' id='skjul_resultater' name='skjul_resultater' value='true' $skjul_checked>
+      Skjul resultattabellene på forsiden
     </label>
         <button type='submit'>Oppdater</button>
     </form>

@@ -3,6 +3,7 @@ $config = is_readable(__DIR__ . "/data/config.ini")
     ? (parse_ini_file(__DIR__ . "/data/config.ini") ?: [])
     : [];
 $year = date("Y");
+$hide_results = in_array($config["skjul_resultater"] ?? "0", ["1", "true", "on", "yes"], true);
 $start_timestamp = strtotime($config["start_date"] ?? "");
 if ($start_timestamp !== false) {
     $year = date("Y", $start_timestamp);
@@ -53,12 +54,16 @@ if ($start_timestamp !== false) {
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
 <h1>Løpende resultater Kadaverløpet <?= htmlspecialchars($year, ENT_QUOTES, "UTF-8") ?></h1>
 </div>
+<?php if ($hide_results): ?>
+<p>Resultatene er ikke publisert ennå.</p>
+<?php else: ?>
 <h2>Vi tar forbehold om feil. Dette er ikke offisielle resultater</h2>
 <p id="live-status" class="smaller muted" role="status" aria-live="polite">Oppdateres automatisk …</p>
 
 <div id='tabellkonteiner' class='flex' data-results hx-get="api/table.php?type=liveresultater" hx-swap="innerMorph" hx-trigger="load, every 5s"></div>
 <h2>Minikadaver'n</h2>
 <div class='flex' data-results hx-get="api/table.php?type=minikadavern" hx-swap="innerMorph" hx-trigger="load, every 15s"></div>
+<?php endif; ?>
 
 <footer>
 <p><a href="paameldte.php">Se alle påmeldte</a></p>
