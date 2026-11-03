@@ -37,6 +37,10 @@ Velg `👥 Løperbase` fra menyen og finn "Søk opp løper". Søk opp løperen (
 
 `⏳️ Nedtelling 1. mat` og `⏳️ Nedtelling 2. mat` viser en overskt over hvem som nettop har ankommet matpost og hvor lang tid de har igjen. Alle må vente minste 4 minutt før de kan løpe videre. Denne skjermen er nyttig å ha på en pc eller pad.
 
+# Registrere at folk har betalt og henta startnummer
+
+I `💰📋 Start og betaling` kan man huke av når folk har betalt og når de har registrert seg på løpsdagen.
+
 # Konfigurasjon
 
 Under `⚙️ Konfigurasjon` kan du endre visse instillinger
