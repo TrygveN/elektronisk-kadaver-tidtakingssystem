@@ -69,7 +69,7 @@ include(__DIR__ . "/nav.php");
     <h1>Nedtelling – <?= htmlspecialchars($control_label, ENT_QUOTES, "UTF-8") ?></h1>
     <button id="sound-toggle" class="accent" aria-pressed="false">🔔 Slå på lydvarsel</button>
   </div>
-  <div hx-get="/api/countdown.php?matpost=<?= $control ?>" hx-trigger="load, every 1s" hx-swap="innerMorph"></div>
+  <div hx-get="/api/countdown.php?matpost=<?= $control ?>" hx-trigger="load, every 1s" hx-swap="innerMorph" hx-status:5xx="swap:none"></div>
 </div>
 <script src="/lib/htmx.min.js"></script>
 <script>

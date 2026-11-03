@@ -98,6 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] !== "GET") {
 $password = getallheaders()['Password'] ?? "";
 if (!password_verify($password, $hash)) {
     http_response_code(401);
+    echo("<span class='bg-danger'>Feil passord.</span>");
     exit;
 }
 
@@ -223,5 +224,5 @@ if ($new_count > 0) {
     echo("</ul></div>");
 }
 else {
-    echo("<div class='flash accent'><b>Ingen nye løpere siden sist synkronisering</b><ul>");
+    echo("<div class='flash accent'><b>Ingen nye løpere siden sist synkronisering</b></div>");
 }

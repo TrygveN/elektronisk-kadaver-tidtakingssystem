@@ -63,9 +63,9 @@ if ($start_timestamp !== false) {
 <h2>Vi tar forbehold om feil. Dette er ikke offisielle resultater</h2>
 <p id="live-status" class="smaller muted" role="status" aria-live="polite">Oppdateres automatisk …</p>
 
-<div id='tabellkonteiner' class='flex' data-results hx-get="api/table.php?type=liveresultater" hx-swap="innerMorph" hx-trigger="load, every 5s"></div>
+<div id='tabellkonteiner' class='flex' data-results hx-get="/api/table.php?type=liveresultater" hx-swap="innerMorph" hx-trigger="load, every 5s" hx-status:5xx="swap:none"></div>
 <h2>Minikadaver'n</h2>
-<div class='flex' data-results hx-get="api/table.php?type=minikadavern" hx-swap="innerMorph" hx-trigger="load, every 15s"></div>
+<div class='flex' data-results hx-get="/api/table.php?type=minikadavern" hx-swap="innerMorph" hx-trigger="load, every 15s" hx-status:5xx="swap:none"></div>
 <?php endif; ?>
 
 <footer>
@@ -76,17 +76,33 @@ if ($start_timestamp !== false) {
 <script src="/lib/htmx.min.js"></script>
 <script>
 function mark_updated() {
-    document.getElementById("live-status").textContent =
+    const status = document.getElementById("live-status");
+    status.textContent =
         "Oppdatert kl. " + new Date().toLocaleTimeString("no-NO", { hour12: false });
+    status.className = "smaller muted";
 }
 
-// htmx 4 bruker namespace-aktige hendingsnamn.
+function mark_update_failed() {
+    const status = document.getElementById("live-status");
+    status.textContent = "Får ikke kontakt med serveren. Viser siste kjente resultater.";
+    status.className = "smaller danger";
+}
+
+// htmx 4 bruker namespace-aktige hendingsnamn, og detaljane ligg i
+// event.detail.ctx (ikkje event.detail.elt som i htmx 2).
 document.body.addEventListener("htmx:after:swap", (event) => {
-    const element = event.detail && event.detail.elt ? event.detail.elt : event.target;
+    const ctx = event.detail?.ctx;
+    const element = ctx?.target ?? event.target;
     if (element && (element.id === "tabellkonteiner" || element.hasAttribute("data-results"))) {
-        mark_updated();
+        if ((ctx?.response?.status ?? 200) < 400) {
+            mark_updated();
+        } else {
+            mark_update_failed();
+        }
     }
 });
+document.body.addEventListener("htmx:response:error", mark_update_failed);
+document.body.addEventListener("htmx:error", mark_update_failed);
 </script>
 </body>
 </html>

@@ -14,6 +14,7 @@ if ($method == "GET") {
     $password = getallheaders()['Password'] ?? "";
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
+        echo("<span class='danger'>Feil passord.</span>");
     } else {
         $runners = read_runners_from_csv();
         $emails = [];

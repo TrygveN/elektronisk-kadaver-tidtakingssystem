@@ -18,7 +18,7 @@
 <?php $selected_page = "config"; include(__DIR__ . "/nav.php"); ?>
 
   <h1>Konfigurasjon</h1>
-<div hx-get="/api/config.php" hx-swap="outerHTML" hx-trigger="load"></div>
+<div hx-get="/api/config.php" hx-swap="outerHTML" hx-trigger="load" hx-status:5xx="swap:none"></div>
 <script>
   function log_out(){
     localStorage.removeItem("navn");

@@ -22,16 +22,16 @@ require_request_path(["/admin", "/admin/", "/admin/index.php"]);
 <?php $selected_page = "dashboard"; include(__DIR__ . "/nav.php"); ?>
   <button class="danger" onclick="log_out()">Logg ut</button>
   <button class="accent" onclick="export_results()">📄 Eksporter resultater (HTML)</button>
-<div class='flex wrap' hx-get="/api/statistics.php" hx-trigger="every 5s">
+<div class='flex wrap' hx-get="/api/statistics.php" hx-trigger="every 5s" hx-status:5xx="swap:none">
 <?php
 include(__DIR__ . "/../api/statistics.php");
 ?>
 </div>
 <h1>Løpende resultater</h1>
 <h2>Kadaverløpet</h2>
-<div class='flex' hx-get="/api/table.php?type=liveresultater" hx-trigger="load, every 5s"></div>
+<div class='flex' hx-get="/api/table.php?type=liveresultater" hx-trigger="load, every 5s" hx-status:5xx="swap:none"></div>
 <h2>Minikadaver'n</h2>
-<div class='flex' hx-get="/api/table.php?type=minikadavern" hx-trigger="load, every 15s"></div>
+<div class='flex' hx-get="/api/table.php?type=minikadavern" hx-trigger="load, every 15s" hx-status:5xx="swap:none"></div>
 <script>
   function log_out(){
     localStorage.removeItem("navn");

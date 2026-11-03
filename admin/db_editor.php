@@ -126,7 +126,7 @@
   <section class="panel" aria-labelledby="search-heading">
     <h2 id="search-heading">Søk opp løper</h2>
     <form class="search-form" action="/api/runner.php" method="GET" hx-boost="true"
-          hx-target="#runner" hx-swap="show:none"
+          hx-target="#runner" hx-swap="innerHTML show:none" hx-push-url="false"
           hx-headers='js:{"Password": localStorage.getItem("passord")}'>
       <label>
         Navn, startnummer eller klubb
@@ -140,7 +140,7 @@
   <section class="panel" aria-labelledby="add-heading">
     <h2 id="add-heading">Legg til løper</h2>
     <form class="form-grid" action="/api/runner.php" method="POST" hx-boost="true"
-          hx-target="#updated" hx-swap="show:none"
+          hx-target="#updated" hx-swap="innerHTML show:none" hx-push-url="false"
           hx-headers='js:{"Password": localStorage.getItem("passord")}'>
       <input type="hidden" id="password" name="password" required>
 
@@ -195,7 +195,7 @@
     <section class="panel" aria-labelledby="sync-heading">
       <h2 id="sync-heading">Synkroniser løperbase</h2>
       <p class="muted">Hent de nyeste påmeldingene fra Nettskjema.</p>
-      <button id="sync-button" hx-get="/api/nettskjema_sync.php" hx-target="#sync-status" hx-swap="show:none"
+      <button id="sync-button" hx-get="/api/nettskjema_sync.php" hx-target="#sync-status" hx-swap="innerHTML show:none"
               hx-headers='js:{"Password": localStorage.getItem("passord")}'>🔄 Synk fra Nettskjema</button>
       <div class="flash default output-container">
         <output id="sync-status" aria-live="polite"></output>
@@ -212,7 +212,9 @@
 
   function email_list() {
     const text = document.getElementById("emails").textContent.trim();
-    return text ? text.split(",").map((email) => email.trim()).filter(Boolean) : [];
+    return text
+      ? text.split(",").map((email) => email.trim()).filter((email) => email.includes("@"))
+      : [];
   }
 
   function update_email_count() {
@@ -249,25 +251,40 @@
     setTimeout(update_email_count, 3000);
   }
 
-  // htmx 4 bruker namespace-aktige hendingsnamn.
+  // htmx 4 bruker namespace-aktige hendingsnamn, og detaljane ligg i
+  // event.detail.ctx (ikkje event.detail.elt som i htmx 2).
   document.body.addEventListener("htmx:after:swap", (event) => {
-    const element = event.detail && event.detail.elt ? event.detail.elt : event.target;
-    if (element && element.id === "emails") {
+    const ctx = event.detail?.ctx;
+    const element = ctx?.target ?? event.target;
+    if (element && element.id === "emails" && (ctx?.response?.status ?? 200) < 400) {
       update_email_count();
     }
   });
 
   // Hindre dobbel synkronisering medan førespurnaden går.
   document.body.addEventListener("htmx:before:request", (event) => {
-    const element = event.detail && event.detail.elt ? event.detail.elt : event.target;
+    const element = event.detail?.ctx?.sourceElement ?? event.target;
     if (element && element.id === "sync-button") {
       element.disabled = true;
     }
   });
-  document.body.addEventListener("htmx:after:request", (event) => {
-    const element = event.detail && event.detail.elt ? event.detail.elt : event.target;
+  // finally:request køyrer også når nettverket feilar, slik at knappen
+  // ikkje blir ståande deaktivert.
+  document.body.addEventListener("htmx:finally:request", (event) => {
+    const element = event.detail?.ctx?.sourceElement ?? event.target;
     if (element && element.id === "sync-button") {
       element.disabled = false;
+    }
+  });
+
+  // htmx:error gjeld nettverks- og byttefeil. HTTP-feil får eige svar frå
+  // serveren og blir viste i #sync-status.
+  document.body.addEventListener("htmx:error", (event) => {
+    const element = event.detail?.ctx?.sourceElement ?? event.target;
+    if (element && element.id === "sync-button") {
+      const status = document.getElementById("sync-status");
+      status.className = "danger";
+      status.textContent = "Fikk ikke kontakt med serveren. Prøv igjen.";
     }
   });
 

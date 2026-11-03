@@ -32,6 +32,7 @@ if ($method === "POST") {
     $new_time_mini = DateTime::createFromFormat(DateTime::ISO8601, $start_time_mini. "+01");
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
+        echo("Feil passord.");
     } elseif (!$new_time || !$new_time_mini) {
         http_response_code(response_code: 400);
         echo("Ugyldig datoformat. Bruk formatet ÅÅÅÅ-MM-DD TT:MM:SS.");
@@ -62,7 +63,7 @@ elseif ($method === "GET") {
     $skjul_ikke_startet = $config["skjul_ikke_startet"] ?? "0";
     $skjul_ikke_startet_checked = in_array($skjul_ikke_startet, ["1", "true", "on", "yes"], true) ? "checked" : "";
     $response = "
-      <form action='/api/config.php' method='POST' hx-boost='true' hx-target='#updated' hx-swap='show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
+      <form action='/api/config.php' method='POST' hx-boost='true' hx-target='#updated' hx-swap='innerHTML show:none' hx-push-url='false' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
     <label>
       Starttid Kadaverløpet
       <input type='datetime-local' id='start_time' name='start_time' step='1' value='$start_kadaver'>

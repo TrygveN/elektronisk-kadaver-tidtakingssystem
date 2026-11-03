@@ -14,6 +14,7 @@ if ($method == "POST") {
     $password = $_POST['password'] ?? "";
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
+        echo("<span class='bg-danger'>Feil passord.</span>");
     }
     elseif (!ctype_digit($runner_id)){
         http_response_code(response_code: 400);
@@ -47,6 +48,7 @@ if ($method == "PATCH") {
     $password = getallheaders()['Password'] ?? "";
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
+        echo("<span class='bg-danger'>Feil passord.</span>");
     } else {
         parse_str(file_get_contents('php://input'), $_PATCH);
         $csv_line = $_PATCH["line_in_csv"] ?? "";
@@ -98,6 +100,7 @@ if ($method == "GET") {
     $password = getallheaders()['Password'] ?? "";
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
+        echo("<span class='bg-danger'>Feil passord.</span>");
     } else {
         parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
         $response = "";
@@ -119,7 +122,7 @@ if ($method == "GET") {
             $student_blank = $r->is_student == "" ? "selected" : "";
             $response .= "
             <h2>Endre " . (int) $r->id . " " . esc($r->name) . "</h2>
-            <form class='form-grid' hx-patch='/api/runner.php' hx-target='#runner' hx-swap='show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
+            <form class='form-grid' hx-patch='/api/runner.php' hx-target='#runner' hx-swap='innerHTML show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
                 <label>Startnummer<input type='number' name='id' min='0' required value='" . (int) $r->id . "'></label>
                 <label>Navn<input type='text' name='name' required value='" . esc($r->name) . "'></label>
                 <label>Klubb/forening<input type='text' name='club' required value='" . esc($r->club) . "'></label>
@@ -141,7 +144,7 @@ if ($method == "GET") {
                 <div class='form-actions'>
                     <button type='submit'>Lagre endringer</button>
                     <button type='button' class='default' hx-get='/api/runner.php?get=" . (int) $r->id . "'
-                        hx-target='#runner' hx-swap='show:none'
+                        hx-target='#runner' hx-swap='innerHTML show:none'
                         hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>Avbryt</button>
                 </div>
             </form>
@@ -158,8 +161,8 @@ if ($method == "GET") {
             <p> <b>Epost:</b> <a href=\"mailto:" . esc($r->email) . "\">" . esc($r->email) . "</a></p>
             <p> <b>Mobilnummer:</b> <a href=\"tel:" . esc($r->phone) . "\">" . esc($r->phone) . "</a></p>
             <p> <b>Student?</b> " . esc($r->is_student) . "</p>
-            <button type='button' hx-get='/api/runner.php?get=" . (int) $r->id . "&edit=true'
-                hx-target='#runner' hx-swap='show:none'
+            <button type='button' hx-get='/api/runner.php?get=" . (int) $r->id . "&amp;edit=true'
+                hx-target='#runner' hx-swap='innerHTML show:none'
                 hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>✏️ Endre løper</button>
             ";
             header("HX-Replace-Url: false");
@@ -170,11 +173,11 @@ if ($method == "GET") {
             for ($i = 0; $i < count($filtered); $i++) {
                 $runner = $filtered[$i];
                 if ($edit == "true") {
-                    $url = "/api/runner.php?get=" . (int) $runner->id . "&edit=true";
+                    $url = "/api/runner.php?get=" . (int) $runner->id . "&amp;edit=true";
                 } else {
                     $url = "/api/runner.php?get=" . (int) $runner->id;
                 }
-                $response .= "<button class=\"default\" hx-get=\"$url\" hx-target=\"#runner\" hx-swap=\"show:none\" hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>" . (int) $runner->id . " " . esc($runner->name) . "</button>";
+                $response .= "<button class=\"default\" hx-get=\"$url\" hx-target=\"#runner\" hx-swap=\"innerHTML show:none\" hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>" . (int) $runner->id . " " . esc($runner->name) . "</button>";
                 header("HX-Replace-Url: false");
             }
             $response .= "</div>";
