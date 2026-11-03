@@ -40,7 +40,7 @@ include(__DIR__ . "/../api/statistics.php");
   }
 
   function export_results(){
-    fetch("/api/export.php", { headers: { password: localStorage.getItem("passord") } })
+    fetch("/api/export.php", { headers: { password: encodeURIComponent(localStorage.getItem("passord") ?? "") } })
       .then(response => {
         if (response.status === 401) {
           alert("Feil passord!");

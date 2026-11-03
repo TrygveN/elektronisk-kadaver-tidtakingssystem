@@ -11,7 +11,7 @@ if ($method !== "GET") {
 if ($method == "GET") {
     parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
     $course = $query['course'] ?? "";
-    $password = $_SERVER['HTTP_PASSWORD'] ?? "";
+    $password = rawurldecode($_SERVER['HTTP_PASSWORD'] ?? "");
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
         echo("<span class='danger'>Feil passord.</span>");

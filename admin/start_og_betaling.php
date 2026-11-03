@@ -97,7 +97,7 @@ usort($runners, fn($a, $b) => strcasecmp($a->name, $b->name));
                aria-label="<?= $label ?>: <?= esc($runner->name) ?>" <?= $runner->$field ? "checked" : "" ?>
                hx-patch="/api/runner_status.php" hx-trigger="change"
                hx-vals='js:{id: this.dataset.id, field: this.dataset.status, value: this.checked.toString()}'
-               hx-headers='js:{"password": localStorage.getItem("passord")}'
+               hx-headers='js:{"password": encodeURIComponent(localStorage.getItem("passord") ?? "")}'
                hx-target="#save-status" hx-swap="innerHTML">
       </td>
       <?php endforeach; ?>

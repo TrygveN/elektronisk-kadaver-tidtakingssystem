@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] !== "GET") {
     exit;
 }
 
-$password = $_SERVER['HTTP_PASSWORD'] ?? "";
+$password = rawurldecode($_SERVER['HTTP_PASSWORD'] ?? "");
 if (!password_verify($password, $hash)) {
     http_response_code(401);
     echo("<span class='bg-danger'>Feil passord.</span>");
