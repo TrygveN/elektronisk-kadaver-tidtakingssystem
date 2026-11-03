@@ -260,7 +260,7 @@
   <div id="post-banner" class="flash danger" role="status">Ingen post valgt. Velg post før du registrerer.</div>
   <label for="search">Søk etter startnummer
     <input id="search" type="number" class="form-control" inputmode="numeric" autocomplete="off"
-           enterkeyhint="done" oninput="schedule_update()" onkeydown="register_from_search(event)"
+           enterkeyhint="done" onkeydown="register_from_search(event)"
            placeholder="Søk etter startnummer">
   </label>
   <div class="flex align-center space-between">
@@ -286,11 +286,19 @@
   </fieldset>
 
 <div class="actions flex wrap">
-  <button onclick="update()">Oppdater tabell</button>
+  <button onclick="refresh_runners()">Oppdater tabell</button>
   <button class="accent" onclick="open_manual_dialog()">🕐 Manuell tid</button>
 </div>
 
-<table id="runners" aria-label="Løpere"></table>
+<table id="runners" aria-label="Løpere"
+       hx-get="/api/table.php?type=registrering"
+       hx-trigger="load, refreshRunners, input changed delay:200ms from:#search"
+       hx-vals='js:{control: get_control(), filter: searchInput.value}'
+       hx-swap="innerHTML"
+       hx-config='{"cache":"no-store"}'
+       hx-sync="this:replace"
+       hx-status:4xx="swap:none"
+       hx-status:5xx="swap:none"></table>
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
@@ -307,7 +315,11 @@
   <header>
     <h2>Manuell registrering</h2>
   </header>
-  <form id="manual-form">
+  <form id="manual-form"
+        hx-post="/api/passing.php"
+        hx-vals='js:{...manual_payload(this)}'
+        hx-swap="none"
+        hx-disable="find button, find input, find select">
     <label>
       Startnummer
       <input type="number" name="id" min="1" required>
@@ -334,24 +346,25 @@
   </footer>
 </dialog>
 
+<script src="/lib/htmx.min.js"></script>
 <script>
 const POST_LABELS = {1: "1. matpost", 2: "2. matpost", 3: "Mål"};
 const searchInput = document.getElementById("search");
+const runnersTable = document.getElementById("runners");
 let toastTimer = null;
-let searchTimer = null;
-let updateSeq = 0;
-let registering = false;
+let pendingSearchId = null;
+let tableScrollY = 0;
 
 function is_mobile_layout() {
     return window.matchMedia("(max-width: 700px)").matches;
 }
 
-function schedule_update() {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => {
-        searchTimer = null;
-        update();
-    }, 200);
+function refresh_runners() {
+    htmx.trigger(runnersTable, "refreshRunners");
+}
+
+function now_iso() {
+    return new Date().toISOString().split(".")[0] + "Z";
 }
 
 function ensure_result_visible(table) {
@@ -410,7 +423,7 @@ function set_post(value) {
     localStorage.setItem("ekt_post", value);
     update_post_banner();
     update_search_mode();
-    update();
+    refresh_runners();
 }
 
 function update_search_mode() {
@@ -521,127 +534,13 @@ function set_refresh_status(message, isError = false) {
     el.className = "smaller " + (isError ? "danger" : "muted");
 }
 
-async function update() {
-    const seq = ++updateSeq;
-    const table = document.getElementById("runners");
-    const control = get_control();
-    const filter = searchInput.value;
-    try {
-        const response = await fetch(
-            `/api/table.php?type=registrering&control=${control}&filter=${encodeURIComponent(filter)}`,
-            { cache: "no-store" }
-        );
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-        }
-        const text = await response.text();
-        // Berre den nyaste førespurnaden skal få oppdatere tabellen.
-        if (seq !== updateSeq || searchInput.value !== filter) {
-            return;
-        }
-        if (table.innerHTML !== text) {
-            const scroll_y = window.scrollY;
-            table.innerHTML = text;
-            // Nettlesaren kan justere scrollposisjonen når tabellen vert kortare.
-            if (window.scrollY !== scroll_y) {
-                window.scrollTo(0, scroll_y);
-            }
-            if (filter !== "") {
-                requestAnimationFrame(() => ensure_result_visible(table));
-            }
-        }
-        set_refresh_status("Sist oppdatert: " + new Date().toLocaleTimeString("no-NO", { hour12: false }));
-    } catch (error) {
-        if (seq === updateSeq) {
-            set_refresh_status("Får ikke kontakt med serveren. Viser siste kjente liste.", true);
-        }
-    }
+function runner_row_for_id(id) {
+    return Array.from(document.querySelectorAll("#runners tbody tr")).find(
+        (tr) => Number(tr.querySelector(".id-cell")?.textContent.trim()) === Number(id)
+    );
 }
 
-async function register_runner(id, button) {
-    if (registering) {
-        return;
-    }
-    const control = get_control();
-    if (!control) {
-        show_no_post_toast();
-        return;
-    }
-
-    const name = runner_name_from_button(button);
-    const existing = button && button.dataset ? button.dataset.time : "";
-    if (existing && !confirm(
-        `${runner_label(id, name)} er allerede registrert på ${POST_LABELS[control]} kl. ${existing}.\n` +
-        "Vil du erstatte tiden?"
-    )) {
-        return;
-    }
-
-    const time = new Date(Date.now()).toISOString().split(".")[0] + "Z";
-    const formData = new FormData();
-    formData.append("password", localStorage.getItem("passord"));
-    formData.append("control", control);
-    formData.append("id", id);
-    formData.append("time", time);
-
-    registering = true;
-    if (button) {
-        button.disabled = true;
-    }
-
-    try {
-        const response = await fetch("/api/passing.php", {
-            method: "POST",
-            body: formData,
-        });
-        if (response.status === 401) {
-            show_toast({
-                kind: "danger",
-                title: "Feil passord",
-                detail: "Logg inn på nytt.",
-            });
-            return;
-        }
-        if (!response.ok) {
-            const text = await response.text();
-            show_toast({
-                kind: "danger",
-                title: "Ikke lagret",
-                name: runner_label(id, name),
-                detail: text || `Kunne ikke lagre passering (HTTP ${response.status}).`,
-            });
-            return;
-        }
-        const clock = new Date().toLocaleTimeString("no-NO", { hour12: false });
-        show_toast({
-            kind: "success",
-            title: "Passering lagret",
-            name: runner_label(id, name),
-            detail: `${POST_LABELS[control]} · kl. ${clock}`,
-        });
-        clearTimeout(searchTimer);
-        searchTimer = null;
-        searchInput.value = "";
-        await update();
-    } catch (error) {
-        // Behald nummeret slik at det er enkelt å prøve igjen.
-        searchInput.value = id;
-        show_toast({
-            kind: "danger",
-            title: "Ikke lagret",
-            name: runner_label(id, name),
-            detail: "Fikk ikke kontakt med serveren. Prøv igjen.",
-        });
-    } finally {
-        registering = false;
-        if (button) {
-            button.disabled = false;
-        }
-        searchInput.focus();
-    }
-}
-
-async function register_from_search(event) {
+function register_from_search(event) {
     if (event.key !== "Enter") {
         return;
     }
@@ -655,25 +554,205 @@ async function register_from_search(event) {
         return;
     }
 
-    // Sørg for at tabellen viser treffet før vi slår opp rada.
-    clearTimeout(searchTimer);
-    searchTimer = null;
-    await update();
-    const row = Array.from(document.querySelectorAll("#runners tbody tr")).find(
-        (tr) => Number(tr.querySelector(".id-cell")?.textContent.trim()) === Number(value)
-    );
+    // Vent på at tabellen viser treffet før vi trykker på registrer-knappen.
+    pendingSearchId = Number(value);
+    refresh_runners();
+}
+
+function activate_pending_search_result() {
+    if (pendingSearchId === null) {
+        return;
+    }
+    const id = pendingSearchId;
+    pendingSearchId = null;
+    if (Number(searchInput.value) !== id) {
+        return;
+    }
+    const row = runner_row_for_id(id);
     if (!row) {
         show_toast({
             kind: "attention",
             title: "Ingen treff",
-            detail: `Fant ingen løper med startnummer ${value}.`,
+            detail: `Fant ingen løper med startnummer ${id}.`,
         });
         return;
     }
-
-    const button = row.querySelector("button.register-button");
-    await register_runner(Number(value), button);
+    row.querySelector("button.register-button")?.click();
 }
+
+function handle_table_response(ctx) {
+    if (ctx.response.status >= 400) {
+        pendingSearchId = null;
+        set_refresh_status("Kunne ikke oppdatere listen.", true);
+        return;
+    }
+    set_refresh_status("Sist oppdatert: " + new Date().toLocaleTimeString("no-NO", { hour12: false }));
+}
+
+function table_response_is_current(ctx) {
+    const params = new URL(ctx.request.action, window.location.href).searchParams;
+    return params.get("filter") === searchInput.value
+        && params.get("control") === String(get_control());
+}
+
+function handle_registration_response(ctx, button) {
+    const status = ctx.response.status;
+    const id = ctx.request.body.get("id");
+    const control = ctx.request.body.get("control");
+    const name = runner_name_from_button(button);
+
+    if (status === 200) {
+        const when = new Date(ctx.request.body.get("time"));
+        const clock = isNaN(when.getTime())
+            ? new Date().toLocaleTimeString("no-NO", { hour12: false })
+            : when.toLocaleTimeString("no-NO", { hour12: false });
+        show_toast({
+            kind: "success",
+            title: "Passering lagret",
+            name: runner_label(id, name),
+            detail: `${POST_LABELS[control]} · kl. ${clock}`,
+        });
+        searchInput.value = "";
+        refresh_runners();
+        searchInput.focus();
+        return;
+    }
+
+    if (status === 401) {
+        show_toast({
+            kind: "danger",
+            title: "Feil passord",
+            detail: "Logg inn på nytt.",
+        });
+        searchInput.focus();
+        return;
+    }
+
+    show_toast({
+        kind: "danger",
+        title: "Ikke lagret",
+        name: runner_label(id, name),
+        detail: ctx.text.trim() || `Kunne ikke lagre passering (HTTP ${status}).`,
+    });
+    searchInput.focus();
+}
+
+function manual_payload(form) {
+    const when = new Date(form.elements["time"].value);
+    return {
+        password: localStorage.getItem("passord"),
+        control: form.elements["control"].value,
+        id: form.elements["id"].value,
+        time: isNaN(when.getTime()) ? "" : when.toISOString().split(".")[0] + "Z",
+    };
+}
+
+function handle_manual_response(ctx, form) {
+    const status = document.getElementById("manual-status");
+    if (ctx.response.status === 200) {
+        const id = form.elements["id"].value;
+        const control = form.elements["control"].value;
+        const when = new Date(form.elements["time"].value);
+        const name = runner_name_for_id(id);
+        document.getElementById("manual-dialog").close();
+        form.reset();
+        status.className = "flash danger hidden";
+        status.textContent = "";
+        show_toast({
+            kind: "success",
+            title: "Manuell passering lagret",
+            name: runner_label(id, name),
+            detail: `${POST_LABELS[control]} · kl. ${when.toLocaleTimeString("no-NO", { hour12: false })}`,
+        });
+        refresh_runners();
+        return;
+    }
+
+    status.className = "flash danger";
+    status.textContent = ctx.response.status === 401
+        ? "Feil passord!"
+        : (ctx.text.trim() || "Kunne ikke lagre passering.");
+}
+
+document.body.addEventListener("htmx:before:request", (event) => {
+    const ctx = event.detail?.ctx;
+    if (ctx?.sourceElement === runnersTable) {
+        tableScrollY = window.scrollY;
+    }
+    if (ctx?.sourceElement?.matches?.("#manual-form")) {
+        const status = document.getElementById("manual-status");
+        status.className = "flash danger hidden";
+        status.textContent = "";
+    }
+});
+
+document.body.addEventListener("htmx:after:request", (event) => {
+    const ctx = event.detail?.ctx;
+    if (!ctx) {
+        return;
+    }
+    const source = ctx.sourceElement;
+    if (source === runnersTable) {
+        if (!table_response_is_current(ctx)) {
+            event.preventDefault();
+            return;
+        }
+        handle_table_response(ctx);
+    } else if (source?.classList?.contains("register-button")) {
+        handle_registration_response(ctx, source);
+    } else if (source?.matches?.("#manual-form")) {
+        handle_manual_response(ctx, source);
+    }
+});
+
+document.body.addEventListener("htmx:after:swap", (event) => {
+    const ctx = event.detail?.ctx;
+    if (ctx?.sourceElement !== runnersTable) {
+        return;
+    }
+    if (window.scrollY !== tableScrollY) {
+        window.scrollTo(0, tableScrollY);
+    }
+    activate_pending_search_result();
+    if (searchInput.value !== "") {
+        requestAnimationFrame(() => ensure_result_visible(runnersTable));
+    }
+});
+
+document.body.addEventListener("htmx:error", (event) => {
+    // Ein nyare tabellførespurnad avbryt den førre. Det er ikkje ein nettverksfeil.
+    if (event.detail?.error?.name === "AbortError") {
+        return;
+    }
+    const ctx = event.detail?.ctx;
+    const source = ctx?.sourceElement;
+    if (source === runnersTable) {
+        pendingSearchId = null;
+        set_refresh_status("Får ikke kontakt med serveren. Viser siste kjente liste.", true);
+        return;
+    }
+    if (source?.classList?.contains("register-button")) {
+        const id = ctx.request?.body?.get?.("id");
+        const name = runner_name_from_button(source);
+        // Behald nummeret slik at det er enkelt å prøve igjen.
+        if (id) {
+            searchInput.value = id;
+        }
+        show_toast({
+            kind: "danger",
+            title: "Ikke lagret",
+            name: runner_label(id, name),
+            detail: "Fikk ikke kontakt med serveren. Prøv igjen.",
+        });
+        searchInput.focus();
+        return;
+    }
+    if (source?.matches?.("#manual-form")) {
+        const status = document.getElementById("manual-status");
+        status.className = "flash danger";
+        status.textContent = "Fikk ikke kontakt med serveren. Prøv igjen.";
+    }
+});
 
 function local_datetime_value(date) {
     const pad = (n) => String(n).padStart(2, "0");
@@ -696,54 +775,6 @@ function open_manual_dialog() {
     dialog.querySelector('input[name="id"]').focus();
 }
 
-document.getElementById("manual-form").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const form = event.target;
-    const status = document.getElementById("manual-status");
-    const when = new Date(form.elements["time"].value);
-    status.className = "flash danger hidden";
-    status.textContent = "";
-
-    if (isNaN(when.getTime())) {
-        status.className = "flash danger";
-        status.textContent = "Ugyldig tidspunkt.";
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append("password", localStorage.getItem("passord"));
-    formData.append("control", form.elements["control"].value);
-    formData.append("id", form.elements["id"].value);
-    formData.append("time", when.toISOString().split(".")[0] + "Z");
-
-    try {
-        const response = await fetch("/api/passing.php", { method: "POST", body: formData });
-        if (response.status === 200) {
-            const id = form.elements["id"].value;
-            const control = form.elements["control"].value;
-            const name = runner_name_for_id(id);
-            const clock = when.toLocaleTimeString("no-NO", { hour12: false });
-            document.getElementById("manual-dialog").close();
-            form.reset();
-            show_toast({
-                kind: "success",
-                title: "Manuell passering lagret",
-                name: runner_label(id, name),
-                detail: `${POST_LABELS[control]} · kl. ${clock}`,
-            });
-            await update();
-        } else {
-            status.className = "flash danger";
-            status.textContent = response.status === 401
-                ? "Feil passord!"
-                : (await response.text() || "Kunne ikke lagre passering.");
-        }
-    } catch (error) {
-        status.className = "flash danger";
-        status.textContent = "Fikk ikke kontakt med serveren. Prøv igjen.";
-    }
-});
-
 // Sjekk om brukeren er logga inn. hvis ikke hiv de ut til innloggingskjermen
 let xmlHttpReq = new XMLHttpRequest();
 xmlHttpReq.open("POST", "/api/is_authorized.php", false);
@@ -757,9 +788,13 @@ if (xmlHttpReq.status != 200) {
 }
 
 searchInput.addEventListener("focus", update_search_mode);
+searchInput.addEventListener("input", () => {
+    if (pendingSearchId !== null && Number(searchInput.value) !== pendingSearchId) {
+        pendingSearchId = null;
+    }
+});
 
 restore_post();
-update();
 if (get_control()) {
     searchInput.focus();
 }
@@ -777,12 +812,12 @@ window.addEventListener("orientationchange", position_toast);
 // Oppdater lista jamleg, men ikkje når fanen er skjult.
 setInterval(() => {
     if (document.visibilityState === "visible") {
-        update();
+        refresh_runners();
     }
 }, 5000);
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
-        update();
+        refresh_runners();
     }
 });
 </script>

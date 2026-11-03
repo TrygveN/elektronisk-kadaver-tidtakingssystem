@@ -30,6 +30,20 @@ if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
 
 require_once("$documentRoot/import_runners.php");
 
+function registration_button_attributes($id, $confirm = "") {
+    $attributes = 'type="button" class="register-button"'
+        . ' hx-post="/api/passing.php"'
+        . ' hx-swap="none"'
+        . ' hx-disable="this"'
+        . ' hx-sync="closest .settings:queue all"'
+        . " hx-vals='js:{password: localStorage.getItem(\"passord\"), control: get_control(), id: "
+        . (int) $id . ", time: now_iso()}'";
+    if ($confirm !== "") {
+        $attributes .= ' hx-confirm="' . esc($confirm) . '"';
+    }
+    return $attributes;
+}
+
 function registration_table($runners) {
     parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
     $matpost = (int) ($query["control"] ?? 0);
@@ -63,7 +77,10 @@ function registration_table($runners) {
             : "Fant ingen løper med startnummer $runner_id. Registrer likevel?";
         echo("<tr data-empty=\"1\"><td colspan=\"5\">" . esc($message) . " ");
         if ($filter !== "") {
-            echo("<button class=\"register-button\" onclick=\"register_runner($runner_id)\">Registrer startnummer $runner_id ✅️</button>");
+            $button_attributes = $valid_post
+                ? registration_button_attributes($runner_id)
+                : 'type="button" class="register-button" disabled';
+            echo("<button $button_attributes>Registrer startnummer $runner_id ✅️</button>");
         }
         echo("</td></tr>");
     } else {
@@ -88,23 +105,28 @@ function registration_table($runners) {
                 $status_text = "Velg post";
             } elseif ($runner->get_control() == $split_index) {
                 // Løperen har vore på denne posten. Grøn rad + tydeleg tekst.
-                $button = "<button class=\"register-button\" data-time=\"$tid_klokke\" "
-                    . "aria-label=\"Endre passering for startnummer $id\" onclick=\"register_runner($id, this)\">☑️ Endre</button>";
+                $confirm = $tid_klokke !== ""
+                    ? "$id $runner->name er allerede registrert på $control_label kl. $tid_klokke.\nVil du erstatte tiden?"
+                    : "";
+                $button = "<button " . registration_button_attributes($id, $confirm) . " "
+                    . "aria-label=\"Endre passering for startnummer $id\">☑️ Endre</button>";
                 $cssclass = "class=\"bg-success\"";
                 $status = "<span class=\"success\">✓ Registrert</span>";
                 $status_text = "✓ Registrert";
             } elseif ($runner->get_control() > $split_index) {
                 // Løperen har passert ein seinare post. Lilla rad, men passeringa
                 // på denne posten kan framleis endrast.
-                $data_time = $tid_klokke !== "" ? " data-time=\"$tid_klokke\"" : "";
-                $button = "<button class=\"register-button\"$data_time "
-                    . "aria-label=\"Endre passering for startnummer $id\" onclick=\"register_runner($id, this)\">☑️ Endre</button>";
+                $confirm = $tid_klokke !== ""
+                    ? "$id $runner->name er allerede registrert på $control_label kl. $tid_klokke.\nVil du erstatte tiden?"
+                    : "";
+                $button = "<button " . registration_button_attributes($id, $confirm) . " "
+                    . "aria-label=\"Endre passering for startnummer $id\">☑️ Endre</button>";
                 $cssclass = "class=\"bg-active\"";
                 $status = "<span class=\"active\">→ Passert senere</span>";
                 $status_text = "→ Passert senere";
             } else {
-                $button = "<button class=\"register-button\" "
-                    . "aria-label=\"Registrer passering for startnummer $id\" onclick=\"register_runner($id, this)\">✅️ Registrer</button>";
+                $button = "<button " . registration_button_attributes($id) . " "
+                    . "aria-label=\"Registrer passering for startnummer $id\">✅️ Registrer</button>";
                 $cssclass = "";
                 $status = "<span class=\"muted\">Ikke registrert</span>";
                 $status_text = "Ikke registrert";
