@@ -1,3 +1,7 @@
+<?php
+require __DIR__ . "/../lib/request.php";
+require_request_path(["/admin", "/admin/", "/admin/index.php"]);
+?>
 <!DOCTYPE html>
 <html lang="no">
 <head>

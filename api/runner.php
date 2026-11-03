@@ -31,9 +31,13 @@ if ($method == "POST") {
         } else {
             $line = csv_runner_line($runner_id, $name, "", "", $club, $course, "");
             $file = "$documentRoot/data/db.csv";
-            append_line($file, $line);
-            header("HX-Replace-Url: false");
-            echo("Løper lagt til: " . esc($line));
+            if (!append_line($file, $line)) {
+                http_response_code(response_code: 500);
+                echo("<span class='bg-danger'>Kunne ikke lagre løperen.</span>");
+            } else {
+                header("HX-Replace-Url: false");
+                echo("Løper lagt til: " . esc($line));
+            }
         }
 
 
@@ -62,6 +66,9 @@ if ($method == "PATCH") {
         } elseif (!ctype_digit($id)) {
             http_response_code(response_code: 400);
             echo("<span class='bg-danger'>Startnummer må vere eit tal.</span>");
+        } elseif ($course != "Kadaverløpet" && $course != "Minikadaver'n") {
+            http_response_code(response_code: 400);
+            echo("<span class='bg-danger'>Ukjent klasse.</span>");
         } else {
             $old_fields = str_getcsv($all_lines[(int) $csv_line], ";");
             $old_id = $old_fields[0];
@@ -76,8 +83,12 @@ if ($method == "PATCH") {
                     $old_fields[9] ?? false, $old_fields[10] ?? false
                 );
                 $all_lines[(int) $csv_line] = $line;
-                file_put_contents("$documentRoot/data/db.csv", implode("", $all_lines), LOCK_EX);
-                echo("<span class='bg-success'>Endret: " . esc($line) . "</span>");
+                if (file_put_contents("$documentRoot/data/db.csv", implode("", $all_lines), LOCK_EX) === false) {
+                    http_response_code(response_code: 500);
+                    echo("<span class='bg-danger'>Kunne ikke lagre endringene.</span>");
+                } else {
+                    echo("<span class='bg-success'>Endret: " . esc($line) . "</span>");
+                }
             }
         }
 }
@@ -173,4 +184,10 @@ if ($method == "GET") {
             echo("Ingen resultater...");
         }
     }
+}
+
+if (!in_array($method, ["GET", "POST", "PATCH"], true)) {
+    http_response_code(response_code: 405);
+    header("Allow: GET, POST, PATCH");
+    echo("<span class='bg-danger'>Method not allowed</span>");
 }

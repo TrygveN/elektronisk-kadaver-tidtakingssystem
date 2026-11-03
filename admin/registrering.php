@@ -590,7 +590,7 @@ async function register_runner(id, button) {
     }
 
     try {
-        const response = await fetch("api/passing.php", {
+        const response = await fetch("/api/passing.php", {
             method: "POST",
             body: formData,
         });
@@ -717,7 +717,7 @@ document.getElementById("manual-form").addEventListener("submit", async (event) 
     formData.append("time", when.toISOString().split(".")[0] + "Z");
 
     try {
-        const response = await fetch("api/passing.php", { method: "POST", body: formData });
+        const response = await fetch("/api/passing.php", { method: "POST", body: formData });
         if (response.status === 200) {
             const id = form.elements["id"].value;
             const control = form.elements["control"].value;

@@ -3,6 +3,11 @@ $documentRoot = $_SERVER['DOCUMENT_ROOT'];
 include("$documentRoot/import_runners.php");
 include("$documentRoot/data/hash.php");
 $method = $_SERVER['REQUEST_METHOD'];
+if ($method !== "GET") {
+    http_response_code(405);
+    header("Allow: GET");
+    exit;
+}
 if ($method == "GET") {
     parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
     $course = $query['course'] ?? "";

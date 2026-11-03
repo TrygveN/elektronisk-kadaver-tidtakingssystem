@@ -81,7 +81,7 @@ $updated = date("d.m.y", $db_updated);
 
 <?php
 $query = ["type"=>"paameldte"];
-include("api/table.php");
+include(__DIR__ . "/api/table.php");
 participants_table($runners);
 ?>
 <footer>

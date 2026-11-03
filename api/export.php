@@ -4,6 +4,12 @@ $documentRoot = $_SERVER['DOCUMENT_ROOT'];
 include("$documentRoot/import_runners.php");
 include("$documentRoot/data/hash.php");
 
+if ($_SERVER['REQUEST_METHOD'] !== "GET") {
+    http_response_code(405);
+    header("Allow: GET");
+    exit("Bruk GET.");
+}
+
 $password = getallheaders()['Password'] ?? ($_GET['password'] ?? "");
 if (!password_verify($password, $hash)) {
     http_response_code(401);

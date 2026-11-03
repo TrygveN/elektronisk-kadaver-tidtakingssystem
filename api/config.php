@@ -15,10 +15,10 @@ function write_ini_file($assoc_array, $path) {
         }
         $content .= "\n";
     }
-    file_put_contents($path, data: $content);
+    return file_put_contents($path, $content) !== false;
 }
 
-$config = parse_ini_file("$documentRoot/data/config.ini");
+$config = parse_ini_file("$documentRoot/data/config.ini") ?: [];
 
 include("$documentRoot/data/hash.php");
 $method = $_SERVER['REQUEST_METHOD'];
@@ -43,9 +43,13 @@ if ($method === "POST") {
         $config["vis_startnummer"] = isset($_POST["vis_startnummer"]) ? "true" : "false";
         $config["skjul_resultater"] = isset($_POST["skjul_resultater"]) ? "true" : "false";
         $config["skjul_ikke_startet"] = isset($_POST["skjul_ikke_startet"]) ? "true" : "false";
-        write_ini_file($config, $file);
-        header("HX-Replace-Url: false");
-        echo("Starttida er oppdatert til: $start_time for Kadaver'n <br> $start_time_mini for Minikadaer'n");
+        if (!write_ini_file($config, $file)) {
+            http_response_code(response_code: 500);
+            echo("Kunne ikke lagre konfigurasjonen.");
+        } else {
+            header("HX-Replace-Url: false");
+            echo("Starttida er oppdatert til: $start_time for Kadaver'n <br> $start_time_mini for Minikadaer'n");
+        }
     }
 }
 elseif ($method === "GET") {

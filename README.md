@@ -77,6 +77,14 @@ php -S localhost:3000 -t .
 - `api/` – endepunktene som grensesnittene kaller.
 - `import_runners.php` – leser CSV-filene og definerer `Runner`.
 - `set_password.php` – setter admin-passord (kun CLI).
+- `lib/request.php` – avviser førespurnader som ikkje gjeld ei faktisk side.
+
+## Ukjende stiar
+
+Webserveren kan falle tilbake til `index.php` når ein fil manglar. Både
+`index.php` og `admin/index.php` sjekkar derfor at stien faktisk er deira eigen
+og svarar `404 Not Found` for alt anna. Det hindrar at feilskrivne API-stiar
+gir `200` i staden for ein feil.
 
 ## Sikkerhet
 

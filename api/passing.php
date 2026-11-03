@@ -26,5 +26,8 @@ elseif (!DateTime::createFromFormat("Y-m-d\TH:i:sp", $time)) {
 else {
     $file = "$documentRoot/data/passering.csv";
     $line = (int) $control . "," . (int) $runner_id . "," . $time . "\n";
-    append_line($file, $line);
+    if (!append_line($file, $line)) {
+        http_response_code(response_code: 500);
+        echo("Kunne ikke lagre passering.");
+    }
 }

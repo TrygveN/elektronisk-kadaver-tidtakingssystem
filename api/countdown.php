@@ -14,6 +14,11 @@ function format($seconds) {
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
+if ($method !== "GET") {
+    http_response_code(405);
+    header("Allow: GET");
+    exit;
+}
 
 $time_limit = 240;
 

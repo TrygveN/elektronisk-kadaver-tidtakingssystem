@@ -1,4 +1,7 @@
 <?php
+require __DIR__ . "/lib/request.php";
+require_request_path(["/", "/index.php"]);
+
 $config = is_readable(__DIR__ . "/data/config.ini")
     ? (parse_ini_file(__DIR__ . "/data/config.ini") ?: [])
     : [];

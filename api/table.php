@@ -1,6 +1,12 @@
 <?php
 $documentRoot = $_SERVER['DOCUMENT_ROOT'];
 
+if ($_SERVER['REQUEST_METHOD'] !== "GET") {
+    http_response_code(405);
+    header("Allow: GET");
+    exit;
+}
+
 $config = parse_ini_file("$documentRoot/data/config.ini");
 date_default_timezone_set('UTC');
 $GLOBALS['start_time'] = DateTime::createFromFormat(DateTime::ISO8601, $config["start_date"]);
@@ -294,5 +300,9 @@ if (!isset($query)){
     }
     elseif ($type == "minikadavern") {
         minikadadvern_table($runners);
+    }
+    else {
+        http_response_code(400);
+        echo("Ukjent tabelltype.");
     }
 }
