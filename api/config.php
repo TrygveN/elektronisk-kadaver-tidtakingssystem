@@ -26,7 +26,7 @@ if ($method === "POST") {
     $start_time = $_POST['start_time'] ?? "";
     $start_time_mini = $_POST['mini_time'] ?? "";
 
-    $password = getallheaders()['Password'] ?? "";
+    $password = $_SERVER['HTTP_PASSWORD'] ?? "";
 
     $new_time = DateTime::createFromFormat(DateTime::ISO8601, $start_time. "+01");
     $new_time_mini = DateTime::createFromFormat(DateTime::ISO8601, $start_time_mini. "+01");
@@ -63,7 +63,7 @@ elseif ($method === "GET") {
     $skjul_ikke_startet = $config["skjul_ikke_startet"] ?? "0";
     $skjul_ikke_startet_checked = in_array($skjul_ikke_startet, ["1", "true", "on", "yes"], true) ? "checked" : "";
     $response = "
-      <form action='/api/config.php' method='POST' hx-boost='true' hx-target='#updated' hx-swap='innerHTML show:none' hx-push-url='false' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
+      <form action='/api/config.php' method='POST' hx-boost='true' hx-target='#updated' hx-swap='innerHTML show:none' hx-push-url='false' hx-headers='js:{\"password\": localStorage.getItem(\"passord\")}'>
     <label>
       Starttid Kadaverløpet
       <input type='datetime-local' id='start_time' name='start_time' step='1' value='$start_kadaver'>

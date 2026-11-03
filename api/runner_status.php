@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] !== "PATCH") {
     exit;
 }
 
-$password = getallheaders()['Password'] ?? "";
+$password = $_SERVER['HTTP_PASSWORD'] ?? "";
 if (!password_verify($password, $hash)) {
     http_response_code(401);
     echo("<span class='danger'>Ikke autorisert</span>");

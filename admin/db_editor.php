@@ -127,7 +127,7 @@
     <h2 id="search-heading">Søk opp løper</h2>
     <form class="search-form" action="/api/runner.php" method="GET" hx-boost="true"
           hx-target="#runner" hx-swap="innerHTML show:none" hx-push-url="false"
-          hx-headers='js:{"Password": localStorage.getItem("passord")}'>
+          hx-headers='js:{"password": localStorage.getItem("passord")}'>
       <label>
         Navn, startnummer eller klubb
         <input type="search" name="search" id="search" autocomplete="off" autofocus required>
@@ -141,7 +141,7 @@
     <h2 id="add-heading">Legg til løper</h2>
     <form class="form-grid" action="/api/runner.php" method="POST" hx-boost="true"
           hx-target="#updated" hx-swap="innerHTML show:none" hx-push-url="false"
-          hx-headers='js:{"Password": localStorage.getItem("passord")}'>
+          hx-headers='js:{"password": localStorage.getItem("passord")}'>
       <input type="hidden" id="password" name="password" required>
 
       <label for="id">Startnummer
@@ -177,11 +177,11 @@
       <p class="muted">Hent adresser for alle eller én klasse.</p>
       <div class="button-row">
         <button hx-get="/api/email.php" hx-target="#emails"
-                hx-headers='js:{"Password": localStorage.getItem("passord")}'>Hent alle</button>
+                hx-headers='js:{"password": localStorage.getItem("passord")}'>Hent alle</button>
         <button hx-get="/api/email.php?course=Kadaverløpet" hx-target="#emails"
-                hx-headers='js:{"Password": localStorage.getItem("passord")}'>Kadaverløpet</button>
+                hx-headers='js:{"password": localStorage.getItem("passord")}'>Kadaverløpet</button>
         <button hx-get="/api/email.php?course=Minikadaver'n" hx-target="#emails"
-                hx-headers='js:{"Password": localStorage.getItem("passord")}'>Minikadaver'n</button>
+                hx-headers='js:{"password": localStorage.getItem("passord")}'>Minikadaver'n</button>
       </div>
       <div class="button-row align-center">
         <button id="copy-emails" class="default" onclick="copy_emails()">📋 Kopier e-postliste</button>
@@ -196,7 +196,7 @@
       <h2 id="sync-heading">Synkroniser løperbase</h2>
       <p class="muted">Hent de nyeste påmeldingene fra Nettskjema.</p>
       <button id="sync-button" hx-get="/api/nettskjema_sync.php" hx-target="#sync-status" hx-swap="innerHTML show:none"
-              hx-headers='js:{"Password": localStorage.getItem("passord")}'>🔄 Synk fra Nettskjema</button>
+              hx-headers='js:{"password": localStorage.getItem("passord")}'>🔄 Synk fra Nettskjema</button>
       <div class="flash default output-container">
         <output id="sync-status" aria-live="polite"></output>
       </div>

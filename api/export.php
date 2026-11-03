@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] !== "GET") {
     exit("Bruk GET.");
 }
 
-$password = getallheaders()['Password'] ?? ($_GET['password'] ?? "");
+$password = $_SERVER['HTTP_PASSWORD'] ?? ($_GET['password'] ?? "");
 if (!password_verify($password, $hash)) {
     http_response_code(401);
     exit("Feil passord.");

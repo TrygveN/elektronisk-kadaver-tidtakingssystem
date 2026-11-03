@@ -45,7 +45,7 @@ if ($method == "POST") {
     }
 }
 if ($method == "PATCH") {
-    $password = getallheaders()['Password'] ?? "";
+    $password = $_SERVER['HTTP_PASSWORD'] ?? "";
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
         echo("<span class='bg-danger'>Feil passord.</span>");
@@ -97,7 +97,7 @@ if ($method == "PATCH") {
 }
 
 if ($method == "GET") {
-    $password = getallheaders()['Password'] ?? "";
+    $password = $_SERVER['HTTP_PASSWORD'] ?? "";
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
         echo("<span class='bg-danger'>Feil passord.</span>");
@@ -122,7 +122,7 @@ if ($method == "GET") {
             $student_blank = $r->is_student == "" ? "selected" : "";
             $response .= "
             <h2>Endre " . (int) $r->id . " " . esc($r->name) . "</h2>
-            <form class='form-grid' hx-patch='/api/runner.php' hx-target='#runner' hx-swap='innerHTML show:none' hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>
+            <form class='form-grid' hx-patch='/api/runner.php' hx-target='#runner' hx-swap='innerHTML show:none' hx-headers='js:{\"password\": localStorage.getItem(\"passord\")}'>
                 <label>Startnummer<input type='number' name='id' min='0' required value='" . (int) $r->id . "'></label>
                 <label>Navn<input type='text' name='name' required value='" . esc($r->name) . "'></label>
                 <label>Klubb/forening<input type='text' name='club' required value='" . esc($r->club) . "'></label>
@@ -145,7 +145,7 @@ if ($method == "GET") {
                     <button type='submit'>Lagre endringer</button>
                     <button type='button' class='default' hx-get='/api/runner.php?get=" . (int) $r->id . "'
                         hx-target='#runner' hx-swap='innerHTML show:none'
-                        hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>Avbryt</button>
+                        hx-headers='js:{\"password\": localStorage.getItem(\"passord\")}'>Avbryt</button>
                 </div>
             </form>
             ";
@@ -163,7 +163,7 @@ if ($method == "GET") {
             <p> <b>Student?</b> " . esc($r->is_student) . "</p>
             <button type='button' hx-get='/api/runner.php?get=" . (int) $r->id . "&amp;edit=true'
                 hx-target='#runner' hx-swap='innerHTML show:none'
-                hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>✏️ Endre løper</button>
+                hx-headers='js:{\"password\": localStorage.getItem(\"passord\")}'>✏️ Endre løper</button>
             ";
             header("HX-Replace-Url: false");
             echo($response);
@@ -177,7 +177,7 @@ if ($method == "GET") {
                 } else {
                     $url = "/api/runner.php?get=" . (int) $runner->id;
                 }
-                $response .= "<button class=\"default\" hx-get=\"$url\" hx-target=\"#runner\" hx-swap=\"innerHTML show:none\" hx-headers='js:{\"Password\": localStorage.getItem(\"passord\")}'>" . (int) $runner->id . " " . esc($runner->name) . "</button>";
+                $response .= "<button class=\"default\" hx-get=\"$url\" hx-target=\"#runner\" hx-swap=\"innerHTML show:none\" hx-headers='js:{\"password\": localStorage.getItem(\"passord\")}'>" . (int) $runner->id . " " . esc($runner->name) . "</button>";
                 header("HX-Replace-Url: false");
             }
             $response .= "</div>";
