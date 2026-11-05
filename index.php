@@ -39,7 +39,7 @@ if ($start_timestamp !== false) {
             --ft: "Kadaver Mono", "Adwaita Mono", "Source Code Pro", -apple-system,
                 BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial,
                 sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-            --ft-size: 18px;
+            --ft-size: 14px;
             --bd-radius: 6px;
             --tr-duration: .2s;
             --ct-width: 1024px;
@@ -86,11 +86,10 @@ if ($start_timestamp !== false) {
             line-height: 1.25;
             overflow-wrap: break-word;
         }
-        h1 { font-size: 2rem; }
-        h2 { font-size: 1.5rem; }
-        h3 { font-size: 1.25rem; }
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.2rem; }
+        h3 { font-size: 1.1rem; }
         :not(:is(dialog, article, body) > header:first-child) > :is(h1, h2) {
-            border-bottom: 1px solid var(--bd-muted);
         }
         :not(hgroup, blockquote, header) > :is(h1, h2, h3):first-child {
             margin-top: 1.5rem;
@@ -197,7 +196,7 @@ if ($start_timestamp !== false) {
 <?php if ($hide_results): ?>
 <p>Resultatene er ikke publisert ennå.</p>
 <?php else: ?>
-<h2>Vi tar forbehold om feil. Dette er ikke offisielle resultater</h2>
+<p>Vi tar forbehold om feil. Dette er ikke offisielle resultater</p>
 <p id="live-status" class="smaller muted" role="status" aria-live="polite">Oppdateres automatisk …</p>
 
 <div id='tabellkonteiner' class='flex' data-results hx-get="/api/table.php?type=liveresultater" hx-swap="innerMorph" hx-trigger="load, every 5s" hx-status:5xx="swap:none"></div>
