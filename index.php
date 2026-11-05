@@ -24,8 +24,145 @@ if ($start_timestamp !== false) {
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Kadaver'n" />
     <link rel="manifest" href="/img/site.webmanifest" />
-    <link rel="stylesheet" href="css/matcha.css">
     <style>
+        /* Berre stilane denne sida treng, henta frå matcha.css. */
+        @font-face {
+            font-family: "Kadaver Mono";
+            font-weight: 700;
+            src: url(/fonts/KadaverMono-Bold.woff2) format("woff2");
+        }
+        @font-face {
+            font-family: "Kadaver Mono";
+            src: url(/fonts/KadaverMono-Regular.woff2) format("woff2");
+        }
+        :root {
+            --ft: "Kadaver Mono", "Adwaita Mono", "Source Code Pro", -apple-system,
+                BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial,
+                sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            --ft-size: 18px;
+            --bd-radius: 6px;
+            --tr-duration: .2s;
+            --ct-width: 1024px;
+            --default: #1f2328;
+            --muted: #656d76;
+            --accent: #0969da;
+            --danger: #d1242f;
+            --bg-default: #ffffff;
+            --bg-muted: #f6f8fa;
+            --bg-contrast: #24292f;
+            --bd-muted: #d0d7deb3;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --default: #e6edf3;
+                --muted: #848d97;
+                --accent: #4493f8;
+                --danger: #f85149;
+                --bg-default: #0d1117;
+                --bg-muted: #161b22;
+                --bg-contrast: #6e7681;
+                --bd-muted: #30363db3;
+            }
+        }
+        body {
+            max-width: var(--ct-width);
+            padding: 0 1.5rem;
+            margin: 0 auto;
+            background: var(--bg-default);
+            color: var(--default);
+            font-family: var(--ft);
+            font-size: var(--ft-size);
+            line-height: 1.5;
+        }
+        a {
+            color: var(--accent);
+            text-decoration: inherit;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        h1, h2, h3 {
+            margin: 0 0 1rem;
+            line-height: 1.25;
+            overflow-wrap: break-word;
+        }
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.5rem; }
+        h3 { font-size: 1.25rem; }
+        :not(:is(dialog, article, body) > header:first-child) > :is(h1, h2) {
+            border-bottom: 1px solid var(--bd-muted);
+        }
+        :not(hgroup, blockquote, header) > :is(h1, h2, h3):first-child {
+            margin-top: 1.5rem;
+        }
+        :is(h1, h2, h3):last-child {
+            margin-bottom: 0;
+        }
+        p {
+            margin: 0 auto 1rem;
+        }
+        p:last-child {
+            margin-bottom: 0;
+        }
+        figure {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        img {
+            max-width: 100%;
+            border-radius: var(--bd-radius);
+            margin: auto;
+        }
+        abbr {
+            color: var(--muted);
+            text-decoration: underline dotted;
+        }
+        abbr[title] {
+            position: relative;
+            color: var(--accent);
+            cursor: help;
+        }
+        footer {
+            text-align: right;
+        }
+        body > footer:last-child {
+            margin-right: -1.5rem;
+            margin-left: -1.5rem;
+        }
+        table {
+            display: block;
+            max-width: 100%;
+            margin: 0 auto 1rem;
+            border-collapse: collapse;
+            border-spacing: 0;
+            inline-size: fit-content;
+            overflow-x: auto;
+        }
+        tbody > tr {
+            transition: background-color var(--tr-duration);
+        }
+        tbody > tr:hover {
+            background-color: var(--bg-muted);
+        }
+        td, th {
+            padding: .25rem .8125rem;
+            border: 0;
+            border-bottom: 1px solid var(--bd-muted);
+            text-align: start;
+            vertical-align: middle;
+        }
+        th {
+            border-bottom-color: var(--bg-contrast);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .flex { display: flex; }
+        .align-center { align-items: center; }
+        .smaller { font-size: .85rem; }
+        .muted { color: var(--muted); }
+        .danger { color: var(--danger); }
+
         @media only screen and (max-width: 650px) {
             body {
                 padding-left: .75rem;
