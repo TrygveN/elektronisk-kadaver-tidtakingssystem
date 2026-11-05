@@ -4,9 +4,19 @@ $documentRoot = $_SERVER['DOCUMENT_ROOT'];
 include("$documentRoot/data/hash.php");
 include("$documentRoot/import_runners.php");
 
+function csv_passing_field($value)
+{
+    $value = str_replace(["\r", "\n"], " ", (string) $value);
+    if (strpbrk($value, ",\"") !== false) {
+        return '"' . str_replace('"', '""', $value) . '"';
+    }
+    return $value;
+}
+
 $control = $_POST['control'] ?? "";
 $runner_id = $_POST['id'] ?? "";
 $time = $_POST['time'] ?? "";
+$navn = trim((string) ($_POST['navn'] ?? ""));
 $password = $_POST['password'] ?? "";
 
 if ($_SERVER['REQUEST_METHOD'] !== "POST") {
@@ -25,7 +35,7 @@ elseif (!DateTime::createFromFormat("Y-m-d\TH:i:sp", $time)) {
 }
 else {
     $file = "$documentRoot/data/passering.csv";
-    $line = (int) $control . "," . (int) $runner_id . "," . $time . "\n";
+    $line = (int) $control . "," . (int) $runner_id . "," . $time . "," . csv_passing_field($navn) . "\n";
     if (!append_line($file, $line)) {
         http_response_code(response_code: 500);
         echo("Kunne ikke lagre passering.");
