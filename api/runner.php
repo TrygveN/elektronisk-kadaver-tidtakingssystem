@@ -125,7 +125,7 @@ if ($method == "GET") {
             <form class='form-grid' hx-patch='/api/runner.php' hx-target='#runner' hx-swap='innerHTML show:none' hx-headers='js:{\"password\": encodeURIComponent(localStorage.getItem(\"passord\") ?? \"\")}'>
                 <label>Startnummer<input type='number' name='id' min='0' required value='" . (int) $r->id . "'></label>
                 <label>Navn<input type='text' name='name' required value='" . esc($r->name) . "'></label>
-                <label>Klubb/forening<input type='text' name='club' required value='" . esc($r->club) . "'></label>
+                <label>Klubb/forening<input type='text' name='club' value='" . esc($r->club) . "'></label>
                 <fieldset>
                     <legend>Klasse</legend>
                     <label><input type='radio' name='course' value='Kadaverløpet' $kadaver_checked required> Kadaverløpet</label>
