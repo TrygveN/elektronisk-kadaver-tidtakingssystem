@@ -45,6 +45,7 @@ if ($method === "PUT") {
         $config["vis_startnummer"] = isset($_PUT["vis_startnummer"]) ? "true" : "false";
         $config["skjul_resultater"] = isset($_PUT["skjul_resultater"]) ? "true" : "false";
         $config["skjul_ikke_startet"] = isset($_PUT["skjul_ikke_startet"]) ? "true" : "false";
+        $config["deaktiver_nettskjema_synk"] = isset($_PUT["deaktiver_nettskjema_synk"]) ? "true" : "false";
         if (!write_ini_file($config, $file)) {
             http_response_code(response_code: 500);
             echo("Kunne ikke lagre konfigurasjonen.");
@@ -65,6 +66,8 @@ elseif ($method === "GET") {
     $skjul_checked = in_array($skjul, ["1", "true", "on", "yes"], true) ? "checked" : "";
     $skjul_ikke_startet = $config["skjul_ikke_startet"] ?? "0";
     $skjul_ikke_startet_checked = in_array($skjul_ikke_startet, ["1", "true", "on", "yes"], true) ? "checked" : "";
+    $deaktiver_nettskjema_synk = $config["deaktiver_nettskjema_synk"] ?? "0";
+    $deaktiver_nettskjema_synk_checked = in_array($deaktiver_nettskjema_synk, ["1", "true", "on", "yes"], true) ? "checked" : "";
     $response = "
       <form hx-put='/api/config.php' hx-target='#updated' hx-swap='innerHTML show:none' hx-push-url='false' hx-headers='js:{\"password\": encodeURIComponent(localStorage.getItem(\"passord\") ?? \"\")}'>
     <fieldset>
@@ -100,6 +103,10 @@ elseif ($method === "GET") {
     <label>
       <input type='checkbox' id='skjul_ikke_startet' name='skjul_ikke_startet' value='true' $skjul_ikke_startet_checked>
       Skjul løpere som ikke har startet
+    </label>
+    <label>
+      <input type='checkbox' id='deaktiver_nettskjema_synk' name='deaktiver_nettskjema_synk' value='true' $deaktiver_nettskjema_synk_checked>
+      Deaktiver synk fra Nettskjema i løperbasen
     </label>
         <button type='submit'>Oppdater</button>
     </form>

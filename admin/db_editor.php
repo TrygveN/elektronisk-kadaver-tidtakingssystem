@@ -116,6 +116,10 @@
         async src="//teller.ekt.trygve.net/count.js"></script>
 </head>
 <body>
+<?php
+$config = parse_ini_file(__DIR__ . "/../data/config.ini") ?: [];
+$nettskjema_sync_disabled = in_array($config["deaktiver_nettskjema_synk"] ?? "0", ["1", "true", "on", "yes"], true);
+?>
 <?php $selected_page = "runners"; include(__DIR__ . "/nav.php"); ?>
 
   <header class="page-header">
@@ -199,6 +203,7 @@
       </div>
     </section>
 
+    <?php if (!$nettskjema_sync_disabled): ?>
     <section class="panel" aria-labelledby="sync-heading">
       <h2 id="sync-heading">Synkroniser løperbase</h2>
       <p class="muted">Hent de nyeste påmeldingene fra Nettskjema.</p>
@@ -208,6 +213,7 @@
         <output id="sync-status" aria-live="polite"></output>
       </div>
     </section>
+    <?php endif; ?>
   </div>
 
 <script>

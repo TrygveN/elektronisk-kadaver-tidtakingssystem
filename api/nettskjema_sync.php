@@ -102,6 +102,11 @@ if (!password_verify($password, $hash)) {
     exit;
 }
 
+$app_config = parse_ini_file("$documentRoot/data/config.ini") ?: [];
+if (in_array($app_config["deaktiver_nettskjema_synk"] ?? "0", ["1", "true", "on", "yes"], true)) {
+    nettskjema_error("synkronisering fra Nettskjema er deaktivert i data/config.ini.", 403);
+}
+
 $config_path = "$documentRoot/data/nettskjema.ini";
 $config = is_readable($config_path) ? parse_ini_file($config_path) : false;
 if (!$config || empty($config["client_id"]) || empty($config["client_secret"]) || empty($config["form_id"])) {
