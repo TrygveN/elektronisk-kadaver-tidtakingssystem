@@ -71,7 +71,7 @@ $updated = date("d.m.y", $db_updated);
 <div class="flex align-center">
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
 <div>
-<h1>Påmeldte Kadaverløpet <?= htmlspecialchars($year) ?></h1>
+<h1>Startliste Kadaverløpet <?= htmlspecialchars($year) ?></h1>
 <strong>Oppdatert <?= htmlspecialchars($updated) ?></strong>
 <br><a href="https://nettskjema.no/a/kadavern26">👉️Meld deg på her!👈️</a>
 <br><a href="https://kadavern.oj-oj.net/">Les mer om løpet</a>
@@ -85,7 +85,7 @@ include(__DIR__ . "/api/table.php");
 participants_table($runners);
 ?>
 <footer>
-<h3>von Vollærskævven vin & data AS</h3>
+<h3>© 2026 von Vollærskævven vin & data AS</h3>
 <figure><img src="img/NMBUI.webp" alt="" width="200px"></figure>
 </footer>
 </body>
