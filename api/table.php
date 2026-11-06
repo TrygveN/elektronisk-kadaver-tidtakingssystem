@@ -153,7 +153,12 @@ function registration_table($runners) {
 }
 
 function participants_table($runners) {
-    usort($runners, "cmp_course");
+    // vis_startnummer = false/0/"" skjuler startnummer-kolonna.
+    $vis_startnummer = !in_array($GLOBALS['config']['vis_startnummer'] ?? "1", ["", "0", "false", "off", "no"], true);
+
+    usort($runners, $vis_startnummer
+        ? fn($a, $b) => $a->id <=> $b->id
+        : "cmp_course");
 
     // Del løparane i éi gruppe per løype.
     $groups = [
@@ -165,9 +170,6 @@ function participants_table($runners) {
             $groups[$runner->course][] = $runner;
         }
     }
-
-    // vis_startnummer = false/0/"" skjuler startnummer-kolonna.
-    $vis_startnummer = !in_array($GLOBALS['config']['vis_startnummer'] ?? "1", ["", "0", "false", "off", "no"], true);
 
     foreach ($groups as $course => $course_runners) {
         $count = count($course_runners);
