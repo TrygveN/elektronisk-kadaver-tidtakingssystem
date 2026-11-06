@@ -85,7 +85,7 @@ include(__DIR__ . "/api/table.php");
 participants_table($runners);
 ?>
 <footer>
-<h3>Laget av Trygve. <a href="https://git.willy.club/Trygve/elektronisk-kadaver-tidtakingssystem">Kildekode</a></h3>
+<h3>von Vollærskævven vin & data AS</h3>
 <figure><img src="img/NMBUI.webp" alt="" width="200px"></figure>
 </footer>
 </body>

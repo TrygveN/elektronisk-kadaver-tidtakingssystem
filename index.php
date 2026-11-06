@@ -241,7 +241,7 @@ if ($start_timestamp !== false) {
 
 <footer>
 <p><a href="paameldte.php">Se alle påmeldte</a></p>
-<h3>Laget av Trygve. <a href="https://git.willy.club/Trygve/elektronisk-kadaver-tidtakingssystem">Kildekode</a></h3>
+<h3>von Vollærskævven vin & data AS</h3>
 <figure><img src="img/NMBUI.webp" alt="" width="200px"></figure>
 </footer>
 <script src="/lib/htmx.min.js"></script>
