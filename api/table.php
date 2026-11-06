@@ -213,6 +213,10 @@ function filter_result_runners($runners) {
     if ($hide_unstarted) {
         $runners = array_values(array_filter($runners, fn($runner) => $runner->started));
     }
+    $only_students = in_array($_GET["student"] ?? "0", ["1", "true", "on", "yes"], true);
+    if ($only_students) {
+        $runners = array_values(array_filter($runners, fn($runner) => csv_flag($runner->is_student)));
+    }
     return $runners;
 }
 
