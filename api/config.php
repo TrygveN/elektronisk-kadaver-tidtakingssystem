@@ -22,9 +22,10 @@ $config = parse_ini_file("$documentRoot/data/config.ini") ?: [];
 
 include("$documentRoot/data/hash.php");
 $method = $_SERVER['REQUEST_METHOD'];
-if ($method === "POST") {
-    $start_time = $_POST['start_time'] ?? "";
-    $start_time_mini = $_POST['mini_time'] ?? "";
+if ($method === "PUT") {
+    parse_str(file_get_contents("php://input"), $_PUT);
+    $start_time = ($_PUT['start_date'] ?? "") . "T" . ($_PUT['start_time'] ?? "");
+    $start_time_mini = ($_PUT['mini_date'] ?? "") . "T" . ($_PUT['mini_time'] ?? "");
 
     $password = rawurldecode($_SERVER['HTTP_PASSWORD'] ?? "");
 
@@ -41,9 +42,9 @@ if ($method === "POST") {
         $file = "$documentRoot/data/config.ini";
         $config["start_date"] = $start_time . "+01";
         $config["start_date_mini"] = $start_time_mini . "+01";
-        $config["vis_startnummer"] = isset($_POST["vis_startnummer"]) ? "true" : "false";
-        $config["skjul_resultater"] = isset($_POST["skjul_resultater"]) ? "true" : "false";
-        $config["skjul_ikke_startet"] = isset($_POST["skjul_ikke_startet"]) ? "true" : "false";
+        $config["vis_startnummer"] = isset($_PUT["vis_startnummer"]) ? "true" : "false";
+        $config["skjul_resultater"] = isset($_PUT["skjul_resultater"]) ? "true" : "false";
+        $config["skjul_ikke_startet"] = isset($_PUT["skjul_ikke_startet"]) ? "true" : "false";
         if (!write_ini_file($config, $file)) {
             http_response_code(response_code: 500);
             echo("Kunne ikke lagre konfigurasjonen.");
@@ -56,6 +57,8 @@ if ($method === "POST") {
 elseif ($method === "GET") {
     $start_kadaver = htmlspecialchars(explode("+", $config["start_date"] ?? "")[0], ENT_QUOTES);
     $start_mini = htmlspecialchars(explode("+", $config["start_date_mini"] ?? "")[0], ENT_QUOTES);
+    [$start_kadaver_date, $start_kadaver_time] = array_pad(explode("T", $start_kadaver, 2), 2, "");
+    [$start_mini_date, $start_mini_time] = array_pad(explode("T", $start_mini, 2), 2, "");
     $vis = $config["vis_startnummer"] ?? "1";
     $vis_checked = in_array($vis, ["", "0", "false", "off", "no"], true) ? "" : "checked";
     $skjul = $config["skjul_resultater"] ?? "0";
@@ -63,15 +66,29 @@ elseif ($method === "GET") {
     $skjul_ikke_startet = $config["skjul_ikke_startet"] ?? "0";
     $skjul_ikke_startet_checked = in_array($skjul_ikke_startet, ["1", "true", "on", "yes"], true) ? "checked" : "";
     $response = "
-      <form action='/api/config.php' method='POST' hx-boost='true' hx-target='#updated' hx-swap='innerHTML show:none' hx-push-url='false' hx-headers='js:{\"password\": encodeURIComponent(localStorage.getItem(\"passord\") ?? \"\")}'>
-    <label>
-      Starttid Kadaverløpet
-      <input type='datetime-local' id='start_time' name='start_time' step='1' value='$start_kadaver'>
-    </label>
-        <label>
-      Starttid Minikadaver'n
-        <input type='datetime-local' id='mini_time' name='mini_time' step='1' value='$start_mini'>
-        </label>
+      <form hx-put='/api/config.php' hx-target='#updated' hx-swap='innerHTML show:none' hx-push-url='false' hx-headers='js:{\"password\": encodeURIComponent(localStorage.getItem(\"passord\") ?? \"\")}'>
+    <fieldset>
+      <legend>Starttid Kadaverløpet</legend>
+      <label>
+        Dato
+        <input type='date' id='start_date' name='start_date' required value='$start_kadaver_date'>
+      </label>
+      <label>
+        Tid
+        <input type='time' id='start_time' name='start_time' step='1' required value='$start_kadaver_time'>
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend>Starttid Minikadaver'n</legend>
+      <label>
+        Dato
+        <input type='date' id='mini_date' name='mini_date' required value='$start_mini_date'>
+      </label>
+      <label>
+        Tid
+        <input type='time' id='mini_time' name='mini_time' step='1' required value='$start_mini_time'>
+      </label>
+    </fieldset>
         <label>
       <input type='checkbox' id='vis_startnummer' name='vis_startnummer' value='true' $vis_checked>
       Vis startnummer i påmeldtlista
@@ -92,7 +109,7 @@ elseif ($method === "GET") {
 }
 else {
     http_response_code(405);
-    header("Allow: GET, POST");
+    header("Allow: GET, PUT");
 }
 
 

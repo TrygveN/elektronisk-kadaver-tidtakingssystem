@@ -175,12 +175,19 @@
     <section class="panel" aria-labelledby="email-heading">
       <h2 id="email-heading">E-postlister</h2>
       <p class="muted">Hent adresser for alle eller én klasse.</p>
+      <label>
+        <input type="checkbox" id="unpaid-only">
+        Kun løpere som ikke har betalt
+      </label>
       <div class="button-row">
         <button hx-get="/api/email.php" hx-target="#emails"
+                hx-vals='js:{unpaid: document.getElementById("unpaid-only").checked ? "1" : ""}'
                 hx-headers='js:{"password": encodeURIComponent(localStorage.getItem("passord") ?? "")}'>Hent alle</button>
         <button hx-get="/api/email.php?course=Kadaverløpet" hx-target="#emails"
+                hx-vals='js:{unpaid: document.getElementById("unpaid-only").checked ? "1" : ""}'
                 hx-headers='js:{"password": encodeURIComponent(localStorage.getItem("passord") ?? "")}'>Kadaverløpet</button>
         <button hx-get="/api/email.php?course=Minikadaver'n" hx-target="#emails"
+                hx-vals='js:{unpaid: document.getElementById("unpaid-only").checked ? "1" : ""}'
                 hx-headers='js:{"password": encodeURIComponent(localStorage.getItem("passord") ?? "")}'>Minikadaver'n</button>
       </div>
       <div class="button-row align-center">
