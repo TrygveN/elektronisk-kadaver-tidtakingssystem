@@ -28,10 +28,29 @@ include(__DIR__ . "/../api/statistics.php");
 ?>
 </div>
 <h1>Løpende resultater</h1>
+<?php
+$only_students = in_array($_GET["student"] ?? "0", ["1", "true", "on", "yes"], true);
+$show_club = in_array($_GET["forening"] ?? "0", ["1", "true", "on", "yes"], true);
+$filters = array_filter(["student" => $only_students ? "1" : null, "forening" => $show_club ? "1" : null]);
+$table_query = $filters ? "&" . htmlspecialchars(http_build_query($filters)) : "";
+$href = fn($changes) => "?" . htmlspecialchars(http_build_query(array_merge($filters, $changes)));
+?>
+<p class="smaller">Vis:
+<?php if ($only_students): ?>
+    <a href="<?= $href(["student" => null]) ?>">Alle løpere</a> eller <span class="muted">Kun studenter</span>
+<?php else: ?>
+    <span class="muted">Alle løpere</span> eller <a href="<?= $href(["student" => "1"]) ?>">Kun studenter</a>
+<?php endif; ?>
+· <?php if ($show_club): ?>
+<a href="<?= $href(["forening" => null]) ?>">Skjul forening</a>
+<?php else: ?>
+<a href="<?= $href(["forening" => "1"]) ?>">Vis forening</a>
+<?php endif; ?>
+</p>
 <h2>Kadaverløpet</h2>
-<div class='flex' hx-get="/api/table.php?type=liveresultater" hx-trigger="load, every 5s" hx-status:5xx="swap:none"></div>
+<div class='flex' hx-get="/api/table.php?type=liveresultater<?= $table_query ?>" hx-trigger="load, every 5s" hx-status:5xx="swap:none"></div>
 <h2>Minikadaver'n</h2>
-<div class='flex' hx-get="/api/table.php?type=minikadavern" hx-trigger="load, every 15s" hx-status:5xx="swap:none"></div>
+<div class='flex' hx-get="/api/table.php?type=minikadavern<?= $table_query ?>" hx-trigger="load, every 15s" hx-status:5xx="swap:none"></div>
 <script>
   function log_out(){
     localStorage.removeItem("navn");

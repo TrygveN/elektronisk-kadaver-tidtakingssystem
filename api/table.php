@@ -220,14 +220,21 @@ function filter_result_runners($runners) {
     return $runners;
 }
 
+function show_club_column() {
+    return in_array($_GET["forening"] ?? "0", ["1", "true", "on", "yes"], true);
+}
+
 function liveresult_table($runners) {
     $runners = filter_result_runners($runners);
     usort($runners, "cmp");
     usort($runners, "cmp_course");
+    $club_header = show_club_column() ? "<th>Forening</th>" : "";
+    $club_cell_show = show_club_column();
     $kadaver_table = "<table id='kadavertabell'><thead>
         <tr>
         <th>#</th>
 	<th>Navn</th>
+        {$club_header}
         <th>1. matpost</th>
         <th>2. matpost</th>
         <th>Mål</th>
@@ -275,7 +282,8 @@ function liveresult_table($runners) {
         if ($runner->course == "Kadaverløpet") {
             $runner_number = $kadaver_num .".";
             if ($runner->get_control() == -1){$runner_number = "";};
-            $kadaver_table .= "<tr id='" . (int) $runner->id . "'><td>". $runner_number ."</td><td>" . esc($runner->name) . "</td>$matposter<td><b>$tid_maal</b></td><td>$tid_etter</td>$sprekk</tr>\n";
+            $club_cell = $club_cell_show ? "<td>" . esc($runner->club) . "</td>" : "";
+            $kadaver_table .= "<tr id='" . (int) $runner->id . "'><td>". $runner_number ."</td><td>" . esc($runner->name) . "</td>$club_cell$matposter<td><b>$tid_maal</b></td><td>$tid_etter</td>$sprekk</tr>\n";
         }
     }
     $kadaver_table .= "</tbody></table>\n";
@@ -286,10 +294,13 @@ function liveresult_table($runners) {
 function minikadadvern_table($runners) {
     $runners = filter_result_runners($runners);
     usort($runners, "cmp");
+    $club_header = show_club_column() ? "<th>Forening</th>" : "";
+    $club_cell_show = show_club_column();
     $minikadaver_table = "<table><thead>
     <tr>
     <th>#</th>
     <th>Navn</th>
+    {$club_header}
     <th>Mål</th>
     </tr></thead>
     <tbody>";
@@ -304,7 +315,8 @@ function minikadadvern_table($runners) {
 		    $mini_num++;
             $runner_number = $mini_num . ".";
             if ($runner->get_control() != 2){$runner_number = "";};
-            $minikadaver_table .= "<tr><td>". "$runner_number" ."</td><td>" . esc($runner->name) . "</td><td>$tid_maal</td></tr>\n";
+            $club_cell = $club_cell_show ? "<td>" . esc($runner->club) . "</td>" : "";
+            $minikadaver_table .= "<tr><td>". "$runner_number" ."</td><td>" . esc($runner->name) . "</td>$club_cell<td>$tid_maal</td></tr>\n";
         }
     }
     $minikadaver_table .= "</tbody></table>";

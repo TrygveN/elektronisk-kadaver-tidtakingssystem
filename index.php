@@ -8,7 +8,10 @@ $config = is_readable(__DIR__ . "/data/config.ini")
 $year = date("Y");
 $hide_results = in_array($config["skjul_resultater"] ?? "0", ["1", "true", "on", "yes"], true);
 $only_students = in_array($_GET["student"] ?? "0", ["1", "true", "on", "yes"], true);
-$student_query = $only_students ? "&student=1" : "";
+$show_club = in_array($_GET["forening"] ?? "0", ["1", "true", "on", "yes"], true);
+$filters = array_filter(["student" => $only_students ? "1" : null, "forening" => $show_club ? "1" : null]);
+$table_query = $filters ? "&" . htmlspecialchars(http_build_query($filters)) : "";
+$href = fn($changes) => "?" . htmlspecialchars(http_build_query(array_merge($filters, $changes)));
 $start_timestamp = strtotime($config["start_date"] ?? "");
 if ($start_timestamp !== false) {
     $year = date("Y", $start_timestamp);
@@ -214,16 +217,26 @@ if ($start_timestamp !== false) {
 <p>Vi tar forbehold om feil. Dette er ikke offisielle resultater</p>
 <p id="live-status" class="smaller muted" role="status" aria-live="polite">Oppdateres automatisk …</p>
 <p class="smaller">Vis:
+
 <?php if ($only_students): ?>
-    <a href="?">Alle løpere</a> eller <span class="muted">Kun studenter</span>
+    <a href="<?= $href(["student" => null]) ?>">Alle løpere</a> eller <span class="muted">Kun studenter</span>
 <?php else: ?>
-    <span class="muted">Alle løpere</span> eller <a href="?student=1">Kun studenter</a>
+    <span class="muted">Alle løpere</span> eller <a href="<?= $href(["student" => "1"]) ?>">Kun studenter</a>
 <?php endif; ?>
 </p>
+<!--
+<p class="smaller">
+<?php// if ($show_club): ?>
+<a href="<?= $href(["forening" => null]) ?>">Skjul forening</a>
+<?php// else: ?>
+<a href="<?= $href(["forening" => "1"]) ?>">Vis forening</a>
+<?php// endif; ?>
+</p>
+-->
 
-<div id='tabellkonteiner' class='flex' data-results hx-get="/api/table.php?type=liveresultater<?= $student_query ?>" hx-swap="innerMorph" hx-trigger="load, every 5s" hx-status:5xx="swap:none"></div>
+<div id='tabellkonteiner' class='flex' data-results hx-get="/api/table.php?type=liveresultater<?= $table_query ?>" hx-swap="innerMorph" hx-trigger="load, every 5s" hx-status:5xx="swap:none"></div>
 <h2>Minikadaver'n</h2>
-<div class='flex' data-results hx-get="/api/table.php?type=minikadavern<?= $student_query ?>" hx-swap="innerMorph" hx-trigger="load, every 15s" hx-status:5xx="swap:none"></div>
+<div class='flex' data-results hx-get="/api/table.php?type=minikadavern<?= $table_query ?>" hx-swap="innerMorph" hx-trigger="load, every 15s" hx-status:5xx="swap:none"></div>
 <?php endif; ?>
 
 <footer>
