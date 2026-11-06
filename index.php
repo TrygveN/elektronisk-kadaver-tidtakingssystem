@@ -136,14 +136,17 @@ if ($start_timestamp !== false) {
             max-width: var(--ct-width);
             margin-inline: auto;
         }
-        /* Tabellane går heilt ut til skjermkantane. */
+        /* Tabellområdet går heilt ut til skjermkantane, men tabellen
+           veks ikkje meir enn innhaldet krev. På mobil fyller han breidda. */
         #tabellkonteiner,
         [data-results] {
             width: 100%;
+            max-width: calc(var(--ct-width) + 3rem);
+            margin-inline: auto;
             overflow-x: auto;
         }
         table {
-            width: 100%;
+            width: fit-content;
             max-width: 100%;
             margin: 0 auto 1rem;
             border-collapse: collapse;
@@ -182,6 +185,7 @@ if ($start_timestamp !== false) {
             }
             #tabellkonteiner table,
             [data-results] table {
+                width: 100%;
                 font-size: .85rem;
             }
             td, th {
