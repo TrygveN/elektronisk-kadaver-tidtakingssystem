@@ -211,6 +211,7 @@ if ($start_timestamp !== false) {
 <figure><img src="img/kadaver.png" alt="" width="100px" class="invert"></figure>
 <h1>Løpende resultater Kadaverløpet <?= htmlspecialchars($year, ENT_QUOTES, "UTF-8") ?></h1>
 </div>
+<p><a href="https://www.livelox.com/Events/Show/207911/Kadaverlopet">GPS sporing</a>
 <?php if ($hide_results): ?>
 <p>Resultatene er ikke publisert ennå.</p>
 <?php else: ?>
