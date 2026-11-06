@@ -203,6 +203,17 @@ $nettskjema_sync_disabled = in_array($config["deaktiver_nettskjema_synk"] ?? "0"
       </div>
     </section>
 
+    <section class="panel" aria-labelledby="start-list-heading">
+      <h2 id="start-list-heading">Startliste</h2>
+      <p class="muted">Last ned startlista som PDF (A4)</p>
+      <div class="button-row">
+        <button type="button" onclick="download_start_list()">📄 Last ned startliste (PDF)</button>
+      </div>
+      <div class="flash default output-container">
+        <output id="start-list-status" aria-live="polite"></output>
+      </div>
+    </section>
+
     <?php if (!$nettskjema_sync_disabled): ?>
     <section class="panel" aria-labelledby="sync-heading">
       <h2 id="sync-heading">Synkroniser løperbase</h2>
@@ -262,6 +273,37 @@ $nettskjema_sync_disabled = in_array($config["deaktiver_nettskjema_synk"] ?? "0"
     document.getElementById("email-count").textContent =
       `${emails.length} e-postadresser kopiert`;
     setTimeout(update_email_count, 3000);
+  }
+
+  async function download_start_list() {
+    const status = document.getElementById("start-list-status");
+    status.className = "muted";
+    status.textContent = "Lager startliste …";
+    try {
+      const response = await fetch("/api/start_list.php", {
+        headers: { password: encodeURIComponent(localStorage.getItem("passord") ?? "") },
+      });
+      if (response.status === 401) {
+        status.className = "danger";
+        status.textContent = "Feil passord.";
+        return;
+      }
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const url = URL.createObjectURL(await response.blob());
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "startliste-kadaver.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      status.textContent = "";
+    } catch (error) {
+      status.className = "danger";
+      status.textContent = "Kunne ikke lage startlista. Prøv igjen.";
+    }
   }
 
   // htmx 4 bruker namespace-aktige hendingsnamn, og detaljane ligg i
