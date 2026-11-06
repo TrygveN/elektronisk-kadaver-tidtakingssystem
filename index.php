@@ -21,7 +21,7 @@ if ($start_timestamp !== false) {
 <html lang="no">
 <head>
     <meta charset="UTF-8" />
-    <title>EKT</title>
+    <title>Kadaverløpet <?= htmlspecialchars($year, ENT_QUOTES, "UTF-8")?></title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="Elektronisk Kadaver Tidtakingssystem" />
     <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
