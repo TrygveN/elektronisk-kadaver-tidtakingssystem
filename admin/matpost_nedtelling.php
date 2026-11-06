@@ -29,6 +29,21 @@ $control_label = $control === 0 ? "1. matpost" : "2. matpost";
         margin: 0 auto;
         max-width: var(--ct-width);
       }
+      .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem 1.5rem;
+        margin: 1.5rem 0;
+      }
+      .page-header h1 {
+        margin: 0;
+        line-height: 1.2;
+      }
+      .page-header button {
+        margin: 0;
+      }
       .time {
         font-size: 1.75em;
         font-weight: bold;
@@ -65,10 +80,10 @@ $nav_class = "ui";
 include(__DIR__ . "/nav.php");
 ?>
 <div class="ui">
-  <div class="flex wrap align-center">
-    <h1>Nedtelling – <?= htmlspecialchars($control_label, ENT_QUOTES, "UTF-8") ?></h1>
-    <button id="sound-toggle" class="accent" aria-pressed="false">🔔 Slå på lydvarsel</button>
-  </div>
+  <header class="page-header">
+    <h1>Nedtelling <?= htmlspecialchars($control_label, ENT_QUOTES, "UTF-8") ?></h1>
+    <button id="sound-toggle" class="accent" aria-pressed="false">📢 Slå på lydvarsel</button>
+  </header>
   <div hx-get="/api/countdown.php?matpost=<?= $control ?>" hx-trigger="load, every 1s" hx-swap="innerMorph" hx-status:5xx="swap:none"></div>
 </div>
 <script src="/lib/htmx.min.js"></script>
@@ -80,7 +95,7 @@ let firstSwap = true;
 
 function updateSoundButton() {
     const button = document.getElementById("sound-toggle");
-    button.textContent = soundEnabled ? "🔕 Slå av lydvarsel" : "🔔 Slå på lydvarsel";
+    button.textContent = soundEnabled ? "🔕 Slå av lydvarsel" : "📢 Slå på lydvarsel";
     button.setAttribute("aria-pressed", soundEnabled ? "true" : "false");
 }
 

@@ -217,7 +217,7 @@ $nettskjema_sync_disabled = in_array($config["deaktiver_nettskjema_synk"] ?? "0"
     <?php if (!$nettskjema_sync_disabled): ?>
     <section class="panel" aria-labelledby="sync-heading">
       <h2 id="sync-heading">Synkroniser løperbase</h2>
-      <p class="muted">Hent de nyeste påmeldingene fra Nettskjema.</p>
+      <p class="muted">Hent nye påmeldinger fra Nettskjema.</p>
       <button id="sync-button" hx-get="/api/nettskjema_sync.php" hx-target="#sync-status" hx-swap="innerHTML show:none"
               hx-headers='js:{"password": encodeURIComponent(localStorage.getItem("passord") ?? "")}'>🔄 Synk fra Nettskjema</button>
       <div class="flash default output-container">
