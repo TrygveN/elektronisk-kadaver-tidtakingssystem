@@ -65,14 +65,20 @@ if ($start_timestamp !== false) {
             }
         }
         body {
-            max-width: var(--ct-width);
-            padding: 0 1.5rem;
-            margin: 0 auto;
+            margin: 0;
             background: var(--bg-default);
             color: var(--default);
             font-family: var(--ft);
             font-size: var(--ft-size);
             line-height: 1.5;
+        }
+        /* Innhaldet held seg til lesande breidd; tabellane er unnatekne
+           og går heilt ut til skjermkantane. */
+        body > :not(#tabellkonteiner, [data-results], footer) {
+            box-sizing: border-box;
+            max-width: calc(var(--ct-width) + 3rem);
+            padding-inline: 1.5rem;
+            margin-inline: auto;
         }
         a {
             color: var(--accent);
@@ -125,18 +131,23 @@ if ($start_timestamp !== false) {
         footer {
             text-align: right;
         }
-        body > footer:last-child {
-            margin-right: -1.5rem;
-            margin-left: -1.5rem;
+        body > footer {
+            box-sizing: border-box;
+            max-width: var(--ct-width);
+            margin-inline: auto;
+        }
+        /* Tabellane går heilt ut til skjermkantane. */
+        #tabellkonteiner,
+        [data-results] {
+            width: 100%;
+            overflow-x: auto;
         }
         table {
-            display: block;
+            width: 100%;
             max-width: 100%;
             margin: 0 auto 1rem;
             border-collapse: collapse;
             border-spacing: 0;
-            inline-size: fit-content;
-            overflow-x: auto;
         }
         tbody > tr {
             transition: background-color var(--tr-duration);
@@ -163,13 +174,11 @@ if ($start_timestamp !== false) {
         .danger { color: var(--danger); }
 
         @media only screen and (max-width: 650px) {
-            body {
-                padding-left: .75rem;
-                padding-right: .75rem;
+            body > :not(#tabellkonteiner, [data-results], footer) {
+                padding-inline: .75rem;
             }
-            #tabellkonteiner,
-            [data-results] {
-                overflow-x: auto;
+            footer {
+                padding-inline: .75rem;
             }
             #tabellkonteiner table,
             [data-results] table {
