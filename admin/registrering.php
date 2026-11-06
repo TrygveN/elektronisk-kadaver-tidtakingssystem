@@ -644,6 +644,7 @@ function manual_payload(form) {
         control: form.elements["control"].value,
         id: form.elements["id"].value,
         time: isNaN(when.getTime()) ? "" : when.toISOString().split(".")[0] + "Z",
+        navn: localStorage.getItem("navn") ?? "",
     };
 }
 
@@ -673,19 +674,6 @@ function handle_manual_response(ctx, form) {
         ? "Feil passord!"
         : (ctx.text.trim() || "Kunne ikke lagre passering.");
 }
-
-document.body.addEventListener("htmx:config:request", (event) => {
-    const ctx = event.detail?.ctx;
-    if (!ctx || !(ctx.request.body instanceof URLSearchParams)) {
-        return;
-    }
-    const action = new URL(ctx.request.action, window.location.href);
-    if (action.pathname !== "/api/passing.php") {
-        return;
-    }
-    // Legg til navnet til den som registrerte
-    ctx.request.body.set("navn", localStorage.getItem("navn") ?? "");
-});
 
 document.body.addEventListener("htmx:before:request", (event) => {
     const ctx = event.detail?.ctx;

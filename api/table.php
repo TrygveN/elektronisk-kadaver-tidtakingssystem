@@ -37,7 +37,7 @@ function registration_button_attributes($id, $confirm = "") {
         . ' hx-disable="this"'
         . ' hx-sync="closest .settings:queue all"'
         . " hx-vals='js:{password: localStorage.getItem(\"passord\"), control: get_control(), id: "
-        . (int) $id . ", time: now_iso()}'";
+        . (int) $id . ", time: now_iso(), navn: localStorage.getItem(\"navn\") ?? \"\"}'";
     if ($confirm !== "") {
         $attributes .= ' hx-confirm="' . esc($confirm) . '"';
     }

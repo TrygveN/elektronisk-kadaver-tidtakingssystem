@@ -47,7 +47,9 @@ mkdir -p data
    ```
 
 4. **Passeringer** – `data/passering.csv` kan være tom. Format per linje:
-   `post,startnummer,tidspunkt` (post 1–3, tid på ISO 8601).
+   `post,startnummer,tidspunkt,navn` (post 1–3, tid på ISO 8601, navn er
+   valgfritt og viser kven som registrerte passeringa). Eldre linjer med berre
+   tre felt er framleis gyldige.
 
 5. **Nettskjema (valgfritt)** – `data/nettskjema.ini` for synk av påmeldinger:
 
