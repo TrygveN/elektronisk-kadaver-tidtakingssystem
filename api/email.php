@@ -11,6 +11,7 @@ if ($method !== "GET") {
 if ($method == "GET") {
     parse_str($_SERVER['QUERY_STRING'] ?? "", $query);
     $course = $query['course'] ?? "";
+    $unpaid_only = ($query['unpaid'] ?? "") === "1";
     $password = rawurldecode($_SERVER['HTTP_PASSWORD'] ?? "");
     if (!password_verify($password, $hash)) {
         http_response_code(response_code: 401);
@@ -21,6 +22,9 @@ if ($method == "GET") {
         for ($i = 0; $i < count($runners); $i++) {
                 $email = trim($runners[$i]->email);
                 if ($email === "") {
+                    continue;
+                }
+                if ($unpaid_only && $runners[$i]->paid) {
                     continue;
                 }
                 if (!isset($query['course']) || $course == $runners[$i]->course) {
