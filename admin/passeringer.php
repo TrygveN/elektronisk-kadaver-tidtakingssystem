@@ -85,6 +85,15 @@ foreach ($runners as $runner) {
         text-align: right;
         white-space: nowrap;
       }
+      .passering-table .action-cell {
+        width: 1%;
+        white-space: nowrap;
+        text-align: right;
+      }
+      .passering-table .action-cell button {
+        margin: 0;
+        padding: .25rem .75rem;
+      }
     </style>
     <script data-goatcounter="https://teller.ekt.trygve.net/count"
         async src="//teller.ekt.trygve.net/count.js"></script>
@@ -120,11 +129,12 @@ foreach ($runners as $runner) {
           <th>Navn</th>
           <th>Tid (UTC)</th>
           <th>Registrert av</th>
+          <th class="action-cell"></th>
         </tr>
       </thead>
       <tbody>
       <?php if (count($passeringer) === 0): ?>
-        <tr><td colspan="6" class="muted">Ingen passeringer registrert.</td></tr>
+        <tr><td colspan="7" class="muted">Ingen passeringer registrert.</td></tr>
       <?php else: ?>
         <?php foreach ($passeringer as $index => $fields): ?>
           <?php
@@ -141,6 +151,7 @@ foreach ($runners as $runner) {
             <td><?= $runner_name !== "" ? passering_esc($runner_name) : '<span class="muted">–</span>' ?></td>
             <td class="time-cell"><time datetime="<?= passering_esc($timestamp) ?>"><?= passering_esc(passering_time_label($timestamp)) ?></time></td>
             <td><?= $navn !== "" ? passering_esc($navn) : '<span class="muted">–</span>' ?></td>
+            <td class="action-cell"><button type="button" class="default" data-delete-passering="<?= $index ?>">Slett</button></td>
           </tr>
         <?php endforeach; ?>
       <?php endif; ?>
@@ -155,6 +166,27 @@ foreach ($runners as $runner) {
     localStorage.removeItem("passord");
     window.location.href = "/admin/login.html";
   }
+
+  document.querySelectorAll("[data-delete-passering]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      if (!confirm("Slette denne passeringa?")) return;
+      button.disabled = true;
+      const response = await fetch("/api/delete_passing.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: new URLSearchParams({
+          index: button.dataset.deletePassering,
+          password: localStorage.getItem("passord") ?? "",
+        }),
+      });
+      if (response.ok) {
+        location.reload();
+      } else {
+        button.disabled = false;
+        alert(await response.text() || "Kunne ikke slette passeringa.");
+      }
+    });
+  });
 
   document.getElementById("passering-filter").addEventListener("input", (event) => {
     const search = event.target.value.trim().toLocaleLowerCase("no-NO");
